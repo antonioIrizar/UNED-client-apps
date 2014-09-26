@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <title>Game of Life</title>
+    <style>
+.circle{
+    border-radius: 50%;
+    border: 1px solid black;
+    margin-bottom: 10px;
+}
+
+.cosa{
+    border: 1px solid black;
+    margin-bottom: 10px;
+}
+.circle-text {
+    width:100%;
+}
+.circle-text:after {
+    content: "";
+    display: block;
+    width: 100%;
+    height:0;
+    padding-bottom: 100%;
+    background: #4679BD;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+.circle-text div {
+    float:left;
+    width:100%;
+    padding-top:50%;
+    line-height:1em;
+    margin-top:-0.5em;
+    text-align:center;
+    color:white;
+}
+</style>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <script type="text/javascript" src="javascripts/game_of_life.js"> 
+    </script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1">
+          <ul style="list-style-type:none">
+            <li><h2>Tool Bar</h2></li>
+            <li><img id="plus1" src="images/plus.png"  draggable="true" ondragstart="drag(event)"></li>
+            <li><img id="minus1" src="images/minus.png" width="50" draggable="true" ondragstart="drag(event)"></li>
+            <li><img id="multiplication1" src="images/multiplication.png" width="50" draggable="true" ondragstart="drag(event)"></li>
+            <li><img id="divide1" src="images/divide.png" width="50" draggable="true" ondragstart="drag(event)"></li>
+            <li><img  id="formula1" src="images/formula.png" width="50" draggable="true" ondragstart="drag(event)"></li>
+          </ul>
+        </div>
+        <div class="col-md-5">
+            <ul style="list-style-type:none">
+              <li>
+                <div id="formulas" class="row">
+                  <h3>Formula</h3>
+                  <div class="col-md-2 form-group">
+                    <label for="exampleInputEmail1">AX</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                  </div>
+                  <div class="circle-text col-md-1">
+                    <label for="exampleInputEmail1">op</label>
+                  </div>
+                  <div class="col-md-2 form-group">
+                    <label for="exampleInputEmail1">BY</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                  </div>
+                  <div class="circle-text col-md-1">
+                    <label for="exampleInputEmail1">op</label>
+                  </div>
+                  <div class="col-md-2 form-group">
+                    <label for="exampleInputEmail1">C</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="row">
+                  rango variables
+                </div>
+              </li>
+              <li>
+                <div class="row">
+                  constantes valor
+                </div>
+              </li>
+            </ul>
+        </div> 
+        <div class="col-md-6">
+          canvas grafica
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
