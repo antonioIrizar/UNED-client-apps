@@ -42,16 +42,16 @@ class Formula
         ev.preventDefault()
 
     drag: (ev) ->
-        console.log "dada"
-        ev.dataTransfer.setData('text/html', ev.target.id)
+        #ev.dataTransfer.setData('text/html', ev.target.id)
 
     drop: (ev) =>
-        console.log "drop"
         ev.preventDefault()
-        img = document.createElement("img") 
+        img = document.createElement 'img'
         img.src = @srcImage
         @divFormula.appendChild img
         @divFormulaWithNumbers.appendChild @drawFormula()
+
+
 
     drawFormula: ->
         formula = document.createElement 'p'
@@ -64,6 +64,7 @@ class Formula
             else
                 text = document.createTextNode variable.name
                 formula.appendChild text
+        @constantValue.appendChild @createButton()
         formula
 
     drawInput: (variable)->
@@ -79,8 +80,22 @@ class Formula
         input.setAttribute 'type' , "text"
         input.setAttribute 'placeholder' , variable.fullName
         divInput.appendChild input
-        divInput    
+        divInput
 
+    createButton:  ->
+        divButton = document.createElement 'div'
+        divButton.setAttribute 'class', "btn-group"
+        button = document.createElement 'button'
+        button.setAttribute 'type', "button"
+        button.setAttribute 'class', "btn btn-primary"
+        button.addEventListener 'click', => @clickButton()
+        text = document.createTextNode "update values"
+        button.appendChild text
+        divButton.appendChild button
+        divButton
+
+    clickButton: ->
+        alert "hola"
 
 class Archimedes extends Formula
 
@@ -108,6 +123,11 @@ class Archimedes extends Formula
         volume = new Variable("V" , "volume" , "description" , null)
         variables = [newtowns,density,gravity,volume]
         super(divPanel , liFormula, constant_value, 'images/archimedesFormula.png',variables)
+        a = new Graph()
+        a.drawEquation(
+            (x) -> 
+                5 * Math.sin(x)
+        , 'green', 3);
 
 class Variable 
     name:null #string but pass in htlm , if it need for example sub tag
@@ -116,6 +136,144 @@ class Variable
     value:null #float
 
     constructor: (@name,@fullName,@description,@value) ->
+
+class Graph
+    canvas: null
+    minX: -10
+    minY: -10
+    maxX: 10
+    maxY: 10
+    unitsPerTick: 1
+    axisColor:"#aaa"
+    font: "8pt Calibri"
+    tickSize: 20
+    context: null
+    rangeX: null
+    rangeY: null
+    unitX: null
+    unitY: null
+    centerX: null
+    centerY: null
+    iteration: null
+    scaleX: null
+    scaleY: null
+
+    constructor: ->
+        @canvas = document.getElementById "graph"
+        @context = @canvas.getContext '2d'
+        @rangeX = @maxX - @minX
+        @rangeY = @maxY - @minY
+        @unitX = @canvas.width / @rangeX 
+        @unitY = @canvas.height / @rangeY
+        @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
+        @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
+        @iteration = (@maxX - @minX) / 1000
+        @scaleX = @canvas.width / @rangeX
+        @scaleY = @canvas.height / @rangeY
+        @drawXAxis()
+        @drawYAxis()
+
+    drawXAxis: ->
+        context = @context
+        context.save()
+        context.beginPath()
+        context.moveTo(0,@centerY)
+        context.lineTo(@canvas.width, @centerY)
+        context.strokeStyle = @axisColor
+        context.lineWidth = 2
+        context.stroke()
+
+        xPosIncrement = @unitsPerTick * @unitX
+        context.font = @font
+        context.textAlign = 'center'
+        context.textBaseline = 'top'
+
+        xPos = @centerX - xPosIncrement
+        unit = -1 * @unitsPerTick
+        while xPos > 0
+            context.moveTo(xPos, @centerY - @tickSize / 2)
+            context.lineTo(xPos, @centerY + @tickSize / 2)
+            context.stroke()
+            context.fillText(unit, xPos, @centerY + @tickSize / 2 + 3)
+            unit -= @unitsPerTick
+            xPos = Math.round(xPos - xPosIncrement)
+
+        xPos = @centerX + xPosIncrement
+        unit = @unitsPerTick
+        while xPos < this.canvas.width 
+            context.moveTo(xPos, @centerY - @tickSize / 2)
+            context.lineTo(xPos, @centerY + @tickSize / 2)
+            context.stroke()
+            context.fillText(unit, xPos, @centerY + @tickSize / 2 + 3)
+            unit += @unitsPerTick
+            xPos = Math.round(xPos + xPosIncrement)
+        
+        context.restore();
+
+    drawYAxis: ->
+        context = @context
+        context.save()
+        context.beginPath()
+        context.moveTo(@centerX, 0)
+        context.lineTo(@centerX,  @canvas.height)
+        context.strokeStyle = @axisColor
+        context.lineWidth = 2
+        context.stroke()
+
+        yPosIncrement = @unitsPerTick * @unitY
+        context.font = @font
+        context.textAlign = 'right'
+        context.textBaseline = 'middle'
+
+        yPos = @centerY - yPosIncrement
+        unit = @unitsPerTick
+        while yPos > 0
+            context.moveTo(@centerX - @tickSize / 2, yPos)
+            context.lineTo(@centerX + @tickSize / 2, yPos)
+            context.stroke()
+            context.fillText(unit, @centerX - @tickSize / 2 - 3, yPos)
+            unit += @unitsPerTick
+            yPos = Math.round(yPos - yPosIncrement)
+
+        yPos = @centerY + yPosIncrement
+        unit = -1 * @unitsPerTick
+        while yPos < @canvas.height
+            context.moveTo(@centerX - @tickSize / 2, yPos)
+            context.lineTo(@centerX + @tickSize / 2, yPos)
+            context.stroke()
+            context.fillText(unit, @centerX - @tickSize / 2 - 3, yPos)
+            unit -= @unitsPerTick
+            yPos = Math.round(yPos + yPosIncrement)
+        
+        context.restore()
+
+    drawEquation: (equation, color, thickness) ->
+        context = @context
+        context.save()
+        context.save()
+        @transformContext()
+
+        context.beginPath()
+        context.moveTo(@minX, equation(@minX))
+        x = @minX + @iteration
+
+        while x <= @maxX
+            context.lineTo(x, equation(x))
+            x += @iteration
+
+        context.restore()
+        context.lineJoin = 'round'
+        context.lineWidth = thickness
+        context.strokeStyle = color
+        context.stroke()
+        context.restore()
+
+    transformContext: ->
+        context = @context
+
+        @context.translate(@centerX, @centerY);
+
+        context.scale(@scaleX, - @scaleY);
 
 window.Archimedes = Archimedes
 
