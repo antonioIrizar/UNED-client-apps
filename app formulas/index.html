@@ -36,6 +36,11 @@
     text-align:center;
     color:white;
 }
+.formula-text {
+  font-family: "Latin Modern", serif;
+  font-size: 36pt;
+  font-style: italic;
+}
 </style>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -69,35 +74,43 @@
         <div class="col-md-5">
             <ul style="list-style-type:none">
               <li>
-                <div id="formulas" class="row panel panel-primary">
+                <div    class="row panel panel-primary">
                   <div class="panel-heading">
                      <h3 class="panel-title">Formula</h3>
                   </div>
-                  <div class="panel-body">
-                    Panel content
+                  <div  id="formulas" class="panel-body">
+                  </div>
+              </li>
+              <li>
+                <div class="row panel panel-info">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Constant value</h3>
+                  </div>
+                  <div  id="constant_value" class="panel-body">
                   </div>
               </li>
               <li>
                 <div class="row">
-                  rango variables
-                </div>
-              </li>
-              <li>
-                <div class="row">
-                  constantes valor
+                  
+                   rango variables
                 </div>
               </li>
             </ul>
         </div> 
         <div class="col-md-6">
-          canvas grafica
+          <div class="row panel panel-success">
+            <div class="panel-heading">
+              <h3 class="panel-title">Graphic</h3>
+            </div>
+            <div  id="" class="panel-body">
+            </div>
         </div>
       </div>
     </div>
                   <script>
                       
                      
-                        new Archimedes('formulas','archimedes_formula');
+                        new Archimedes('formulas','archimedes_formula','constant_value');
                  
                   </script>
 
