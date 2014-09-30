@@ -22,10 +22,26 @@
 
     Formula.prototype.constantValue = null;
 
-    function Formula(divPanel, liFormula, constant_value, srcImage, variables) {
+    Formula.prototype.idFormula = "prueba";
+
+    Formula.prototype.equation = null;
+
+    Formula.prototype.valueVariables = [];
+
+    Formula.prototype.positionValueVariableX = null;
+
+    Formula.prototype.graph = null;
+
+    Formula.prototype.graphCloneCanvas = null;
+
+    Formula.prototype.contextCanvasClone = null;
+
+    function Formula(divPanel, liFormula, constant_value, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
       this.variables = variables;
+      this.equation = equation;
+      this.graph = graph;
       this.drop = __bind(this.drop, this);
       this.allowDrop = __bind(this.allowDrop, this);
       this.liFormula = document.getElementById(liFormula);
@@ -60,6 +76,7 @@
       this.divPanel.appendChild(this.divFormulaWithNumbers);
       this.addListenerToFormula(this.srcImage);
       this.constantValue = document.getElementById(constant_value);
+      this.cloneCanvas();
     }
 
     Formula.prototype.addListenerToFormula = function(srcImage) {
@@ -89,13 +106,15 @@
     };
 
     Formula.prototype.drawFormula = function() {
-      var formula, id, text, variable, _ref;
+      var form, formula, id, text, variable, _ref;
       formula = document.createElement('p');
       formula.setAttribute('class', "formula-text");
+      formula.setAttribute('id', this.idFormula);
+      form = document.createElement('form');
       _ref = this.variables;
       for (id in _ref) {
         variable = _ref[id];
-        this.constantValue.appendChild(this.drawInput(variable));
+        form.appendChild(this.drawInput(variable));
         if (id === "1") {
           text = document.createTextNode(" = " + variable.name);
           formula.appendChild(text);
@@ -104,7 +123,8 @@
           formula.appendChild(text);
         }
       }
-      this.constantValue.appendChild(this.createButton());
+      form.appendChild(this.createButton());
+      this.constantValue.appendChild(form);
       return formula;
     };
 
@@ -120,6 +140,7 @@
       input = document.createElement('input');
       input.setAttribute('class', "form-control");
       input.setAttribute('type', "text");
+      input.setAttribute('id', variable.fullName);
       input.setAttribute('placeholder', variable.fullName);
       divInput.appendChild(input);
       return divInput;
@@ -130,8 +151,9 @@
       divButton = document.createElement('div');
       divButton.setAttribute('class', "btn-group");
       button = document.createElement('button');
-      button.setAttribute('type', "button");
+      button.setAttribute('type', "submit");
       button.setAttribute('class', "btn btn-primary");
+      button.setAttribute('button.setAttribute', "");
       button.addEventListener('click', (function(_this) {
         return function() {
           return _this.clickButton();
@@ -144,7 +166,79 @@
     };
 
     Formula.prototype.clickButton = function() {
-      return alert("hola");
+      var aux, id, variable, _ref;
+      this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
+      this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
+      _ref = this.variables;
+      for (id in _ref) {
+        variable = _ref[id];
+        aux = document.getElementById(variable.fullName);
+        if (aux.value !== "") {
+          this.variables[id].value = new Number(aux.value);
+        } else {
+          this.variables[id].value = null;
+        }
+      }
+      this.drawNumbersFormula();
+      this.getVariableValues();
+      return this.graph.drawEquation((function(_this) {
+        return function(x) {
+          return _this.executeEquation(x);
+        };
+      })(this), 'blue', 3);
+    };
+
+    Formula.prototype.cloneCanvas = function() {
+      this.graphCloneCanvas = document.createElement('canvas');
+      this.contextCanvasClone = this.graphCloneCanvas.getContext('2d');
+      this.graphCloneCanvas.width = this.graph.canvas.width;
+      this.graphCloneCanvas.height = this.graph.canvas.height;
+      return this.contextCanvasClone.drawImage(this.graph.canvas, 0, 0);
+    };
+
+    Formula.prototype.drawNumbersFormula = function() {
+      var formula, id, text, variable, _ref;
+      formula = document.getElementById(this.idFormula);
+      text = "";
+      _ref = this.variables;
+      for (id in _ref) {
+        variable = _ref[id];
+        if (variable.value !== null) {
+          if (id === "1") {
+            text = text + " = " + variable.value;
+          } else {
+            text = text + variable.value;
+          }
+        } else {
+          if (id === "1") {
+            text = text + " = " + variable.name;
+          } else {
+            text = text + variable.name;
+          }
+        }
+      }
+      return formula.innerHTML = text;
+    };
+
+    Formula.prototype.getVariableValues = function() {
+      var id, variable, _ref, _results;
+      _ref = this.variables.slice(1);
+      _results = [];
+      for (id in _ref) {
+        variable = _ref[id];
+        if (variable.value === null) {
+          this.valueVariables[id] = null;
+          _results.push(this.positionValueVariableX = new Number(id));
+        } else {
+          _results.push(this.valueVariables[id] = variable.value);
+        }
+      }
+      return _results;
+    };
+
+    Formula.prototype.executeEquation = function(x) {
+      this.valueVariables[this.positionValueVariableX] = x;
+      return this.equation(this.valueVariables);
     };
 
     return Formula;
@@ -154,18 +248,8 @@
   Archimedes = (function(_super) {
     __extends(Archimedes, _super);
 
-    Archimedes.prototype.newtowns = null;
-
-    Archimedes.prototype.density = null;
-
-    Archimedes.prototype.volume = null;
-
-    Archimedes.prototype.gravity = null;
-
-    Archimedes.prototype.text = null;
-
     function Archimedes(divPanel, liFormula, constant_value) {
-      var a, density, gravity, newtowns, variables, volume;
+      var density, graph, gravity, newtowns, variables, volume;
       newtowns = new Variable("E", "newtowns", "description", null);
 
       /*
@@ -178,16 +262,23 @@
       paragraph.appendChild subTag
       console.log "aqui"
        */
+      graph = new Graph();
       density = new Variable("\u03C1", "density", "description", null);
       gravity = new Variable("g", "gravity", "description", null);
       volume = new Variable("V", "volume", "description", null);
       variables = [newtowns, density, gravity, volume];
-      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constant_value, 'images/archimedesFormula.png', variables);
-      a = new Graph();
-      a.drawEquation(function(x) {
-        return 5 * Math.sin(x);
-      }, 'green', 3);
+      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constant_value, 'images/archimedesFormula.png', variables, this.archimedesEquation, graph);
     }
+
+    Archimedes.prototype.archimedesEquation = function(arrayVariables) {
+      return arrayVariables[0] * arrayVariables[1] * arrayVariables[2];
+    };
+
+
+    /*
+    archimedesEquation: (a,b,c) ->
+        a*b*c
+     */
 
     return Archimedes;
 
@@ -345,7 +436,6 @@
     Graph.prototype.drawEquation = function(equation, color, thickness) {
       var context, x;
       context = this.context;
-      context.save();
       context.save();
       this.transformContext();
       context.beginPath();

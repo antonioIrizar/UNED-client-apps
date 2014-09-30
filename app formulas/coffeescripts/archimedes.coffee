@@ -7,8 +7,15 @@ class Formula
     textFormula:null
     variables:null
     constantValue:null
+    idFormula: "prueba"
+    equation: null
+    valueVariables: []
+    positionValueVariableX: null
+    graph: null
+    graphCloneCanvas: null
+    contextCanvasClone: null
 
-    constructor: (divPanel,liFormula,constant_value,@srcImage,@variables) ->
+    constructor: (divPanel,liFormula,constant_value,@srcImage,@variables,@equation,@graph) ->
         @liFormula = document.getElementById liFormula
         @liFormula.setAttribute 'ondragstart' , ""
         @liFormula.ondragstart = (e) => @drag(e)
@@ -29,6 +36,7 @@ class Formula
         @divPanel.appendChild @divFormulaWithNumbers
         @addListenerToFormula(@srcImage)
         @constantValue = document.getElementById constant_value
+        @cloneCanvas()
 
     addListenerToFormula: (srcImage) ->
         @liFormula.addEventListener( 'dragstart' , 
@@ -51,20 +59,21 @@ class Formula
         @divFormula.appendChild img
         @divFormulaWithNumbers.appendChild @drawFormula()
 
-
-
     drawFormula: ->
         formula = document.createElement 'p'
         formula.setAttribute 'class', "formula-text"
+        formula.setAttribute 'id', @idFormula
+        form = document.createElement 'form'
         for id, variable of @variables
-            @constantValue.appendChild @drawInput variable
+            form.appendChild @drawInput variable
             if id is "1"
                 text = document.createTextNode " = " + variable.name
                 formula.appendChild text
             else
                 text = document.createTextNode variable.name
                 formula.appendChild text
-        @constantValue.appendChild @createButton()
+        form.appendChild @createButton()
+        @constantValue.appendChild form
         formula
 
     drawInput: (variable)->
@@ -78,6 +87,7 @@ class Formula
         input = document.createElement 'input'
         input.setAttribute 'class' , "form-control"
         input.setAttribute 'type' , "text"
+        input.setAttribute 'id', variable.fullName
         input.setAttribute 'placeholder' , variable.fullName
         divInput.appendChild input
         divInput
@@ -86,8 +96,9 @@ class Formula
         divButton = document.createElement 'div'
         divButton.setAttribute 'class', "btn-group"
         button = document.createElement 'button'
-        button.setAttribute 'type', "button"
+        button.setAttribute 'type', "submit"
         button.setAttribute 'class', "btn btn-primary"
+        button.setAttribute 'button.setAttribute', ""
         button.addEventListener 'click', => @clickButton()
         text = document.createTextNode "update values"
         button.appendChild text
@@ -95,15 +106,67 @@ class Formula
         divButton
 
     clickButton: ->
-        alert "hola"
+        
+        #a = document.getElementById 'caca'
+        #@graph.canvas = @graphCloneCanvas.cloneNode(true)
+        #a.appendChild @graph.canvas
+        
+        @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
+        @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
+        
+        for id, variable of @variables
+            aux = document.getElementById variable.fullName
+            if aux.value isnt ""
+                @variables[id].value = new Number (aux.value)
+            else 
+                @variables[id].value = null
+        @drawNumbersFormula()
+        @getVariableValues()
+        @graph.drawEquation (x) => 
+            @executeEquation x
+            
+        ,'blue', 3
 
+
+    cloneCanvas: -> 
+
+        @graphCloneCanvas  = document.createElement('canvas')
+        @contextCanvasClone = @graphCloneCanvas.getContext('2d')
+
+        @graphCloneCanvas.width = @graph.canvas.width
+        @graphCloneCanvas.height = @graph.canvas.height
+    
+        @contextCanvasClone.drawImage(@graph.canvas, 0, 0)
+
+    drawNumbersFormula: () ->
+        formula = document.getElementById @idFormula
+        text = ""
+        for id, variable of @variables
+            if variable.value isnt  null
+                if id is "1"
+                    text = text + " = " + variable.value
+                else
+                    text = text + variable.value
+            else
+                if id is "1"
+                    text = text + " = " + variable.name
+                else
+                    text = text + variable.name
+        formula.innerHTML = text
+    
+    getVariableValues: ->
+        for id, variable of @variables[1..]
+            if variable.value is null
+                @valueVariables[id] = null
+                @positionValueVariableX = new Number(id)
+            else
+                @valueVariables[id] = variable.value
+
+    executeEquation: (x) ->
+        @valueVariables[@positionValueVariableX] = x
+        @equation @valueVariables
+    
 class Archimedes extends Formula
-
-    newtowns:null
-    density:null
-    volume:null
-    gravity:null
-    text:null
 
     constructor: (divPanel,liFormula,constant_value) ->
         newtowns = new Variable("E" , "newtowns" , "description" , null)
@@ -118,17 +181,20 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
+        graph = new Graph()
         density = new Variable("\u03C1" , "density" , "description" , null)
         gravity = new Variable("g" , "gravity" , "description" , null)
         volume = new Variable("V" , "volume" , "description" , null)
         variables = [newtowns,density,gravity,volume]
-        super(divPanel , liFormula, constant_value, 'images/archimedesFormula.png',variables)
-        a = new Graph()
-        a.drawEquation(
-            (x) -> 
-                5 * Math.sin(x)
-        , 'green', 3);
-
+        
+        super(divPanel , liFormula, constant_value, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
+    
+    archimedesEquation: (arrayVariables) ->
+        arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
+    ###
+    archimedesEquation: (a,b,c) ->
+        a*b*c
+    ###
 class Variable 
     name:null #string but pass in htlm , if it need for example sub tag
     fullName:null #string to put in constant value
@@ -250,7 +316,6 @@ class Graph
     drawEquation: (equation, color, thickness) ->
         context = @context
         context.save()
-        context.save()
         @transformContext()
 
         context.beginPath()
@@ -271,9 +336,9 @@ class Graph
     transformContext: ->
         context = @context
 
-        @context.translate(@centerX, @centerY);
+        @context.translate(@centerX, @centerY)
 
-        context.scale(@scaleX, - @scaleY);
+        context.scale(@scaleX, - @scaleY)
 
 window.Archimedes = Archimedes
 
