@@ -114,7 +114,7 @@
       _ref = this.variables;
       for (id in _ref) {
         variable = _ref[id];
-        form.appendChild(this.drawInput(variable));
+        form.appendChild(this.createInput(variable));
         if (id === "1") {
           text = document.createTextNode(" = " + variable.name);
           formula.appendChild(text);
@@ -123,12 +123,13 @@
           formula.appendChild(text);
         }
       }
+      form.appendChild(this.createModeLine());
       form.appendChild(this.createButton());
       this.constantValue.appendChild(form);
       return formula;
     };
 
-    Formula.prototype.drawInput = function(variable) {
+    Formula.prototype.createInput = function(variable) {
       var divInput, input, spanInput, text;
       divInput = document.createElement('div');
       divInput.setAttribute('class', "input-group");
@@ -165,6 +166,23 @@
       return divButton;
     };
 
+    Formula.prototype.createModeLine = function() {
+      var divRadio, input, label, text;
+      divRadio = document.createElement('div');
+      divRadio.setAttribute('class', "radio");
+      label = document.createElement('label');
+      input = document.createElement('input');
+      input.setAttribute('type', "radio");
+      input.setAttribute('name', "modeLine");
+      input.setAttribute('value', "line");
+      input.setAttribute('checked', true);
+      text = document.createTextNode("line");
+      label.appendChild(input);
+      label.appendChild(text);
+      divRadio.appendChild(label);
+      return divRadio;
+    };
+
     Formula.prototype.clickButton = function() {
       var aux, id, variable, _ref;
       this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
@@ -185,7 +203,7 @@
         return function(x) {
           return _this.executeEquation(x);
         };
-      })(this), 'blue', 3);
+      })(this), 'blue', 3, "circle");
     };
 
     Formula.prototype.cloneCanvas = function() {
@@ -433,23 +451,40 @@
       return context.restore();
     };
 
-    Graph.prototype.drawEquation = function(equation, color, thickness) {
-      var context, x;
+    Graph.prototype.drawEquation = function(equation, color, thickness, mode) {
+      var context, endAngle, iteration, x, y;
       context = this.context;
+      context.save();
       context.save();
       this.transformContext();
       context.beginPath();
-      context.moveTo(this.minX, equation(this.minX));
-      x = this.minX + this.iteration;
-      while (x <= this.maxX) {
-        context.lineTo(x, equation(x));
-        x += this.iteration;
+      iteration = this.iteration * 10;
+      x = this.minX + iteration;
+      if (mode === "line") {
+        context.moveTo(this.minX, equation(this.minX));
+        while (x <= this.maxX && y <= this.maxY) {
+          context.lineTo(x, equation(x));
+          x += iteration;
+          y = equation(x);
+        }
+        context.restore();
+        context.lineJoin = 'round';
+        context.lineWidth = thickness;
+        context.strokeStyle = color;
+        context.stroke();
       }
-      context.restore();
-      context.lineJoin = 'round';
-      context.lineWidth = thickness;
-      context.strokeStyle = color;
-      context.stroke();
+      if (mode === "circle") {
+        endAngle = 2 * Math.PI;
+        y = equation(x);
+        while (x <= this.maxX && y <= this.maxY) {
+          context.arc(x, y, 0.09, 0, endAngle);
+          x += iteration;
+          y = equation(x);
+        }
+        context.restore();
+        context.fillStyle = color;
+        context.fill();
+      }
       return context.restore();
     };
 

@@ -65,18 +65,19 @@ class Formula
         formula.setAttribute 'id', @idFormula
         form = document.createElement 'form'
         for id, variable of @variables
-            form.appendChild @drawInput variable
+            form.appendChild @createInput variable
             if id is "1"
                 text = document.createTextNode " = " + variable.name
                 formula.appendChild text
             else
                 text = document.createTextNode variable.name
                 formula.appendChild text
+        form.appendChild @createModeLine()
         form.appendChild @createButton()
         @constantValue.appendChild form
         formula
 
-    drawInput: (variable)->
+    createInput: (variable)->
         divInput = document.createElement 'div'
         divInput.setAttribute 'class' , "input-group"
         spanInput = document.createElement 'span'
@@ -105,11 +106,25 @@ class Formula
         divButton.appendChild button
         divButton
 
+    createAllModeLineRadio: ->
+        @createRadio
+
+    createRadio: (name) ->
+        divRadio = document.createElement 'div'
+        divRadio.setAttribute 'class', "radio"
+        label = document.createElement 'label'
+        input = document.createElement 'input'
+        input.setAttribute 'type', "radio"
+        input.setAttribute 'name', "modeLine"
+        input.setAttribute 'value', name
+        input.setAttribute 'checked', true
+        text = document.createTextNode "Line with form:" name
+        label.appendChild input
+        label.appendChild text
+        divRadio.appendChild label
+        divRadio
+
     clickButton: ->
-        
-        #a = document.getElementById 'caca'
-        #@graph.canvas = @graphCloneCanvas.cloneNode(true)
-        #a.appendChild @graph.canvas
         
         @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
         @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
@@ -125,7 +140,7 @@ class Formula
         @graph.drawEquation (x) => 
             @executeEquation x
             
-        ,'blue', 3
+        ,'blue', 3, "circle"
 
 
     cloneCanvas: -> 
@@ -313,24 +328,44 @@ class Graph
         
         context.restore()
 
-    drawEquation: (equation, color, thickness) ->
+    drawEquation: (equation, color, thickness, mode) ->
         context = @context
+        context.save()
         context.save()
         @transformContext()
 
         context.beginPath()
-        context.moveTo(@minX, equation(@minX))
-        x = @minX + @iteration
+        iteration =  @iteration *10
+        x = @minX + iteration
+        if mode == "line"
 
-        while x <= @maxX
-            context.lineTo(x, equation(x))
-            x += @iteration
+            context.moveTo(@minX, equation(@minX))
+           
+            while x <= @maxX && y <= @maxY
+                context.lineTo(x, equation(x))
+                x += iteration
+                y = equation(x)
 
-        context.restore()
-        context.lineJoin = 'round'
-        context.lineWidth = thickness
-        context.strokeStyle = color
-        context.stroke()
+            context.restore()
+            context.lineJoin = 'round'
+            context.lineWidth = thickness
+            context.strokeStyle = color
+            context.stroke()
+
+        if mode == "circle"
+
+            endAngle = 2*Math.PI
+            y = equation(x)
+
+            while x <= @maxX && y <= @maxY
+                context.arc x, y, 0.09, 0,endAngle
+                x += iteration
+                y = equation(x)
+
+            context.restore()
+            context.fillStyle = color
+            context.fill()
+            
         context.restore()
 
     transformContext: ->
