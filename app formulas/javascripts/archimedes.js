@@ -151,7 +151,7 @@
       divButton = document.createElement('div');
       divButton.setAttribute('class', "btn-group");
       button = document.createElement('button');
-      button.setAttribute('type', "submit");
+      button.setAttribute('type', "button");
       button.setAttribute('class', "btn btn-primary");
       button.setAttribute('button.setAttribute', "");
       button.addEventListener('click', (function(_this) {
