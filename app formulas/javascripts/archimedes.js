@@ -36,6 +36,8 @@
 
     Formula.prototype.contextCanvasClone = null;
 
+    Formula.prototype.mode = null;
+
     function Formula(divPanel, liFormula, constant_value, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
@@ -123,7 +125,8 @@
           formula.appendChild(text);
         }
       }
-      form.appendChild(this.createModeLine());
+      form.appendChild(this.createRadio("line", true));
+      form.appendChild(this.createRadio("dots", false));
       form.appendChild(this.createButton());
       this.constantValue.appendChild(form);
       return formula;
@@ -166,7 +169,7 @@
       return divButton;
     };
 
-    Formula.prototype.createModeLine = function() {
+    Formula.prototype.createRadio = function(name, checked) {
       var divRadio, input, label, text;
       divRadio = document.createElement('div');
       divRadio.setAttribute('class', "radio");
@@ -174,9 +177,11 @@
       input = document.createElement('input');
       input.setAttribute('type', "radio");
       input.setAttribute('name', "modeLine");
-      input.setAttribute('value', "line");
-      input.setAttribute('checked', true);
-      text = document.createTextNode("line");
+      input.setAttribute('value', name);
+      if (checked) {
+        input.setAttribute('checked', true);
+      }
+      text = document.createTextNode("Line with form: " + name);
       label.appendChild(input);
       label.appendChild(text);
       divRadio.appendChild(label);
@@ -184,7 +189,7 @@
     };
 
     Formula.prototype.clickButton = function() {
-      var aux, id, variable, _ref;
+      var aux, i, id, rads, variable, _ref;
       this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
       this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
       _ref = this.variables;
@@ -197,13 +202,22 @@
           this.variables[id].value = null;
         }
       }
+      rads = document.getElementsByName('modeLine');
+      i = 0;
+      while (i < rads.length) {
+        if (rads[i].checked) {
+          this.mode = rads[i].value;
+          break;
+        }
+        i++;
+      }
       this.drawNumbersFormula();
       this.getVariableValues();
       return this.graph.drawEquation((function(_this) {
         return function(x) {
           return _this.executeEquation(x);
         };
-      })(this), 'blue', 3, "circle");
+      })(this), 'blue', 3, this.mode);
     };
 
     Formula.prototype.cloneCanvas = function() {
@@ -462,6 +476,7 @@
       x = this.minX + iteration;
       if (mode === "line") {
         context.moveTo(this.minX, equation(this.minX));
+        y = equation(x);
         while (x <= this.maxX && y <= this.maxY) {
           context.lineTo(x, equation(x));
           x += iteration;
@@ -473,7 +488,7 @@
         context.strokeStyle = color;
         context.stroke();
       }
-      if (mode === "circle") {
+      if (mode === "dots") {
         endAngle = 2 * Math.PI;
         y = equation(x);
         while (x <= this.maxX && y <= this.maxY) {

@@ -14,6 +14,7 @@ class Formula
     graph: null
     graphCloneCanvas: null
     contextCanvasClone: null
+    mode: null
 
     constructor: (divPanel,liFormula,constant_value,@srcImage,@variables,@equation,@graph) ->
         @liFormula = document.getElementById liFormula
@@ -72,7 +73,8 @@ class Formula
             else
                 text = document.createTextNode variable.name
                 formula.appendChild text
-        form.appendChild @createModeLine()
+        form.appendChild @createRadio("line", true)
+        form.appendChild @createRadio("dots", false)
         form.appendChild @createButton()
         @constantValue.appendChild form
         formula
@@ -106,10 +108,7 @@ class Formula
         divButton.appendChild button
         divButton
 
-    createAllModeLineRadio: ->
-        @createRadio
-
-    createRadio: (name) ->
+    createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
         divRadio.setAttribute 'class', "radio"
         label = document.createElement 'label'
@@ -117,8 +116,9 @@ class Formula
         input.setAttribute 'type', "radio"
         input.setAttribute 'name', "modeLine"
         input.setAttribute 'value', name
-        input.setAttribute 'checked', true
-        text = document.createTextNode "Line with form:" name
+        if checked
+            input.setAttribute 'checked', true
+        text = document.createTextNode "Line with form: " + name
         label.appendChild input
         label.appendChild text
         divRadio.appendChild label
@@ -135,12 +135,21 @@ class Formula
                 @variables[id].value = new Number (aux.value)
             else 
                 @variables[id].value = null
+        rads = document.getElementsByName 'modeLine'
+
+        i = 0
+        while i < rads.length
+            if rads[i].checked
+                @mode = rads[i].value
+                break
+            i++
+
         @drawNumbersFormula()
         @getVariableValues()
         @graph.drawEquation (x) => 
             @executeEquation x
             
-        ,'blue', 3, "circle"
+        ,'blue', 3, @mode
 
 
     cloneCanvas: -> 
@@ -340,6 +349,7 @@ class Graph
         if mode == "line"
 
             context.moveTo(@minX, equation(@minX))
+            y = equation(x)
            
             while x <= @maxX && y <= @maxY
                 context.lineTo(x, equation(x))
@@ -352,7 +362,7 @@ class Graph
             context.strokeStyle = color
             context.stroke()
 
-        if mode == "circle"
+        if mode == "dots"
 
             endAngle = 2*Math.PI
             y = equation(x)
