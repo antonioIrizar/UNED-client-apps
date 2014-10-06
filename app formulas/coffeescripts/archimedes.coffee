@@ -1,12 +1,13 @@
 class Formula
-    divFormula:null
-    divFormulaWithNumbers:null
-    divPanel:null
-    liFormula:null
-    srcImage:null
-    textFormula:null
-    variables:null
-    constantValue:null
+    divFormula: null
+    divFormulaWithNumbers: null
+    divPanel: null
+    liFormula: null
+    descriptionVariables: null
+    srcImage: null
+    textFormula: null
+    variables: null
+    constantValue: null
     idFormula: "prueba"
     equation: null
     valueVariables: []
@@ -16,7 +17,7 @@ class Formula
     contextCanvasClone: null
     mode: null
 
-    constructor: (divPanel,liFormula,constant_value,@srcImage,@variables,@equation,@graph) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
         @liFormula = document.getElementById liFormula
         @liFormula.setAttribute 'ondragstart' , ""
         @liFormula.ondragstart = (e) => @drag(e)
@@ -36,7 +37,8 @@ class Formula
         @divPanel.appendChild @divFormula
         @divPanel.appendChild @divFormulaWithNumbers
         @addListenerToFormula(@srcImage)
-        @constantValue = document.getElementById constant_value
+        @constantValue = document.getElementById constantValue
+        @descriptionVariables = document.getElementById descriptionVariables
         @cloneCanvas()
 
     addListenerToFormula: (srcImage) ->
@@ -66,11 +68,13 @@ class Formula
         formula.setAttribute 'id', @idFormula
         form = document.createElement 'form'
         for id, variable of @variables
-            form.appendChild @createInput variable
-            if id is "1"
-                text = document.createTextNode " = " + variable.name
+            @descriptionVariables.appendChild @createDt variable.name, variable.fullName
+            @descriptionVariables.appendChild @createDd variable.description
+            if id is "0"
+                text = document.createTextNode variable.name + " = " 
                 formula.appendChild text
             else
+                form.appendChild @createInput variable
                 text = document.createTextNode variable.name
                 formula.appendChild text
         form.appendChild @createRadio("line", true)
@@ -95,6 +99,22 @@ class Formula
         divInput.appendChild input
         divInput
 
+    createRadio: (name, checked) ->
+        divRadio = document.createElement 'div'
+        divRadio.setAttribute 'class', "radio"
+        label = document.createElement 'label'
+        input = document.createElement 'input'
+        input.setAttribute 'type', "radio"
+        input.setAttribute 'name', "modeLine"
+        input.setAttribute 'value', name
+        if checked
+            input.setAttribute 'checked', true
+        text = document.createTextNode "Graph with form: " + name
+        label.appendChild input
+        label.appendChild text
+        divRadio.appendChild label
+        divRadio
+
     createButton:  ->
         divButton = document.createElement 'div'
         divButton.setAttribute 'class', "btn-group"
@@ -108,29 +128,26 @@ class Formula
         divButton.appendChild button
         divButton
 
-    createRadio: (name, checked) ->
-        divRadio = document.createElement 'div'
-        divRadio.setAttribute 'class', "radio"
-        label = document.createElement 'label'
-        input = document.createElement 'input'
-        input.setAttribute 'type', "radio"
-        input.setAttribute 'name', "modeLine"
-        input.setAttribute 'value', name
-        if checked
-            input.setAttribute 'checked', true
-        text = document.createTextNode "Line with form: " + name
-        label.appendChild input
-        label.appendChild text
-        divRadio.appendChild label
-        divRadio
+    createDt: (name, fullName) ->
+        dt = document.createElement 'dt'
+        text = document.createTextNode fullName + " (" + name + ")"
+        dt.appendChild text
+        dt
+
+    createDd: (description) ->
+        dd = document.createElement 'dd'
+        text = document.createTextNode description
+        dd.appendChild text
+        dd
 
     clickButton: ->
         
         @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
         @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
         
-        for id, variable of @variables
+        for id, variable of @variables[1..]
             aux = document.getElementById variable.fullName
+            id++
             if aux.value isnt ""
                 @variables[id].value = new Number (aux.value)
             else 
@@ -146,6 +163,7 @@ class Formula
 
         @drawNumbersFormula()
         @getVariableValues()
+        @graph.drawVariables @variables[@positionValueVariableX + 1].name, @variables[0].name
         @graph.drawEquation (x) => 
             @executeEquation x
             
@@ -185,14 +203,16 @@ class Formula
                 @positionValueVariableX = new Number(id)
             else
                 @valueVariables[id] = variable.value
+        console.log @valueVariables
 
     executeEquation: (x) ->
         @valueVariables[@positionValueVariableX] = x
+        #console.log @valueVariables
         @equation @valueVariables
     
 class Archimedes extends Formula
 
-    constructor: (divPanel,liFormula,constant_value) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables) ->
         newtowns = new Variable("E" , "newtowns" , "description" , null)
         ###
         paragraph = document.createElement 'p'
@@ -211,7 +231,7 @@ class Archimedes extends Formula
         volume = new Variable("V" , "volume" , "description" , null)
         variables = [newtowns,density,gravity,volume]
         
-        super(divPanel , liFormula, constant_value, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
+        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
     
     archimedesEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
@@ -296,9 +316,9 @@ class Graph
             context.stroke()
             context.fillText(unit, xPos, @centerY + @tickSize / 2 + 3)
             unit += @unitsPerTick
-            xPos = Math.round(xPos + xPosIncrement)
-        
-        context.restore();
+            xPos = Math.round(xPos + xPosIncrement)     
+
+        context.restore()
 
     drawYAxis: ->
         context = @context
@@ -336,6 +356,14 @@ class Graph
             yPos = Math.round(yPos + yPosIncrement)
         
         context.restore()
+
+    drawVariables: (x, y) ->
+        context = @context
+        context.save()
+        context.font="20px Georgia"
+        context.fillText(y,@centerX-20,15)
+        context.fillText(x, @canvas.width-15, @centerY+20)
+        context.restore()        
 
     drawEquation: (equation, color, thickness, mode) ->
         context = @context

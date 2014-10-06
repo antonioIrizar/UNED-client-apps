@@ -14,8 +14,6 @@
 
     Formula.prototype.liFormula = null;
 
-    Formula.prototype.descriptionVariables = null;
-
     Formula.prototype.srcImage = null;
 
     Formula.prototype.textFormula = null;
@@ -40,7 +38,7 @@
 
     Formula.prototype.mode = null;
 
-    function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, equation, graph) {
+    function Formula(divPanel, liFormula, constantValue, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
       this.variables = variables;
@@ -80,7 +78,6 @@
       this.divPanel.appendChild(this.divFormulaWithNumbers);
       this.addListenerToFormula(this.srcImage);
       this.constantValue = document.getElementById(constantValue);
-      this.descriptionVariables = document.getElementById(descriptionVariables);
       this.cloneCanvas();
     }
 
@@ -119,8 +116,6 @@
       _ref = this.variables;
       for (id in _ref) {
         variable = _ref[id];
-        this.descriptionVariables.appendChild(this.createDt(variable.name, variable.fullName));
-        this.descriptionVariables.appendChild(this.createDd(variable.description));
         if (id === "0") {
           text = document.createTextNode(variable.name + " = ");
           formula.appendChild(text);
@@ -213,11 +208,10 @@
       var aux, i, id, rads, variable, _ref;
       this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
       this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
-      _ref = this.variables.slice(1);
+      _ref = this.variables;
       for (id in _ref) {
         variable = _ref[id];
         aux = document.getElementById(variable.fullName);
-        id++;
         if (aux.value !== "") {
           this.variables[id].value = new Number(aux.value);
         } else {
@@ -235,7 +229,6 @@
       }
       this.drawNumbersFormula();
       this.getVariableValues();
-      this.graph.drawVariables(this.variables[this.positionValueVariableX + 1].name, this.variables[0].name);
       return this.graph.drawEquation((function(_this) {
         return function(x) {
           return _this.executeEquation(x);
@@ -276,18 +269,19 @@
     };
 
     Formula.prototype.getVariableValues = function() {
-      var id, variable, _ref;
+      var id, variable, _ref, _results;
       _ref = this.variables.slice(1);
+      _results = [];
       for (id in _ref) {
         variable = _ref[id];
         if (variable.value === null) {
           this.valueVariables[id] = null;
-          this.positionValueVariableX = new Number(id);
+          _results.push(this.positionValueVariableX = new Number(id));
         } else {
-          this.valueVariables[id] = variable.value;
+          _results.push(this.valueVariables[id] = variable.value);
         }
       }
-      return console.log(this.valueVariables);
+      return _results;
     };
 
     Formula.prototype.executeEquation = function(x) {
@@ -302,7 +296,7 @@
   Archimedes = (function(_super) {
     __extends(Archimedes, _super);
 
-    function Archimedes(divPanel, liFormula, constantValue, descriptionVariables) {
+    function Archimedes(divPanel, liFormula, constantValue, description_variables) {
       var density, graph, gravity, newtowns, variables, volume;
       newtowns = new Variable("E", "newtowns", "description", null);
 
@@ -484,16 +478,6 @@
         unit -= this.unitsPerTick;
         yPos = Math.round(yPos + yPosIncrement);
       }
-      return context.restore();
-    };
-
-    Graph.prototype.drawVariables = function(x, y) {
-      var context;
-      context = this.context;
-      context.save();
-      context.font = "20px Georgia";
-      context.fillText(y, this.centerX - 20, 15);
-      context.fillText(x, this.canvas.width - 15, this.centerY + 20);
       return context.restore();
     };
 
