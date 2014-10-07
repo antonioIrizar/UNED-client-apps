@@ -431,6 +431,7 @@
       this.scaleY = this.canvas.height / this.rangeY;
       this.drawXAxis();
       this.drawYAxis();
+      this.resizeCanvas();
     }
 
     Graph.prototype.drawXAxis = function() {

@@ -299,6 +299,7 @@ class Graph
         @scaleY = @canvas.height / @rangeY
         @drawXAxis()
         @drawYAxis()
+        @resizeCanvas()
 
     drawXAxis: ->
         context = @context
