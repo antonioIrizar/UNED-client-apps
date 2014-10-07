@@ -16,8 +16,15 @@ class Formula
     graphCloneCanvas: null
     contextCanvasClone: null
     mode: null
+    resizeTimer: null
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
+        #a = document.getElementById 'panelGraph'
+        document.body.setAttribute 'onresize', ""
+        document.body.onresize = => 
+            if @resizeTimer != null
+                clearTimeout(@resizeTimer)
+            @resizeTimer = setTimeout(@graph.resizeCanvas(), 250)
         @liFormula = document.getElementById liFormula
         @liFormula.setAttribute 'ondragstart' , ""
         @liFormula.ondragstart = (e) => @drag(e)
@@ -40,6 +47,9 @@ class Formula
         @constantValue = document.getElementById constantValue
         @descriptionVariables = document.getElementById descriptionVariables
         @cloneCanvas()
+
+    prueba: -> 
+        console.log "blabla"
 
     addListenerToFormula: (srcImage) ->
         @liFormula.addEventListener( 'dragstart' , 
@@ -225,6 +235,8 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
+        panel = document.getElementById 'caca'
+        console.log window.innerWidth
         graph = new Graph()
         density = new Variable("\u03C1" , "density" , "description" , null)
         gravity = new Variable("g" , "gravity" , "description" , null)
@@ -271,8 +283,13 @@ class Graph
     constructor: ->
         @canvas = document.getElementById "graph"
         @context = @canvas.getContext '2d'
+        console.log (window.innerWidth/12)*0.85*5
+        @canvas.width = (window.innerWidth/12)*0.85*5
+        @canvas.height = @canvas.width
+        
         @rangeX = @maxX - @minX
         @rangeY = @maxY - @minY
+
         @unitX = @canvas.width / @rangeX 
         @unitY = @canvas.height / @rangeY
         @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
@@ -360,10 +377,25 @@ class Graph
     drawVariables: (x, y) ->
         context = @context
         context.save()
-        context.font="20px Georgia"
-        context.fillText(y,@centerX-20,15)
-        context.fillText(x, @canvas.width-15, @centerY+20)
-        context.restore()        
+        context.font = "20px Georgia"
+        context.fillText(y, @centerX - 20, 15)
+        context.fillText(x, @canvas.width - 15, @centerY + 20)
+        context.restore()       
+
+    resizeCanvas: ->
+        width = window.innerWidth
+        if width > 991
+            width = (width/12) * 5
+        @canvas.width = width * 0.85
+        @canvas.height = @canvas.width
+        @unitX = @canvas.width / @rangeX 
+        @unitY = @canvas.height / @rangeY
+        @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
+        @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
+        @scaleX = @canvas.width / @rangeX
+        @scaleY = @canvas.height / @rangeY
+        @drawXAxis()
+        @drawYAxis()
 
     drawEquation: (equation, color, thickness, mode) ->
         context = @context

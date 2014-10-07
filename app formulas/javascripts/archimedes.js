@@ -40,6 +40,8 @@
 
     Formula.prototype.mode = null;
 
+    Formula.prototype.resizeTimer = null;
+
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
@@ -48,6 +50,15 @@
       this.graph = graph;
       this.drop = __bind(this.drop, this);
       this.allowDrop = __bind(this.allowDrop, this);
+      document.body.setAttribute('onresize', "");
+      document.body.onresize = (function(_this) {
+        return function() {
+          if (_this.resizeTimer !== null) {
+            clearTimeout(_this.resizeTimer);
+          }
+          return _this.resizeTimer = setTimeout(_this.graph.resizeCanvas(), 250);
+        };
+      })(this);
       this.liFormula = document.getElementById(liFormula);
       this.liFormula.setAttribute('ondragstart', "");
       this.liFormula.ondragstart = (function(_this) {
@@ -83,6 +94,10 @@
       this.descriptionVariables = document.getElementById(descriptionVariables);
       this.cloneCanvas();
     }
+
+    Formula.prototype.prueba = function() {
+      return console.log("blabla");
+    };
 
     Formula.prototype.addListenerToFormula = function(srcImage) {
       return this.liFormula.addEventListener('dragstart', (function(_this) {
@@ -303,7 +318,7 @@
     __extends(Archimedes, _super);
 
     function Archimedes(divPanel, liFormula, constantValue, descriptionVariables) {
-      var density, graph, gravity, newtowns, variables, volume;
+      var density, graph, gravity, newtowns, panel, variables, volume;
       newtowns = new Variable("E", "newtowns", "description", null);
 
       /*
@@ -316,6 +331,8 @@
       paragraph.appendChild subTag
       console.log "aqui"
        */
+      panel = document.getElementById('caca');
+      console.log(window.innerWidth);
       graph = new Graph();
       density = new Variable("\u03C1", "density", "description", null);
       gravity = new Variable("g", "gravity", "description", null);
@@ -400,6 +417,9 @@
     function Graph() {
       this.canvas = document.getElementById("graph");
       this.context = this.canvas.getContext('2d');
+      console.log((window.innerWidth / 12) * 0.85 * 5);
+      this.canvas.width = (window.innerWidth / 12) * 0.85 * 5;
+      this.canvas.height = this.canvas.width;
       this.rangeX = this.maxX - this.minX;
       this.rangeY = this.maxY - this.minY;
       this.unitX = this.canvas.width / this.rangeX;
@@ -495,6 +515,24 @@
       context.fillText(y, this.centerX - 20, 15);
       context.fillText(x, this.canvas.width - 15, this.centerY + 20);
       return context.restore();
+    };
+
+    Graph.prototype.resizeCanvas = function() {
+      var width;
+      width = window.innerWidth;
+      if (width > 991) {
+        width = (width / 12) * 5;
+      }
+      this.canvas.width = width * 0.85;
+      this.canvas.height = this.canvas.width;
+      this.unitX = this.canvas.width / this.rangeX;
+      this.unitY = this.canvas.height / this.rangeY;
+      this.centerX = Math.round(Math.abs(this.minX / this.rangeX) * this.canvas.width);
+      this.centerY = Math.round(Math.abs(this.minY / this.rangeY) * this.canvas.height);
+      this.scaleX = this.canvas.width / this.rangeX;
+      this.scaleY = this.canvas.height / this.rangeY;
+      this.drawXAxis();
+      return this.drawYAxis();
     };
 
     Graph.prototype.drawEquation = function(equation, color, thickness, mode) {
