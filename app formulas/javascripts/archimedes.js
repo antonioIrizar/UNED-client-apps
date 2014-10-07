@@ -417,20 +417,6 @@
     function Graph() {
       this.canvas = document.getElementById("graph");
       this.context = this.canvas.getContext('2d');
-      console.log((window.innerWidth / 12) * 0.85 * 5);
-      this.canvas.width = (window.innerWidth / 12) * 0.85 * 5;
-      this.canvas.height = this.canvas.width;
-      this.rangeX = this.maxX - this.minX;
-      this.rangeY = this.maxY - this.minY;
-      this.unitX = this.canvas.width / this.rangeX;
-      this.unitY = this.canvas.height / this.rangeY;
-      this.centerX = Math.round(Math.abs(this.minX / this.rangeX) * this.canvas.width);
-      this.centerY = Math.round(Math.abs(this.minY / this.rangeY) * this.canvas.height);
-      this.iteration = (this.maxX - this.minX) / 1000;
-      this.scaleX = this.canvas.width / this.rangeX;
-      this.scaleY = this.canvas.height / this.rangeY;
-      this.drawXAxis();
-      this.drawYAxis();
       this.resizeCanvas();
     }
 
@@ -526,10 +512,13 @@
       }
       this.canvas.width = width * 0.85;
       this.canvas.height = this.canvas.width;
+      this.rangeX = this.maxX - this.minX;
+      this.rangeY = this.maxY - this.minY;
       this.unitX = this.canvas.width / this.rangeX;
       this.unitY = this.canvas.height / this.rangeY;
       this.centerX = Math.round(Math.abs(this.minX / this.rangeX) * this.canvas.width);
       this.centerY = Math.round(Math.abs(this.minY / this.rangeY) * this.canvas.height);
+      this.iteration = (this.maxX - this.minX) / 1000;
       this.scaleX = this.canvas.width / this.rangeX;
       this.scaleY = this.canvas.height / this.rangeY;
       this.drawXAxis();

@@ -283,22 +283,6 @@ class Graph
     constructor: ->
         @canvas = document.getElementById "graph"
         @context = @canvas.getContext '2d'
-        console.log (window.innerWidth/12)*0.85*5
-        @canvas.width = (window.innerWidth/12)*0.85*5
-        @canvas.height = @canvas.width
-        
-        @rangeX = @maxX - @minX
-        @rangeY = @maxY - @minY
-
-        @unitX = @canvas.width / @rangeX 
-        @unitY = @canvas.height / @rangeY
-        @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
-        @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
-        @iteration = (@maxX - @minX) / 1000
-        @scaleX = @canvas.width / @rangeX
-        @scaleY = @canvas.height / @rangeY
-        @drawXAxis()
-        @drawYAxis()
         @resizeCanvas()
 
     drawXAxis: ->
@@ -389,10 +373,15 @@ class Graph
             width = (width/12) * 5
         @canvas.width = width * 0.85
         @canvas.height = @canvas.width
+
+        @rangeX = @maxX - @minX
+        @rangeY = @maxY - @minY
+
         @unitX = @canvas.width / @rangeX 
         @unitY = @canvas.height / @rangeY
         @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
         @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
+        @iteration = (@maxX - @minX) / 1000
         @scaleX = @canvas.width / @rangeX
         @scaleY = @canvas.height / @rangeY
         @drawXAxis()
