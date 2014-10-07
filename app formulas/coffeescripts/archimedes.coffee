@@ -19,12 +19,11 @@ class Formula
     resizeTimer: null
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
-        #a = document.getElementById 'panelGraph'
-        document.body.setAttribute 'onresize', ""
-        document.body.onresize = => 
-            if @resizeTimer != null
-                clearTimeout(@resizeTimer)
-            @resizeTimer = setTimeout(@graph.resizeCanvas(), 250)
+        #document.body.setAttribute 'resize', ""
+        window.addEventListener "resize", =>
+            console.log "aqui"
+            @graph.resizeCanvas()
+            
         @liFormula = document.getElementById liFormula
         @liFormula.setAttribute 'ondragstart' , ""
         @liFormula.ondragstart = (e) => @drag(e)

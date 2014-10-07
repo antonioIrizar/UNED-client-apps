@@ -50,15 +50,12 @@
       this.graph = graph;
       this.drop = __bind(this.drop, this);
       this.allowDrop = __bind(this.allowDrop, this);
-      document.body.setAttribute('onresize', "");
-      document.body.onresize = (function(_this) {
+      window.addEventListener("resize", (function(_this) {
         return function() {
-          if (_this.resizeTimer !== null) {
-            clearTimeout(_this.resizeTimer);
-          }
-          return _this.resizeTimer = setTimeout(_this.graph.resizeCanvas(), 250);
+          console.log("aqui");
+          return _this.graph.resizeCanvas();
         };
-      })(this);
+      })(this));
       this.liFormula = document.getElementById(liFormula);
       this.liFormula.setAttribute('ondragstart', "");
       this.liFormula.ondragstart = (function(_this) {
