@@ -40,6 +40,10 @@
 
     Formula.prototype.mode = null;
 
+    Formula.prototype.numberInputsFilled = 0;
+
+    Formula.prototype.inputsCorrect = true;
+
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
@@ -183,15 +187,36 @@
       return divForm;
     };
 
-    Formula.prototype.isNumber = function(input, divInput, id, spanControl, label) {
-      if (isNaN(input.value)) {
-        divInput.setAttribute('class', "form-group has-error has-feedback");
-        spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
-        return label.setAttribute('class', "control-label");
+    Formula.prototype.isNumber = function(input, divForm, id, spanControl, labelForm) {
+      if (input.value.length > 0) {
+        if (isNaN(input.value)) {
+          divForm.setAttribute('class', "form-group has-error has-feedback");
+          spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
+          labelForm.setAttribute('class', "control-label");
+          if (this.variables[id].correct) {
+            this.variables[id].correct = false;
+            this.numberInputsFilled--;
+          }
+          return this.variables[id].value = null;
+        } else {
+          divForm.setAttribute('class', "form-group has-success has-feedback");
+          spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
+          labelForm.setAttribute('class', "control-label sr-only");
+          if (!this.variables[id].correct) {
+            this.variables[id].correct = true;
+            this.numberInputsFilled++;
+          }
+          return this.variables[id].value = new Number(input.value);
+        }
       } else {
-        divInput.setAttribute('class', "form-group has-success has-feedback");
-        spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
-        return label.setAttribute('class', "control-label sr-only");
+        if (this.variables[id].correct) {
+          this.variables[id].correct = false;
+          this.numberInputsFilled--;
+        }
+        this.variables[id].value = null;
+        divForm.setAttribute('class', "form-group");
+        spanControl.setAttribute('class', "");
+        return labelForm.setAttribute('class', "control-label sr-only");
       }
     };
 
@@ -250,20 +275,9 @@
     };
 
     Formula.prototype.clickButton = function() {
-      var aux, i, id, rads, variable, _ref;
+      var i, rads;
       this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
       this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
-      _ref = this.variables.slice(1);
-      for (id in _ref) {
-        variable = _ref[id];
-        aux = document.getElementById(variable.fullName);
-        id++;
-        if (aux.value !== "") {
-          this.variables[id].value = new Number(aux.value);
-        } else {
-          this.variables[id].value = null;
-        }
-      }
       rads = document.getElementsByName('modeLine');
       i = 0;
       while (i < rads.length) {
@@ -317,18 +331,19 @@
     };
 
     Formula.prototype.getVariableValues = function() {
-      var id, variable, _ref;
+      var id, variable, _ref, _results;
       _ref = this.variables.slice(1);
+      _results = [];
       for (id in _ref) {
         variable = _ref[id];
         if (variable.value === null) {
           this.valueVariables[id] = null;
-          this.positionValueVariableX = new Number(id);
+          _results.push(this.positionValueVariableX = new Number(id));
         } else {
-          this.valueVariables[id] = variable.value;
+          _results.push(this.valueVariables[id] = variable.value);
         }
       }
-      return console.log(this.valueVariables);
+      return _results;
     };
 
     Formula.prototype.executeEquation = function(x) {
@@ -358,7 +373,6 @@
       console.log "aqui"
        */
       panel = document.getElementById('caca');
-      console.log(window.innerWidth);
       graph = new Graph();
       density = new Variable("\u03C1", "density", "description", null);
       gravity = new Variable("g", "gravity", "description", null);
@@ -389,6 +403,8 @@
     Variable.prototype.description = null;
 
     Variable.prototype.value = null;
+
+    Variable.prototype.correct = false;
 
     function Variable(name, fullName, description, value) {
       this.name = name;

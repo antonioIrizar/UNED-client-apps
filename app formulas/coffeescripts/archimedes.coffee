@@ -16,6 +16,8 @@ class Formula
     graphCloneCanvas: null
     contextCanvasClone: null
     mode: null
+    numberInputsFilled: 0
+    inputsCorrect: true
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -129,18 +131,35 @@ class Formula
         divInput.appendChild input
         divInput.appendChild spanControl
         divForm.appendChild divInput
-        
+
         divForm
 
-    isNumber: (input, divInput, id, spanControl, label) ->
-        if isNaN input.value
-            divInput.setAttribute 'class', "form-group has-error has-feedback"
-            spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
-            label.setAttribute 'class', "control-label"
+    isNumber: (input, divForm, id, spanControl, labelForm) ->
+        if input.value.length > 0
+            if isNaN input.value
+                divForm.setAttribute 'class', "form-group has-error has-feedback"
+                spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
+                labelForm.setAttribute 'class', "control-label"
+                if @variables[id].correct 
+                     @variables[id].correct = false
+                     @numberInputsFilled--
+                @variables[id].value = null
+            else
+                divForm.setAttribute 'class', "form-group has-success has-feedback"
+                spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
+                labelForm.setAttribute 'class', "control-label sr-only"
+                if not @variables[id].correct 
+                     @variables[id].correct = true
+                     @numberInputsFilled++
+                @variables[id].value = new Number(input.value)
         else
-            divInput.setAttribute 'class', "form-group has-success has-feedback"
-            spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
-            label.setAttribute 'class', "control-label sr-only"
+            if @variables[id].correct 
+                @variables[id].correct = false
+                @numberInputsFilled--
+            @variables[id].value = null
+            divForm.setAttribute 'class', "form-group"
+            spanControl.setAttribute 'class', ""
+            labelForm.setAttribute 'class', "control-label sr-only"
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
@@ -188,13 +207,6 @@ class Formula
         @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
         @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
         
-        for id, variable of @variables[1..]
-            aux = document.getElementById variable.fullName
-            id++
-            if aux.value isnt ""
-                @variables[id].value = new Number (aux.value)
-            else 
-                @variables[id].value = null
         rads = document.getElementsByName 'modeLine'
 
         i = 0
@@ -246,11 +258,9 @@ class Formula
                 @positionValueVariableX = new Number(id)
             else
                 @valueVariables[id] = variable.value
-        console.log @valueVariables
 
     executeEquation: (x) ->
         @valueVariables[@positionValueVariableX] = x
-        #console.log @valueVariables
         @equation @valueVariables
     
 class Archimedes extends Formula
@@ -269,7 +279,6 @@ class Archimedes extends Formula
         ###
         #todo problems with sub tags
         panel = document.getElementById 'caca'
-        console.log window.innerWidth
         graph = new Graph()
         density = new Variable("\u03C1" , "density" , "description" , null)
         gravity = new Variable("g" , "gravity" , "description" , null)
@@ -285,10 +294,11 @@ class Archimedes extends Formula
         a*b*c
     ###
 class Variable 
-    name:null #string but pass in htlm , if it need for example sub tag
-    fullName:null #string to put in constant value
-    description:null # small description of variable
-    value:null #float
+    name: null #string but pass in htlm , if it need for example sub tag
+    fullName: null #string to put in constant value
+    description: null # small description of variable
+    value: null #float
+    correct: false #value is float and it's not null
 
     constructor: (@name,@fullName,@description,@value) ->
 
