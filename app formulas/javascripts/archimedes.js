@@ -40,8 +40,6 @@
 
     Formula.prototype.mode = null;
 
-    Formula.prototype.resizeTimer = null;
-
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
@@ -135,7 +133,7 @@
           text = document.createTextNode(variable.name + " = ");
           formula.appendChild(text);
         } else {
-          form.appendChild(this.createInput(variable));
+          form.appendChild(this.createInput(variable, id));
           text = document.createTextNode(variable.name);
           formula.appendChild(text);
         }
@@ -147,10 +145,20 @@
       return formula;
     };
 
-    Formula.prototype.createInput = function(variable) {
-      var divInput, input, spanInput, text;
+    Formula.prototype.createInput = function(variable, id) {
+      var divForm, divInput, input, labelForm, labelInput, spanControl, spanInput, text;
+      divForm = document.createElement('div');
+      divForm.setAttribute('class', "form-group");
       divInput = document.createElement('div');
       divInput.setAttribute('class', "input-group");
+      labelForm = document.createElement('label');
+      labelForm.setAttribute('class', "control-label sr-only");
+      text = document.createTextNode("A number is required");
+      labelForm.appendChild(text);
+      divForm.appendChild(labelForm);
+      labelInput = document.createElement('label');
+      labelInput.setAttribute('class', "control-label sr-only");
+      divInput.appendChild(labelInput);
       spanInput = document.createElement('span');
       spanInput.setAttribute('class', "input-group-addon");
       text = document.createTextNode(variable.name);
@@ -161,8 +169,30 @@
       input.setAttribute('type', "text");
       input.setAttribute('id', variable.fullName);
       input.setAttribute('placeholder', variable.fullName);
+      spanControl = document.createElement('span');
+      spanControl.setAttribute('id', "span-control-" + id);
+      input.setAttribute('oninput', "");
+      input.oninput = (function(_this) {
+        return function() {
+          return _this.isNumber(input, divForm, id, spanControl, labelForm);
+        };
+      })(this);
       divInput.appendChild(input);
-      return divInput;
+      divInput.appendChild(spanControl);
+      divForm.appendChild(divInput);
+      return divForm;
+    };
+
+    Formula.prototype.isNumber = function(input, divInput, id, spanControl, label) {
+      if (isNaN(input.value)) {
+        divInput.setAttribute('class', "form-group has-error has-feedback");
+        spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
+        return label.setAttribute('class', "control-label");
+      } else {
+        divInput.setAttribute('class', "form-group has-success has-feedback");
+        spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
+        return label.setAttribute('class', "control-label sr-only");
+      }
     };
 
     Formula.prototype.createRadio = function(name, checked) {

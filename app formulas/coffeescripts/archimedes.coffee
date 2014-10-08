@@ -16,7 +16,6 @@ class Formula
     graphCloneCanvas: null
     contextCanvasClone: null
     mode: null
-    resizeTimer: null
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -84,7 +83,7 @@ class Formula
                 text = document.createTextNode variable.name + " = " 
                 formula.appendChild text
             else
-                form.appendChild @createInput variable
+                form.appendChild @createInput variable, id
                 text = document.createTextNode variable.name
                 formula.appendChild text
         form.appendChild @createRadio("line", true)
@@ -93,21 +92,55 @@ class Formula
         @constantValue.appendChild form
         formula
 
-    createInput: (variable)->
+    createInput: (variable, id)->
+        divForm = document.createElement 'div'
+        divForm.setAttribute 'class', "form-group"
+
         divInput = document.createElement 'div'
         divInput.setAttribute 'class' , "input-group"
+
+        labelForm = document.createElement 'label'
+        labelForm.setAttribute 'class', "control-label sr-only"
+        text = document.createTextNode "A number is required"
+        labelForm.appendChild text
+        divForm.appendChild labelForm
+
+        labelInput = document.createElement 'label'
+        labelInput.setAttribute 'class', "control-label sr-only"
+        divInput.appendChild labelInput
+
         spanInput = document.createElement 'span'
         spanInput.setAttribute 'class' , "input-group-addon"
         text = document.createTextNode variable.name
         spanInput.appendChild text
         divInput.appendChild spanInput
+
         input = document.createElement 'input'
         input.setAttribute 'class' , "form-control"
         input.setAttribute 'type' , "text"
         input.setAttribute 'id', variable.fullName
         input.setAttribute 'placeholder' , variable.fullName
+
+        spanControl = document.createElement 'span'
+        spanControl.setAttribute 'id', "span-control-" + id
+
+        input.setAttribute 'oninput', ""
+        input.oninput = => @isNumber input, divForm, id, spanControl, labelForm
         divInput.appendChild input
-        divInput
+        divInput.appendChild spanControl
+        divForm.appendChild divInput
+        
+        divForm
+
+    isNumber: (input, divInput, id, spanControl, label) ->
+        if isNaN input.value
+            divInput.setAttribute 'class', "form-group has-error has-feedback"
+            spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
+            label.setAttribute 'class', "control-label"
+        else
+            divInput.setAttribute 'class', "form-group has-success has-feedback"
+            spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
+            label.setAttribute 'class', "control-label sr-only"
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
