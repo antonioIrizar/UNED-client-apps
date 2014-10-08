@@ -128,6 +128,7 @@
       formula.setAttribute('class', "formula-text");
       formula.setAttribute('id', this.idFormula);
       form = document.createElement('form');
+      form.setAttribute('id', "form-archimedes");
       _ref = this.variables;
       for (id in _ref) {
         variable = _ref[id];
@@ -153,6 +154,7 @@
       var divForm, divInput, input, labelForm, labelInput, spanControl, spanInput, text;
       divForm = document.createElement('div');
       divForm.setAttribute('class', "form-group");
+      divForm.setAttribute('id', "div-form-" + id);
       divInput = document.createElement('div');
       divInput.setAttribute('class', "input-group");
       labelForm = document.createElement('label');
@@ -188,6 +190,7 @@
     };
 
     Formula.prototype.isNumber = function(input, divForm, id, spanControl, labelForm) {
+      var a, b;
       if (input.value.length > 0) {
         if (isNaN(input.value)) {
           divForm.setAttribute('class', "form-group has-error has-feedback");
@@ -197,7 +200,7 @@
             this.variables[id].correct = false;
             this.numberInputsFilled--;
           }
-          return this.variables[id].value = null;
+          this.variables[id].value = null;
         } else {
           divForm.setAttribute('class', "form-group has-success has-feedback");
           spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
@@ -206,7 +209,7 @@
             this.variables[id].correct = true;
             this.numberInputsFilled++;
           }
-          return this.variables[id].value = new Number(input.value);
+          this.variables[id].value = new Number(input.value);
         }
       } else {
         if (this.variables[id].correct) {
@@ -216,8 +219,48 @@
         this.variables[id].value = null;
         divForm.setAttribute('class', "form-group");
         spanControl.setAttribute('class', "");
-        return labelForm.setAttribute('class', "control-label sr-only");
+        labelForm.setAttribute('class', "control-label sr-only");
       }
+      if (this.numberInputsFilled === 2) {
+        a = document.getElementById('div-form-3');
+        b = document.getElementById('form-archimedes');
+        return b.replaceChild(this.createInputRange(), a);
+      }
+    };
+
+    Formula.prototype.createInputRange = function() {
+      var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelText, text;
+      divForm = document.createElement('div');
+      divForm.setAttribute('class', "form-inline");
+      divLabel = document.createElement('div');
+      divLabel.setAttribute('class', "form-group");
+      labelText = document.createElement('label');
+      text = document.createTextNode("Range of " + this.variables[3].name + " (optional):");
+      labelText.appendChild(text);
+      divLabel.appendChild(labelText);
+      divForm.appendChild(divLabel);
+      divInputStart = document.createElement('div');
+      divInputStart.setAttribute('class', "form-group");
+      inputStart = document.createElement('input');
+      inputStart.setAttribute('type', "text");
+      inputStart.setAttribute('class', "form-control");
+      divInputStart.appendChild(inputStart);
+      divForm.appendChild(divInputStart);
+      divLabel = document.createElement('div');
+      divLabel.setAttribute('class', "form-group");
+      labelText = document.createElement('label');
+      text = document.createTextNode(" to ");
+      labelText.appendChild(text);
+      divLabel.appendChild(labelText);
+      divForm.appendChild(divLabel);
+      divInputEnd = document.createElement('div');
+      divInputEnd.setAttribute('class', "form-group");
+      inputEnd = document.createElement('input');
+      inputEnd.setAttribute('type', "text");
+      inputEnd.setAttribute('class', "form-control");
+      divInputEnd.appendChild(inputEnd);
+      divForm.appendChild(divInputEnd);
+      return divForm;
     };
 
     Formula.prototype.createRadio = function(name, checked) {
@@ -276,26 +319,30 @@
 
     Formula.prototype.clickButton = function() {
       var i, rads;
-      this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
-      this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
-      rads = document.getElementsByName('modeLine');
-      i = 0;
-      while (i < rads.length) {
-        if (rads[i].checked) {
-          this.mode = rads[i].value;
-          break;
+      if (this.numberInputsFilled === this.variables.length - 2) {
+        this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
+        this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
+        rads = document.getElementsByName('modeLine');
+        i = 0;
+        while (i < rads.length) {
+          if (rads[i].checked) {
+            this.mode = rads[i].value;
+            break;
+          }
+          i++;
         }
-        i++;
+        this.drawNumbersFormula();
+        this.getVariableValues();
+        this.graph.x = this.variables[this.positionValueVariableX + 1].name;
+        this.graph.y = this.variables[0].name;
+        return this.graph.drawEquation((function(_this) {
+          return function(x) {
+            return _this.executeEquation(x);
+          };
+        })(this), 'blue', 3, this.mode);
+      } else {
+        return alert("you need fille the inputs");
       }
-      this.drawNumbersFormula();
-      this.getVariableValues();
-      this.graph.x = this.variables[this.positionValueVariableX + 1].name;
-      this.graph.y = this.variables[0].name;
-      return this.graph.drawEquation((function(_this) {
-        return function(x) {
-          return _this.executeEquation(x);
-        };
-      })(this), 'blue', 3, this.mode);
     };
 
     Formula.prototype.cloneCanvas = function() {

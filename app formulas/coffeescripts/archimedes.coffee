@@ -78,6 +78,7 @@ class Formula
         formula.setAttribute 'class', "formula-text"
         formula.setAttribute 'id', @idFormula
         form = document.createElement 'form'
+        form.setAttribute 'id', "form-archimedes"
         for id, variable of @variables
             @descriptionVariables.appendChild @createDt variable.name, variable.fullName
             @descriptionVariables.appendChild @createDd variable.description
@@ -97,6 +98,7 @@ class Formula
     createInput: (variable, id)->
         divForm = document.createElement 'div'
         divForm.setAttribute 'class', "form-group"
+        divForm.setAttribute 'id', "div-form-" + id
 
         divInput = document.createElement 'div'
         divInput.setAttribute 'class' , "input-group"
@@ -160,6 +162,57 @@ class Formula
             divForm.setAttribute 'class', "form-group"
             spanControl.setAttribute 'class', ""
             labelForm.setAttribute 'class', "control-label sr-only"
+        if @numberInputsFilled == 2
+            a = document.getElementById 'div-form-3'
+            b = document.getElementById 'form-archimedes'
+            b.replaceChild @createInputRange(), a
+
+
+    createInputRange: ->
+        divForm = document.createElement 'div'
+        divForm.setAttribute 'class', "form-inline"
+
+        divLabel = document.createElement 'div'
+        divLabel.setAttribute 'class', "form-group"
+
+        labelText = document.createElement 'label'
+        text = document.createTextNode "Range of " + @variables[3].name + " (optional):"
+        labelText.appendChild text
+
+        divLabel.appendChild labelText
+        divForm.appendChild divLabel
+
+        divInputStart = document.createElement 'div'
+        divInputStart.setAttribute 'class' , "form-group"
+
+        inputStart = document.createElement 'input'
+        inputStart.setAttribute 'type', "text"
+        inputStart.setAttribute 'class', "form-control"
+        
+        divInputStart.appendChild inputStart
+        divForm.appendChild divInputStart
+
+        divLabel = document.createElement 'div'
+        divLabel.setAttribute 'class', "form-group"
+
+        labelText = document.createElement 'label'
+        text = document.createTextNode " to "
+        labelText.appendChild text
+
+        divLabel.appendChild labelText
+        divForm.appendChild divLabel
+
+        divInputEnd = document.createElement 'div'
+        divInputEnd.setAttribute 'class' , "form-group"
+
+        inputEnd = document.createElement 'input'
+        inputEnd.setAttribute 'type', "text"
+        inputEnd.setAttribute 'class', "form-control"
+        
+        divInputEnd.appendChild inputEnd
+        divForm.appendChild divInputEnd
+
+        divForm
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
@@ -203,27 +256,29 @@ class Formula
         dd
 
     clickButton: ->
-        
-        @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
-        @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
-        
-        rads = document.getElementsByName 'modeLine'
-
-        i = 0
-        while i < rads.length
-            if rads[i].checked
-                @mode = rads[i].value
-                break
-            i++
-
-        @drawNumbersFormula()
-        @getVariableValues()
-        @graph.x = @variables[@positionValueVariableX + 1].name
-        @graph.y = @variables[0].name
-        @graph.drawEquation (x) => 
-            @executeEquation x
+        if (@numberInputsFilled == @variables.length-2)
+            @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
+            @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
             
-        ,'blue', 3, @mode
+            rads = document.getElementsByName 'modeLine'
+
+            i = 0
+            while i < rads.length
+                if rads[i].checked
+                    @mode = rads[i].value
+                    break
+                i++
+
+            @drawNumbersFormula()
+            @getVariableValues()
+            @graph.x = @variables[@positionValueVariableX + 1].name
+            @graph.y = @variables[0].name
+            @graph.drawEquation (x) => 
+                @executeEquation x
+                
+            ,'blue', 3, @mode
+        else
+            alert "you need fille the inputs"
 
     cloneCanvas: -> 
 
