@@ -52,7 +52,6 @@
       this.allowDrop = __bind(this.allowDrop, this);
       window.addEventListener("resize", (function(_this) {
         return function() {
-          console.log("aqui");
           return _this.graph.resizeCanvas();
         };
       })(this));
@@ -77,6 +76,7 @@
           return _this.allowDrop(e);
         };
       })(this);
+      this.divPanel.setAttribute('ondragenter', "return false");
       this.divFormula.height = '300 px';
       this.divFormula.width = '300 px';
       paragraph = document.createElement('p');
@@ -91,10 +91,6 @@
       this.descriptionVariables = document.getElementById(descriptionVariables);
       this.cloneCanvas();
     }
-
-    Formula.prototype.prueba = function() {
-      return console.log("blabla");
-    };
 
     Formula.prototype.addListenerToFormula = function(srcImage) {
       return this.liFormula.addEventListener('dragstart', (function(_this) {

@@ -19,9 +19,9 @@ class Formula
     resizeTimer: null
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
-        #document.body.setAttribute 'resize', ""
+        #document.body.setAttribute 'onresize', ""
+        #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
-            console.log "aqui"
             @graph.resizeCanvas()
             
         @liFormula = document.getElementById liFormula
@@ -29,10 +29,12 @@ class Formula
         @liFormula.ondragstart = (e) => @drag(e)
         @divPanel = document.getElementById divPanel
         @divFormula = document.createElement 'div'
-        @divPanel.setAttribute 'ondrop' , ""
+        @divPanel.setAttribute 'ondrop', ""
         @divPanel.ondrop = (e) => @drop(e)
-        @divPanel.setAttribute 'ondragover' , ""
+        @divPanel.setAttribute 'ondragover', ""
         @divPanel.ondragover = (e) => @allowDrop(e)
+        #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
+        @divPanel.setAttribute 'ondragenter', "return false"
         @divFormula.height = '300 px'
         @divFormula.width = '300 px'
         paragraph = document.createElement 'p'
@@ -46,9 +48,6 @@ class Formula
         @constantValue = document.getElementById constantValue
         @descriptionVariables = document.getElementById descriptionVariables
         @cloneCanvas()
-
-    prueba: -> 
-        console.log "blabla"
 
     addListenerToFormula: (srcImage) ->
         @liFormula.addEventListener( 'dragstart' , 
