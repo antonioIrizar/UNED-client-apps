@@ -52,7 +52,9 @@
       this.allowDrop = __bind(this.allowDrop, this);
       window.addEventListener("resize", (function(_this) {
         return function() {
-          return _this.graph.resizeCanvas();
+          return _this.graph.resizeCanvas(function(x) {
+            return _this.executeEquation(x);
+          }, 'blue', 3, _this.mode);
         };
       })(this));
       this.liFormula = document.getElementById(liFormula);
@@ -243,7 +245,8 @@
       }
       this.drawNumbersFormula();
       this.getVariableValues();
-      this.graph.drawVariables(this.variables[this.positionValueVariableX + 1].name, this.variables[0].name);
+      this.graph.x = this.variables[this.positionValueVariableX + 1].name;
+      this.graph.y = this.variables[0].name;
       return this.graph.drawEquation((function(_this) {
         return function(x) {
           return _this.executeEquation(x);
@@ -407,6 +410,10 @@
 
     Graph.prototype.scaleY = null;
 
+    Graph.prototype.x = null;
+
+    Graph.prototype.y = null;
+
     function Graph() {
       this.canvas = document.getElementById("graph");
       this.context = this.canvas.getContext('2d');
@@ -487,17 +494,17 @@
       return context.restore();
     };
 
-    Graph.prototype.drawVariables = function(x, y) {
+    Graph.prototype.drawVariables = function() {
       var context;
       context = this.context;
       context.save();
       context.font = "20px Georgia";
-      context.fillText(y, this.centerX - 20, 15);
-      context.fillText(x, this.canvas.width - 15, this.centerY + 20);
+      context.fillText(this.y, this.centerX - 40, 15);
+      context.fillText(this.x, this.canvas.width - 15, this.centerY + 40);
       return context.restore();
     };
 
-    Graph.prototype.resizeCanvas = function() {
+    Graph.prototype.resizeCanvas = function(equation, color, thickness, mode) {
       var width;
       width = window.innerWidth;
       if (width > 991) {
@@ -515,7 +522,10 @@
       this.scaleX = this.canvas.width / this.rangeX;
       this.scaleY = this.canvas.height / this.rangeY;
       this.drawXAxis();
-      return this.drawYAxis();
+      this.drawYAxis();
+      if (this.x && this.y) {
+        return this.drawEquation(equation, color, thickness, mode);
+      }
     };
 
     Graph.prototype.drawEquation = function(equation, color, thickness, mode) {
@@ -553,7 +563,8 @@
         context.fillStyle = color;
         context.fill();
       }
-      return context.restore();
+      context.restore();
+      return this.drawVariables();
     };
 
     Graph.prototype.transformContext = function() {

@@ -22,7 +22,9 @@ class Formula
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
-            @graph.resizeCanvas()
+            @graph.resizeCanvas (x) => 
+                @executeEquation x
+            ,'blue', 3, @mode
             
         @liFormula = document.getElementById liFormula
         @liFormula.setAttribute 'ondragstart' , ""
@@ -171,12 +173,12 @@ class Formula
 
         @drawNumbersFormula()
         @getVariableValues()
-        @graph.drawVariables @variables[@positionValueVariableX + 1].name, @variables[0].name
+        @graph.x = @variables[@positionValueVariableX + 1].name
+        @graph.y = @variables[0].name
         @graph.drawEquation (x) => 
             @executeEquation x
             
         ,'blue', 3, @mode
-
 
     cloneCanvas: -> 
 
@@ -277,6 +279,8 @@ class Graph
     iteration: null
     scaleX: null
     scaleY: null
+    x: null
+    y: null
 
     constructor: ->
         @canvas = document.getElementById "graph"
@@ -357,15 +361,15 @@ class Graph
         
         context.restore()
 
-    drawVariables: (x, y) ->
+    drawVariables: ->
         context = @context
         context.save()
         context.font = "20px Georgia"
-        context.fillText(y, @centerX - 20, 15)
-        context.fillText(x, @canvas.width - 15, @centerY + 20)
+        context.fillText(@y, @centerX - 40, 15)
+        context.fillText(@x, @canvas.width - 15, @centerY + 40)
         context.restore()       
 
-    resizeCanvas: ->
+    resizeCanvas:  (equation, color, thickness, mode)->
         width = window.innerWidth
         if width > 991
             width = (width/12) * 5
@@ -384,6 +388,8 @@ class Graph
         @scaleY = @canvas.height / @rangeY
         @drawXAxis()
         @drawYAxis()
+        if (@x and @y)
+            @drawEquation equation, color, thickness, mode
 
     drawEquation: (equation, color, thickness, mode) ->
         context = @context
@@ -425,6 +431,7 @@ class Graph
             context.fill()
             
         context.restore()
+        @drawVariables()
 
     transformContext: ->
         context = @context
