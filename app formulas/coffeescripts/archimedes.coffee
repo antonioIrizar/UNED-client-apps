@@ -163,20 +163,28 @@ class Formula
             spanControl.setAttribute 'class', ""
             labelForm.setAttribute 'class', "control-label sr-only"
         if @numberInputsFilled == 2
-            a = document.getElementById 'div-form-3'
+            idInputRange = @searchInputRange() 
+            a = document.getElementById 'div-form-' + idInputRange
             b = document.getElementById 'form-archimedes'
-            b.replaceChild @createInputRange(), a
+            b.replaceChild @createInputRange(idInputRange), a
 
+    searchInputRange: ->
+        idInputRange = 1
+        while @variables[idInputRange].value isnt null
+            idInputRange++
 
-    createInputRange: ->
+        idInputRange
+
+    createInputRange: (id) ->
         divForm = document.createElement 'div'
-        divForm.setAttribute 'class', "form-inline"
+        divForm.setAttribute 'class', "form-inline form-group"
+        divForm.setAttribute 'id', "div-form-" + idInputRange
 
         divLabel = document.createElement 'div'
         divLabel.setAttribute 'class', "form-group"
 
         labelText = document.createElement 'label'
-        text = document.createTextNode "Range of " + @variables[3].name + " (optional):"
+        text = document.createTextNode "Range of " + @variables[id].name + " (optional):"
         labelText.appendChild text
 
         divLabel.appendChild labelText
@@ -211,8 +219,8 @@ class Formula
         
         divInputEnd.appendChild inputEnd
         divForm.appendChild divInputEnd
-
         divForm
+        
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
@@ -305,6 +313,8 @@ class Formula
                 else
                     text = text + variable.name
         formula.innerHTML = text
+
+    #Can optimize this function with refactor searchInputRange
     
     getVariableValues: ->
         for id, variable of @variables[1..]
@@ -354,6 +364,8 @@ class Variable
     description: null # small description of variable
     value: null #float
     correct: false #value is float and it's not null
+    startRange: null #float star range
+    endRange: null #float end range
 
     constructor: (@name,@fullName,@description,@value) ->
 

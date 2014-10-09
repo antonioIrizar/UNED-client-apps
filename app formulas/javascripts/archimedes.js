@@ -190,7 +190,7 @@
     };
 
     Formula.prototype.isNumber = function(input, divForm, id, spanControl, labelForm) {
-      var a, b;
+      var a, b, idInputRange;
       if (input.value.length > 0) {
         if (isNaN(input.value)) {
           divForm.setAttribute('class', "form-group has-error has-feedback");
@@ -222,20 +222,31 @@
         labelForm.setAttribute('class', "control-label sr-only");
       }
       if (this.numberInputsFilled === 2) {
-        a = document.getElementById('div-form-3');
+        idInputRange = this.searchInputRange();
+        a = document.getElementById('div-form-' + idInputRange);
         b = document.getElementById('form-archimedes');
-        return b.replaceChild(this.createInputRange(), a);
+        return b.replaceChild(this.createInputRange(idInputRange), a);
       }
     };
 
-    Formula.prototype.createInputRange = function() {
+    Formula.prototype.searchInputRange = function() {
+      var idInputRange;
+      idInputRange = 1;
+      while (this.variables[idInputRange].value !== null) {
+        idInputRange++;
+      }
+      return idInputRange;
+    };
+
+    Formula.prototype.createInputRange = function(id) {
       var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelText, text;
       divForm = document.createElement('div');
-      divForm.setAttribute('class', "form-inline");
+      divForm.setAttribute('class', "form-inline form-group");
+      divForm.setAttribute('id', "div-form-" + idInputRange);
       divLabel = document.createElement('div');
       divLabel.setAttribute('class', "form-group");
       labelText = document.createElement('label');
-      text = document.createTextNode("Range of " + this.variables[3].name + " (optional):");
+      text = document.createTextNode("Range of " + this.variables[id].name + " (optional):");
       labelText.appendChild(text);
       divLabel.appendChild(labelText);
       divForm.appendChild(divLabel);
@@ -452,6 +463,10 @@
     Variable.prototype.value = null;
 
     Variable.prototype.correct = false;
+
+    Variable.prototype.startRange = null;
+
+    Variable.prototype.endRange = null;
 
     function Variable(name, fullName, description, value) {
       this.name = name;
