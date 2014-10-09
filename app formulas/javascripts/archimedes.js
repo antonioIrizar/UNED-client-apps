@@ -44,6 +44,8 @@
 
     Formula.prototype.inputsCorrect = true;
 
+    Formula.prototype.idInputRange = null;
+
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, equation, graph) {
       var paragraph, text;
       this.srcImage = srcImage;
@@ -138,7 +140,7 @@
           text = document.createTextNode(variable.name + " = ");
           formula.appendChild(text);
         } else {
-          form.appendChild(this.createInput(variable, id));
+          form.appendChild(this.createInput(id));
           text = document.createTextNode(variable.name);
           formula.appendChild(text);
         }
@@ -150,7 +152,7 @@
       return formula;
     };
 
-    Formula.prototype.createInput = function(variable, id) {
+    Formula.prototype.createInput = function(id) {
       var divForm, divInput, input, labelForm, labelInput, spanControl, spanInput, text;
       divForm = document.createElement('div');
       divForm.setAttribute('class', "form-group");
@@ -167,14 +169,14 @@
       divInput.appendChild(labelInput);
       spanInput = document.createElement('span');
       spanInput.setAttribute('class', "input-group-addon");
-      text = document.createTextNode(variable.name);
+      text = document.createTextNode(this.variables[id].name);
       spanInput.appendChild(text);
       divInput.appendChild(spanInput);
       input = document.createElement('input');
       input.setAttribute('class', "form-control");
       input.setAttribute('type', "text");
-      input.setAttribute('id', variable.fullName);
-      input.setAttribute('placeholder', variable.fullName);
+      input.setAttribute('id', this.variables[id].fullName);
+      input.setAttribute('placeholder', this.variables[id].fullName);
       spanControl = document.createElement('span');
       spanControl.setAttribute('id', "span-control-" + id);
       input.setAttribute('oninput', "");
@@ -190,49 +192,80 @@
     };
 
     Formula.prototype.isNumber = function(input, divForm, id, spanControl, labelForm) {
-      var a, b, idInputRange;
+      var newNumberInputsFilled;
+      newNumberInputsFilled = this.numberInputsFilled;
       if (input.value.length > 0) {
         if (isNaN(input.value)) {
           divForm.setAttribute('class', "form-group has-error has-feedback");
           spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
           labelForm.setAttribute('class', "control-label");
-          if (this.variables[id].correct) {
-            this.variables[id].correct = false;
-            this.numberInputsFilled--;
+          if (this.variables[id].value !== null && this.idInputRange === null) {
+            newNumberInputsFilled--;
+            console.log("menos");
           }
+          this.variables[id].correct = false;
           this.variables[id].value = null;
         } else {
           divForm.setAttribute('class', "form-group has-success has-feedback");
           spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
           labelForm.setAttribute('class', "control-label sr-only");
-          if (!this.variables[id].correct) {
-            this.variables[id].correct = true;
-            this.numberInputsFilled++;
+          if (this.variables[id].value === null && this.variables[id].correct) {
+            newNumberInputsFilled++;
           }
+          this.variables[id].correct = true;
           this.variables[id].value = new Number(input.value);
         }
       } else {
-        if (this.variables[id].correct) {
-          this.variables[id].correct = false;
-          this.numberInputsFilled--;
+        if (this.variables[id].value !== null) {
+          newNumberInputsFilled--;
         }
+        this.variables[id].correct = true;
         this.variables[id].value = null;
         divForm.setAttribute('class', "form-group");
         spanControl.setAttribute('class', "");
         labelForm.setAttribute('class', "control-label sr-only");
       }
-      if (this.numberInputsFilled === 2) {
-        idInputRange = this.searchInputRange();
-        a = document.getElementById('div-form-' + idInputRange);
-        b = document.getElementById('form-archimedes');
-        return b.replaceChild(this.createInputRange(idInputRange), a);
+      console.log(newNumberInputsFilled);
+      console.log(this.valid());
+      if (newNumberInputsFilled === (this.variables.length - 2) && this.valid()) {
+        console.log("aqui");
+        this.idInputRange = this.searchIdInputRange();
+        this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
+      } else {
+        if (this.idInputRange !== null && this.valid()) {
+          console.log("caca");
+          this.remplaceInputs(this.createInput(this.idInputRange), this.idInputRange);
+          this.idInputRange = null;
+        }
       }
+      return this.numberInputsFilled = newNumberInputsFilled;
     };
 
-    Formula.prototype.searchInputRange = function() {
+    Formula.prototype.valid = function() {
+      var idInputRange, valid;
+      idInputRange = 1;
+      valid = true;
+      while (this.variables.length - 1 > idInputRange) {
+        if (!this.variables[idInputRange].correct && this.variables[idInputRange].value === null) {
+          valid = false;
+          break;
+        }
+        idInputRange++;
+      }
+      return valid;
+    };
+
+    Formula.prototype.remplaceInputs = function(newChild, id) {
+      var oldChild, parent;
+      oldChild = document.getElementById('div-form-' + id);
+      parent = document.getElementById('form-archimedes');
+      return parent.replaceChild(newChild, oldChild);
+    };
+
+    Formula.prototype.searchIdInputRange = function() {
       var idInputRange;
       idInputRange = 1;
-      while (this.variables[idInputRange].value !== null) {
+      while (idInputRange < this.variables.length - 1 && !(this.variables[idInputRange].value === null && this.variables[idInputRange].correct)) {
         idInputRange++;
       }
       return idInputRange;
@@ -242,7 +275,7 @@
       var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelText, text;
       divForm = document.createElement('div');
       divForm.setAttribute('class', "form-inline form-group");
-      divForm.setAttribute('id', "div-form-" + idInputRange);
+      divForm.setAttribute('id', "div-form-" + id);
       divLabel = document.createElement('div');
       divLabel.setAttribute('class', "form-group");
       labelText = document.createElement('label');
@@ -462,7 +495,7 @@
 
     Variable.prototype.value = null;
 
-    Variable.prototype.correct = false;
+    Variable.prototype.correct = true;
 
     Variable.prototype.startRange = null;
 

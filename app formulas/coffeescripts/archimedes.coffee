@@ -18,6 +18,7 @@ class Formula
     mode: null
     numberInputsFilled: 0
     inputsCorrect: true
+    idInputRange: null
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -86,7 +87,7 @@ class Formula
                 text = document.createTextNode variable.name + " = " 
                 formula.appendChild text
             else
-                form.appendChild @createInput variable, id
+                form.appendChild @createInput id
                 text = document.createTextNode variable.name
                 formula.appendChild text
         form.appendChild @createRadio("line", true)
@@ -95,7 +96,7 @@ class Formula
         @constantValue.appendChild form
         formula
 
-    createInput: (variable, id)->
+    createInput: (id) ->
         divForm = document.createElement 'div'
         divForm.setAttribute 'class', "form-group"
         divForm.setAttribute 'id', "div-form-" + id
@@ -115,15 +116,15 @@ class Formula
 
         spanInput = document.createElement 'span'
         spanInput.setAttribute 'class' , "input-group-addon"
-        text = document.createTextNode variable.name
+        text = document.createTextNode @variables[id].name
         spanInput.appendChild text
         divInput.appendChild spanInput
 
         input = document.createElement 'input'
         input.setAttribute 'class' , "form-control"
         input.setAttribute 'type' , "text"
-        input.setAttribute 'id', variable.fullName
-        input.setAttribute 'placeholder' , variable.fullName
+        input.setAttribute 'id', @variables[id].fullName
+        input.setAttribute 'placeholder' , @variables[id].fullName
 
         spanControl = document.createElement 'span'
         spanControl.setAttribute 'id', "span-control-" + id
@@ -137,48 +138,79 @@ class Formula
         divForm
 
     isNumber: (input, divForm, id, spanControl, labelForm) ->
+        newNumberInputsFilled = @numberInputsFilled
+
         if input.value.length > 0
+
             if isNaN input.value
                 divForm.setAttribute 'class', "form-group has-error has-feedback"
                 spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
                 labelForm.setAttribute 'class', "control-label"
-                if @variables[id].correct 
-                     @variables[id].correct = false
-                     @numberInputsFilled--
+                if @variables[id].value isnt null and @idInputRange is null
+                    newNumberInputsFilled--
+                    console.log "menos"
+                @variables[id].correct = false
                 @variables[id].value = null
             else
                 divForm.setAttribute 'class', "form-group has-success has-feedback"
                 spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
                 labelForm.setAttribute 'class', "control-label sr-only"
-                if not @variables[id].correct 
-                     @variables[id].correct = true
-                     @numberInputsFilled++
-                @variables[id].value = new Number(input.value)
+                if @variables[id].value is null and @variables[id].correct
+                    newNumberInputsFilled++
+                @variables[id].correct = true
+                @variables[id].value = new Number input.value
         else
-            if @variables[id].correct 
-                @variables[id].correct = false
-                @numberInputsFilled--
+            if @variables[id].value isnt null 
+                newNumberInputsFilled--
+            @variables[id].correct = true
             @variables[id].value = null
             divForm.setAttribute 'class', "form-group"
             spanControl.setAttribute 'class', ""
             labelForm.setAttribute 'class', "control-label sr-only"
-        if @numberInputsFilled == 2
-            idInputRange = @searchInputRange() 
-            a = document.getElementById 'div-form-' + idInputRange
-            b = document.getElementById 'form-archimedes'
-            b.replaceChild @createInputRange(idInputRange), a
 
-    searchInputRange: ->
+       
+        console.log newNumberInputsFilled
+        console.log @valid()
+        if newNumberInputsFilled == (@variables.length - 2) and @valid()
+            console.log "aqui"
+            @idInputRange = @searchIdInputRange()
+            @remplaceInputs @createInputRange(@idInputRange), @idInputRange
+        else
+            if @idInputRange isnt null and @valid()
+                console.log "caca"
+                @remplaceInputs @createInput(@idInputRange), @idInputRange
+                @idInputRange = null
+        @numberInputsFilled = newNumberInputsFilled
+
+
+    valid: ->
         idInputRange = 1
-        while @variables[idInputRange].value isnt null
+        valid = true
+        while @variables.length-1 > idInputRange
+            if (not @variables[idInputRange].correct and @variables[idInputRange].value is null)
+                valid = false
+                break
+            idInputRange++
+
+        valid
+
+    remplaceInputs: (newChild, id) ->
+        oldChild = document.getElementById 'div-form-' + id
+        parent = document.getElementById 'form-archimedes'
+        parent.replaceChild newChild, oldChild
+
+    searchIdInputRange: ->
+        idInputRange = 1
+        while idInputRange < @variables.length-1 and  not(@variables[idInputRange].value is null and @variables[idInputRange].correct)
             idInputRange++
 
         idInputRange
 
-    createInputRange: (id) ->
+    createInputRange:  (id)->
+     
         divForm = document.createElement 'div'
         divForm.setAttribute 'class', "form-inline form-group"
-        divForm.setAttribute 'id', "div-form-" + idInputRange
+        divForm.setAttribute 'id', "div-form-" + id
 
         divLabel = document.createElement 'div'
         divLabel.setAttribute 'class', "form-group"
@@ -219,8 +251,8 @@ class Formula
         
         divInputEnd.appendChild inputEnd
         divForm.appendChild divInputEnd
+
         divForm
-        
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
@@ -315,7 +347,6 @@ class Formula
         formula.innerHTML = text
 
     #Can optimize this function with refactor searchInputRange
-    
     getVariableValues: ->
         for id, variable of @variables[1..]
             if variable.value is null
@@ -363,7 +394,7 @@ class Variable
     fullName: null #string to put in constant value
     description: null # small description of variable
     value: null #float
-    correct: false #value is float and it's not null
+    correct: true #value is float or it is null
     startRange: null #float star range
     endRange: null #float end range
 
