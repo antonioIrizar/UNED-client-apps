@@ -192,28 +192,29 @@
     };
 
     Formula.prototype.isNumber = function(input, divForm, id, spanControl, labelForm) {
-      var newNumberInputsFilled;
+      var inputsCorrect, newNumberInputsFilled;
       newNumberInputsFilled = this.numberInputsFilled;
       if (input.value.length > 0) {
         if (isNaN(input.value)) {
           divForm.setAttribute('class', "form-group has-error has-feedback");
           spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
           labelForm.setAttribute('class', "control-label");
-          if (this.variables[id].value !== null && this.idInputRange === null) {
+          if (this.variables[id].value !== null) {
             newNumberInputsFilled--;
-            console.log("menos");
           }
           this.variables[id].correct = false;
           this.variables[id].value = null;
+          inputsCorrect = false;
         } else {
           divForm.setAttribute('class', "form-group has-success has-feedback");
           spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
           labelForm.setAttribute('class', "control-label sr-only");
-          if (this.variables[id].value === null && this.variables[id].correct) {
+          if ((this.variables[id].value === null && this.variables[id].correct) || (this.variables[id].value === null && !this.variables[id].correct)) {
             newNumberInputsFilled++;
           }
           this.variables[id].correct = true;
           this.variables[id].value = new Number(input.value);
+          inputsCorrect = true;
         }
       } else {
         if (this.variables[id].value !== null) {
@@ -221,23 +222,34 @@
         }
         this.variables[id].correct = true;
         this.variables[id].value = null;
+        inputsCorrect = true;
         divForm.setAttribute('class', "form-group");
         spanControl.setAttribute('class', "");
         labelForm.setAttribute('class', "control-label sr-only");
       }
-      console.log(newNumberInputsFilled);
-      console.log(this.valid());
-      if (newNumberInputsFilled === (this.variables.length - 2) && this.valid()) {
-        console.log("aqui");
-        this.idInputRange = this.searchIdInputRange();
-        this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
+      if (this.inputsCorrect && inputsCorrect) {
+        if (newNumberInputsFilled !== this.numberInputsFilled) {
+          if (newNumberInputsFilled === (this.variables.length - 2)) {
+            this.idInputRange = this.searchIdInputRange();
+            this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
+          } else {
+            if (this.idInputRange !== null && this.valid()) {
+              this.remplaceInputs(this.createInput(this.idInputRange), this.idInputRange);
+              this.variables[this.idInputRange].startRange = null;
+              this.variables[this.idInputRange].endRange = null;
+              this.idInputRange = null;
+            }
+          }
+        }
       } else {
-        if (this.idInputRange !== null && this.valid()) {
-          console.log("caca");
-          this.remplaceInputs(this.createInput(this.idInputRange), this.idInputRange);
-          this.idInputRange = null;
+        if (this.inputsCorrect && !inputsCorrect) {
+          this.disabledInputs(id);
+        }
+        if (!this.inputsCorrect && inputsCorrect) {
+          this.eneableInputs(id);
         }
       }
+      this.inputsCorrect = inputsCorrect;
       return this.numberInputsFilled = newNumberInputsFilled;
     };
 
@@ -245,7 +257,7 @@
       var idInputRange, valid;
       idInputRange = 1;
       valid = true;
-      while (this.variables.length - 1 > idInputRange) {
+      while (this.variables.length > idInputRange) {
         if (!this.variables[idInputRange].correct && this.variables[idInputRange].value === null) {
           valid = false;
           break;
@@ -265,16 +277,56 @@
     Formula.prototype.searchIdInputRange = function() {
       var idInputRange;
       idInputRange = 1;
-      while (idInputRange < this.variables.length - 1 && !(this.variables[idInputRange].value === null && this.variables[idInputRange].correct)) {
+      while (idInputRange < this.variables.length && !(this.variables[idInputRange].value === null && this.variables[idInputRange].correct)) {
         idInputRange++;
       }
       return idInputRange;
     };
 
+    Formula.prototype.disabledInputs = function(id) {
+      var i, input, inputEnd, inputStart, _results;
+      i = 1;
+      _results = [];
+      while (i < this.variables.length) {
+        if (i !== Number(id) && i !== this.idInputRange) {
+          input = document.getElementById(this.variables[i].fullName);
+          input.setAttribute('disabled', "");
+        }
+        if (i === this.idInputRange) {
+          inputStart = document.getElementById('input-star');
+          inputStart.setAttribute('disabled', "");
+          inputEnd = document.getElementById('input-end');
+          inputEnd.setAttribute('disabled', "");
+        }
+        _results.push(i++);
+      }
+      return _results;
+    };
+
+    Formula.prototype.eneableInputs = function(id) {
+      var i, input, inputEnd, inputStart, _results;
+      i = 1;
+      _results = [];
+      while (i < this.variables.length) {
+        if (i !== Number(id) && i !== this.idInputRange) {
+          input = document.getElementById(this.variables[i].fullName);
+          input.removeAttribute('disabled');
+        }
+        if (i === this.idInputRange) {
+          inputStart = document.getElementById('input-star');
+          inputStart.removeAttribute('disabled');
+          inputEnd = document.getElementById('input-end');
+          inputEnd.removeAttribute('disabled');
+        }
+        _results.push(i++);
+      }
+      return _results;
+    };
+
     Formula.prototype.createInputRange = function(id) {
-      var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelText, text;
+      var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelInputEnd, labelInputStar, labelText, spanControlEnd, spanControlStart, text;
       divForm = document.createElement('div');
-      divForm.setAttribute('class', "form-inline form-group");
+      divForm.setAttribute('class', "form-group");
       divForm.setAttribute('id', "div-form-" + id);
       divLabel = document.createElement('div');
       divLabel.setAttribute('class', "form-group");
@@ -285,10 +337,25 @@
       divForm.appendChild(divLabel);
       divInputStart = document.createElement('div');
       divInputStart.setAttribute('class', "form-group");
+      labelInputStar = document.createElement('label');
+      labelInputStar.setAttribute('class', "control-label sr-only");
+      text = document.createTextNode("A number is required");
+      labelInputStar.appendChild(text);
+      divInputStart.appendChild(labelInputStar);
       inputStart = document.createElement('input');
+      inputStart.setAttribute('id', "input-star");
       inputStart.setAttribute('type', "text");
       inputStart.setAttribute('class', "form-control");
+      spanControlStart = document.createElement('span');
+      spanControlStart.setAttribute('id', "span-control-start");
+      inputStart.setAttribute('oninput', "");
+      inputStart.oninput = (function(_this) {
+        return function() {
+          return _this.variables[id].startRange = _this.isNumberInRange(inputStart, divInputStart, id, spanControlStart, labelInputStar);
+        };
+      })(this);
       divInputStart.appendChild(inputStart);
+      divInputStart.appendChild(spanControlStart);
       divForm.appendChild(divInputStart);
       divLabel = document.createElement('div');
       divLabel.setAttribute('class', "form-group");
@@ -299,12 +366,51 @@
       divForm.appendChild(divLabel);
       divInputEnd = document.createElement('div');
       divInputEnd.setAttribute('class', "form-group");
+      labelInputEnd = document.createElement('label');
+      labelInputEnd.setAttribute('class', "control-label sr-only");
+      text = document.createTextNode("A number is required");
+      labelInputEnd.appendChild(text);
+      divInputEnd.appendChild(labelInputEnd);
       inputEnd = document.createElement('input');
+      inputEnd.setAttribute('id', "input-end");
       inputEnd.setAttribute('type', "text");
       inputEnd.setAttribute('class', "form-control");
+      spanControlEnd = document.createElement('span');
+      spanControlEnd.setAttribute('id', "span-control-end");
+      inputEnd.setAttribute('oninput', "");
+      inputEnd.oninput = (function(_this) {
+        return function() {
+          return _this.variables[id].endRange = _this.isNumberInRange(inputEnd, divInputEnd, id, spanControlEnd, labelInputEnd);
+        };
+      })(this);
       divInputEnd.appendChild(inputEnd);
+      divInputEnd.appendChild(spanControlEnd);
       divForm.appendChild(divInputEnd);
       return divForm;
+    };
+
+    Formula.prototype.isNumberInRange = function(input, divForm, id, spanControl, labelForm) {
+      var value;
+      value = null;
+      if (input.value.length > 0) {
+        if (isNaN(input.value)) {
+          divForm.setAttribute('class', "form-group has-error has-feedback");
+          spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
+          labelForm.setAttribute('class', "control-label");
+          value = null;
+        } else {
+          divForm.setAttribute('class', "form-group has-success has-feedback");
+          spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
+          labelForm.setAttribute('class', "control-label sr-only");
+          value = new Number(input.value);
+        }
+      } else {
+        this.variables[id].value = null;
+        divForm.setAttribute('class', "form-group");
+        spanControl.setAttribute('class', "");
+        labelForm.setAttribute('class', "control-label sr-only");
+      }
+      return value;
     };
 
     Formula.prototype.createRadio = function(name, checked) {
@@ -363,7 +469,7 @@
 
     Formula.prototype.clickButton = function() {
       var i, rads;
-      if (this.numberInputsFilled === this.variables.length - 2) {
+      if (this.numberInputsFilled === this.variables.length - 2 && this.inputsCorrect) {
         this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
         this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
         rads = document.getElementsByName('modeLine');
@@ -385,7 +491,7 @@
           };
         })(this), 'blue', 3, this.mode);
       } else {
-        return alert("you need fille the inputs");
+        return alert("The form have errors or it's not filled");
       }
     };
 

@@ -146,47 +146,53 @@ class Formula
                 divForm.setAttribute 'class', "form-group has-error has-feedback"
                 spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
                 labelForm.setAttribute 'class', "control-label"
-                if @variables[id].value isnt null and @idInputRange is null
+                if @variables[id].value isnt null
                     newNumberInputsFilled--
-                    console.log "menos"
                 @variables[id].correct = false
                 @variables[id].value = null
+                inputsCorrect = false
             else
                 divForm.setAttribute 'class', "form-group has-success has-feedback"
                 spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
                 labelForm.setAttribute 'class', "control-label sr-only"
-                if @variables[id].value is null and @variables[id].correct
+                if (@variables[id].value is null and @variables[id].correct) or (@variables[id].value is null and not @variables[id].correct)
                     newNumberInputsFilled++
                 @variables[id].correct = true
                 @variables[id].value = new Number input.value
+                inputsCorrect = true
         else
             if @variables[id].value isnt null 
                 newNumberInputsFilled--
             @variables[id].correct = true
             @variables[id].value = null
+            inputsCorrect = true
             divForm.setAttribute 'class', "form-group"
             spanControl.setAttribute 'class', ""
             labelForm.setAttribute 'class', "control-label sr-only"
 
-       
-        console.log newNumberInputsFilled
-        console.log @valid()
-        if newNumberInputsFilled == (@variables.length - 2) and @valid()
-            console.log "aqui"
-            @idInputRange = @searchIdInputRange()
-            @remplaceInputs @createInputRange(@idInputRange), @idInputRange
+        if @inputsCorrect and inputsCorrect
+            if newNumberInputsFilled != @numberInputsFilled
+                if newNumberInputsFilled == (@variables.length - 2) 
+                    @idInputRange = @searchIdInputRange()
+                    @remplaceInputs @createInputRange(@idInputRange), @idInputRange
+                else
+                    if @idInputRange isnt null and @valid()
+                        @remplaceInputs @createInput(@idInputRange), @idInputRange
+                        @variables[@idInputRange].startRange = null
+                        @variables[@idInputRange].endRange = null
+                        @idInputRange = null
         else
-            if @idInputRange isnt null and @valid()
-                console.log "caca"
-                @remplaceInputs @createInput(@idInputRange), @idInputRange
-                @idInputRange = null
+            if @inputsCorrect and not inputsCorrect
+                @disabledInputs id
+            if not @inputsCorrect and inputsCorrect
+                @eneableInputs id
+        @inputsCorrect = inputsCorrect
         @numberInputsFilled = newNumberInputsFilled
-
 
     valid: ->
         idInputRange = 1
         valid = true
-        while @variables.length-1 > idInputRange
+        while @variables.length > idInputRange
             if (not @variables[idInputRange].correct and @variables[idInputRange].value is null)
                 valid = false
                 break
@@ -201,15 +207,41 @@ class Formula
 
     searchIdInputRange: ->
         idInputRange = 1
-        while idInputRange < @variables.length-1 and  not(@variables[idInputRange].value is null and @variables[idInputRange].correct)
+        while idInputRange < @variables.length and  not(@variables[idInputRange].value is null and @variables[idInputRange].correct)
             idInputRange++
 
         idInputRange
 
+    disabledInputs: (id) ->
+        i = 1
+        while i < @variables.length
+            if i != Number(id) and i != @idInputRange
+                input = document.getElementById @variables[i].fullName
+                input.setAttribute 'disabled', ""
+            if i == @idInputRange
+                inputStart = document.getElementById 'input-star'
+                inputStart.setAttribute 'disabled', ""
+                inputEnd = document.getElementById 'input-end'
+                inputEnd.setAttribute 'disabled', ""
+            i++
+
+    eneableInputs: (id) ->
+        i = 1
+        while i < @variables.length
+            if i != Number(id) and i != @idInputRange
+                input = document.getElementById @variables[i].fullName
+                input.removeAttribute 'disabled'
+            if i == @idInputRange
+                inputStart = document.getElementById 'input-star'
+                inputStart.removeAttribute 'disabled'
+                inputEnd = document.getElementById 'input-end'
+                inputEnd.removeAttribute 'disabled'
+            i++
+
     createInputRange:  (id)->
      
         divForm = document.createElement 'div'
-        divForm.setAttribute 'class', "form-inline form-group"
+        divForm.setAttribute 'class', "form-group"
         divForm.setAttribute 'id', "div-form-" + id
 
         divLabel = document.createElement 'div'
@@ -225,11 +257,26 @@ class Formula
         divInputStart = document.createElement 'div'
         divInputStart.setAttribute 'class' , "form-group"
 
+        labelInputStar = document.createElement 'label'
+        labelInputStar.setAttribute 'class', "control-label sr-only"
+        text = document.createTextNode "A number is required"
+        labelInputStar.appendChild text
+        divInputStart.appendChild labelInputStar
+
         inputStart = document.createElement 'input'
+        inputStart.setAttribute 'id', "input-star"
         inputStart.setAttribute 'type', "text"
         inputStart.setAttribute 'class', "form-control"
+
+        spanControlStart = document.createElement 'span'
+        spanControlStart.setAttribute 'id', "span-control-start"
+
+        inputStart.setAttribute 'oninput', ""
+        inputStart.oninput = => 
+            @variables[id].startRange = @isNumberInRange inputStart, divInputStart, id, spanControlStart, labelInputStar
         
         divInputStart.appendChild inputStart
+        divInputStart.appendChild spanControlStart
         divForm.appendChild divInputStart
 
         divLabel = document.createElement 'div'
@@ -245,14 +292,52 @@ class Formula
         divInputEnd = document.createElement 'div'
         divInputEnd.setAttribute 'class' , "form-group"
 
+        labelInputEnd = document.createElement 'label'
+        labelInputEnd.setAttribute 'class', "control-label sr-only"
+        text = document.createTextNode "A number is required"
+        labelInputEnd.appendChild text
+        divInputEnd.appendChild labelInputEnd
+
         inputEnd = document.createElement 'input'
+        inputEnd.setAttribute 'id', "input-end"
         inputEnd.setAttribute 'type', "text"
         inputEnd.setAttribute 'class', "form-control"
         
+        spanControlEnd = document.createElement 'span'
+        spanControlEnd.setAttribute 'id', "span-control-end"
+
+        inputEnd.setAttribute 'oninput', ""
+        inputEnd.oninput = => 
+            @variables[id].endRange = @isNumberInRange inputEnd, divInputEnd, id, spanControlEnd, labelInputEnd
+
         divInputEnd.appendChild inputEnd
+        divInputEnd.appendChild spanControlEnd
         divForm.appendChild divInputEnd
 
         divForm
+
+    isNumberInRange: (input, divForm, id, spanControl, labelForm) ->
+        value = null
+
+        if input.value.length > 0
+
+            if isNaN input.value
+                divForm.setAttribute 'class', "form-group has-error has-feedback"
+                spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
+                labelForm.setAttribute 'class', "control-label"
+                value = null
+            else
+                divForm.setAttribute 'class', "form-group has-success has-feedback"
+                spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
+                labelForm.setAttribute 'class', "control-label sr-only"
+                value = new Number input.value
+        else
+            @variables[id].value = null
+            divForm.setAttribute 'class', "form-group"
+            spanControl.setAttribute 'class', ""
+            labelForm.setAttribute 'class', "control-label sr-only"
+
+        value
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
@@ -296,7 +381,7 @@ class Formula
         dd
 
     clickButton: ->
-        if (@numberInputsFilled == @variables.length-2)
+        if (@numberInputsFilled == @variables.length-2 and @inputsCorrect)
             @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
             @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
             
@@ -318,7 +403,7 @@ class Formula
                 
             ,'blue', 3, @mode
         else
-            alert "you need fille the inputs"
+            alert "The form have errors or it's not filled"
 
     cloneCanvas: -> 
 
