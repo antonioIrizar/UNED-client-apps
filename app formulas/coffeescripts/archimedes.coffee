@@ -37,7 +37,6 @@ class Formula
         @divPanel.appendChild @divFormula
         @divPanel.appendChild @divFormulaWithNumbers
 
-        @addListenerToFormula(@srcImage)
         @constantValue = document.getElementById constantValue
         @descriptionVariables = document.getElementById descriptionVariables
 
@@ -47,14 +46,6 @@ class Formula
         img.src = @srcImage
         @divFormula.appendChild img
         @divFormulaWithNumbers.appendChild @drawFormula()
-
-    addListenerToFormula: (srcImage) ->
-        @liFormula.addEventListener( 'dragstart' , 
-            (e) =>
-                img = document.createElement("img")
-                img.src = srcImage
-                e.dataTransfer.setDragImage(img , 0 , 0)
-        ,false)
 
     drawFormula: ->
         formula = document.createElement 'p'
@@ -428,7 +419,7 @@ class Formula
     
 class Archimedes extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
         newtowns = new Variable("E" , "newtowns" , "description" , null)
         ###
         paragraph = document.createElement 'p'
@@ -447,7 +438,7 @@ class Archimedes extends Formula
         volume = new Variable("V" , "volume" , "description" , null)
         variables = [newtowns,density,gravity,volume]
         
-        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation, graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @archimedesEquation, graph)
     
     archimedesEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
@@ -455,7 +446,7 @@ class Archimedes extends Formula
 
 class Newton1 extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
         force = new Variable("F" , "Force" , "description" , null)
         ###
         paragraph = document.createElement 'p'
@@ -472,7 +463,7 @@ class Newton1 extends Formula
         aceleration = new Variable("a" , "Aceleration" , "description" , null)
         variables = [force, mass, aceleration]
         
-        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/newtonFormula.png',variables, @newtowEquation, graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @newtowEquation, graph)
     
     newtowEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1]
@@ -671,10 +662,11 @@ class Graph
         context.scale(@scaleX, - @scaleY)
 
 class Init
-
     divPanel: null
     archimedes: null
+    imgArchimedes: 'images/archimedesFormula.png'
     newton1: null
+    imgNewton1: 'images/newtonFormula.png'
     constantValue: null
     descriptionVariables: null
     graph: null
@@ -685,10 +677,12 @@ class Init
         @archimedes = document.getElementById liArchimedes
         @archimedes.setAttribute 'ondragstart' , ""
         @archimedes.ondragstart = (e) => @drag(e)
+        @addListenerToFormula @archimedes, @imgArchimedes
 
         @newton1 = document.getElementById liNewton1
         @newton1.setAttribute 'ondragstart' , ""
         @newton1.ondragstart = (e) => @drag(e)
+        @addListenerToFormula @newton1, @imgNewton1
 
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
@@ -726,8 +720,16 @@ class Init
 
         data = ev.dataTransfer.getData("text")
         if data is @archimedes.id
-            new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph
+            new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
         if data is @newton1.id
-            new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph
+            new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+
+    addListenerToFormula: (formula, srcImage) ->
+        formula.addEventListener( 'dragstart' , 
+            (e) =>
+                img = document.createElement("img")
+                img.src = srcImage
+                e.dataTransfer.setDragImage(img , 0 , 0)
+        ,false)
 
 window.Init = Init

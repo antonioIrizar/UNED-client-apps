@@ -67,7 +67,6 @@
       this.divFormulaWithNumbers = document.createElement('div');
       this.divPanel.appendChild(this.divFormula);
       this.divPanel.appendChild(this.divFormulaWithNumbers);
-      this.addListenerToFormula(this.srcImage);
       this.constantValue = document.getElementById(constantValue);
       this.descriptionVariables = document.getElementById(descriptionVariables);
       this.cloneCanvas();
@@ -76,17 +75,6 @@
       this.divFormula.appendChild(img);
       this.divFormulaWithNumbers.appendChild(this.drawFormula());
     }
-
-    Formula.prototype.addListenerToFormula = function(srcImage) {
-      return this.liFormula.addEventListener('dragstart', (function(_this) {
-        return function(e) {
-          var img;
-          img = document.createElement("img");
-          img.src = srcImage;
-          return e.dataTransfer.setDragImage(img, 0, 0);
-        };
-      })(this), false);
-    };
 
     Formula.prototype.drawFormula = function() {
       var form, formula, id, text, variable, _ref;
@@ -519,7 +507,7 @@
   Archimedes = (function(_super) {
     __extends(Archimedes, _super);
 
-    function Archimedes(divPanel, liFormula, constantValue, descriptionVariables, graph) {
+    function Archimedes(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
       var density, gravity, newtowns, variables, volume;
       newtowns = new Variable("E", "newtowns", "description", null);
 
@@ -537,7 +525,7 @@
       gravity = new Variable("g", "gravity", "description", null);
       volume = new Variable("V", "volume", "description", null);
       variables = [newtowns, density, gravity, volume];
-      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png', variables, this.archimedesEquation, graph);
+      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, this.archimedesEquation, graph);
     }
 
     Archimedes.prototype.archimedesEquation = function(arrayVariables) {
@@ -551,7 +539,7 @@
   Newton1 = (function(_super) {
     __extends(Newton1, _super);
 
-    function Newton1(divPanel, liFormula, constantValue, descriptionVariables, graph) {
+    function Newton1(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
       var aceleration, force, mass, variables;
       force = new Variable("F", "Force", "description", null);
 
@@ -568,7 +556,7 @@
       mass = new Variable("m", "Mass", "description", null);
       aceleration = new Variable("a", "Aceleration", "description", null);
       variables = [force, mass, aceleration];
-      Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, 'images/newtonFormula.png', variables, this.newtowEquation, graph);
+      Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, this.newtowEquation, graph);
     }
 
     Newton1.prototype.newtowEquation = function(arrayVariables) {
@@ -817,7 +805,11 @@
 
     Init.prototype.archimedes = null;
 
+    Init.prototype.imgArchimedes = 'images/archimedesFormula.png';
+
     Init.prototype.newton1 = null;
+
+    Init.prototype.imgNewton1 = 'images/newtonFormula.png';
 
     Init.prototype.constantValue = null;
 
@@ -841,6 +833,7 @@
           return _this.drag(e);
         };
       })(this);
+      this.addListenerToFormula(this.archimedes, this.imgArchimedes);
       this.newton1 = document.getElementById(liNewton1);
       this.newton1.setAttribute('ondragstart', "");
       this.newton1.ondragstart = (function(_this) {
@@ -848,6 +841,7 @@
           return _this.drag(e);
         };
       })(this);
+      this.addListenerToFormula(this.newton1, this.imgNewton1);
       window.addEventListener("resize", (function(_this) {
         return function() {
           return _this.graph.resizeCanvas(function(x) {
@@ -892,11 +886,22 @@
       this.divPanel.removeChild(this.paragraph);
       data = ev.dataTransfer.getData("text");
       if (data === this.archimedes.id) {
-        new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph);
+        new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph, this.imgArchimedes);
       }
       if (data === this.newton1.id) {
-        return new Newton1(this.divPanel, this.newton1, this.constantValue, this.descriptionVariables, this.graph);
+        return new Newton1(this.divPanel, this.newton1, this.constantValue, this.descriptionVariables, this.graph, this.imgNewton1);
       }
+    };
+
+    Init.prototype.addListenerToFormula = function(formula, srcImage) {
+      return formula.addEventListener('dragstart', (function(_this) {
+        return function(e) {
+          var img;
+          img = document.createElement("img");
+          img.src = srcImage;
+          return e.dataTransfer.setDragImage(img, 0, 0);
+        };
+      })(this), false);
     };
 
     return Init;
