@@ -678,6 +678,7 @@ class Init
     constantValue: null
     descriptionVariables: null
     graph: null
+    paragraph: null
 
     constructor: (divPanel, liArchimedes, liNewton1, @constantValue, @descriptionVariables) ->
         @graph = new Graph()
@@ -705,10 +706,10 @@ class Init
         #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
         @divPanel.setAttribute 'ondragenter', "return false"
 
-        paragraph = document.createElement 'p'
+        @paragraph = document.createElement 'p'
         text = document.createTextNode "Please drop your formula here"
-        paragraph.appendChild text
-        @divPanel.appendChild paragraph
+        @paragraph.appendChild text
+        @divPanel.appendChild @paragraph
 
     allowDrop: (ev) => 
         ev.preventDefault()
@@ -718,6 +719,11 @@ class Init
 
     drop: (ev) =>
         ev.preventDefault()
+        @divPanel.removeAttribute 'ondrop'
+        @divPanel.removeAttribute 'ondragover'
+        @divPanel.removeAttribute 'ondragenter'
+        @divPanel.removeChild @paragraph
+
         data = ev.dataTransfer.getData("text")
         if data is @archimedes.id
             new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph

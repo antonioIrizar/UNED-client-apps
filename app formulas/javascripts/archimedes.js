@@ -825,8 +825,10 @@
 
     Init.prototype.graph = null;
 
+    Init.prototype.paragraph = null;
+
     function Init(divPanel, liArchimedes, liNewton1, constantValue, descriptionVariables) {
-      var paragraph, text;
+      var text;
       this.constantValue = constantValue;
       this.descriptionVariables = descriptionVariables;
       this.drop = __bind(this.drop, this);
@@ -867,10 +869,10 @@
         };
       })(this);
       this.divPanel.setAttribute('ondragenter', "return false");
-      paragraph = document.createElement('p');
+      this.paragraph = document.createElement('p');
       text = document.createTextNode("Please drop your formula here");
-      paragraph.appendChild(text);
-      this.divPanel.appendChild(paragraph);
+      this.paragraph.appendChild(text);
+      this.divPanel.appendChild(this.paragraph);
     }
 
     Init.prototype.allowDrop = function(ev) {
@@ -884,6 +886,10 @@
     Init.prototype.drop = function(ev) {
       var data;
       ev.preventDefault();
+      this.divPanel.removeAttribute('ondrop');
+      this.divPanel.removeAttribute('ondragover');
+      this.divPanel.removeAttribute('ondragenter');
+      this.divPanel.removeChild(this.paragraph);
       data = ev.dataTransfer.getData("text");
       if (data === this.archimedes.id) {
         new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph);
