@@ -8,7 +8,7 @@ class Formula
     textFormula: null
     variables: []
     constantValue: null
-    idFormula: "formula"
+    idFormula: "formula_with_numbers"
     equation: null
     valueVariables: []
     positionValueVariableX: null
@@ -415,7 +415,7 @@ class Formula
 
         formula.innerHTML = text
         MathJax.Hub.Queue(["Typeset",MathJax.Hub])
-
+        
     #Can optimize this function with refactor searchInputRange
     getVariableValues: ->
         for id, variable of @variables[1..]
@@ -462,17 +462,6 @@ class Newton1 extends Formula
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
         force = new Variable "F" , "Force" , "description" , null
         equals = new Operator "="
-        ###
-        paragraph = document.createElement 'p'
-        text1 = document.createTextNode "\u03C1"
-        subTag = document.createElement 'sub'
-        text2 = document.createTextNode "f"
-        subTag.appendChild text2
-        paragraph.appendChild text1
-        paragraph.appendChild subTag
-        console.log "aqui"
-        ###
-        #todo problems with sub tags
         mass = new Variable "m" , "Mass" , "description" , null
         mult = new Operator "*"
         aceleration = new Variable "a" , "Aceleration" , "description" , null
@@ -483,26 +472,19 @@ class Newton1 extends Formula
     newtowEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1]
 
-class PendulumFormula extends Formula
+class Pendulum extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
         force = new Variable("F" , "Force" , "description" , null)
         equals = new Operator("=")
-        ###
-        paragraph = document.createElement 'p'
-        text1 = document.createTextNode "\u03C1"
-        subTag = document.createElement 'sub'
-        text2 = document.createTextNode "f"
-        subTag.appendChild text2
-        paragraph.appendChild text1
-        paragraph.appendChild subTag
-        console.log "aqui"
-        ###
-        #todo problems with sub tags
+        parenthesisOpen = new Operator "("
         weight = new Variable("P" , "Weight pendulum" , "description" , null)
+        mult = new Operator "*"
         elongation = new Variable("e" , "Elongation" , "description" , null)
+        parenthesisClose = new Operator ")"
+        division = new Operator "/"
         length = new Variable("\u03C1" , "Length pendulum" , "description" , null)
-        variables = [force, weight, elongation, length]
+        variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length]
         
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @newtowEquation, graph)
     
@@ -725,7 +707,7 @@ class Init
     graph: null
     paragraph: null
 
-    constructor: (divPanel, liArchimedes, liNewton1, @constantValue, @descriptionVariables) ->
+    constructor: (divPanel, liArchimedes, liNewton1, lipendulum, @constantValue, @descriptionVariables) ->
         @graph = new Graph()
         @archimedes = document.getElementById liArchimedes
         @archimedes.setAttribute 'ondragstart' , ""
@@ -736,6 +718,11 @@ class Init
         @newton1.setAttribute 'ondragstart' , ""
         @newton1.ondragstart = (e) => @drag(e)
         @addListenerToFormula @newton1, @imgNewton1
+
+        @pendulum = document.getElementById lipendulum
+        @pendulum.setAttribute 'ondragstart' , ""
+        @pendulum.ondragstart = (e) => @drag(e)
+        @addListenerToFormula @pendulum, @imgPendulum
 
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
@@ -773,6 +760,9 @@ class Init
         if data is @newton1.id
             @disabledDrop()
             new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+        if data is @pendulum.id
+            @disabledDrop()
+            new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
 
     disabledDrop: ->
         @divPanel.removeAttribute 'ondrop'
