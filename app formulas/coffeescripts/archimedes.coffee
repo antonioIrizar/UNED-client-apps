@@ -8,7 +8,7 @@ class Formula
     textFormula: null
     variables: []
     constantValue: null
-    idFormula: "prueba"
+    idFormula: "formula"
     equation: null
     valueVariables: []
     positionValueVariableX: null

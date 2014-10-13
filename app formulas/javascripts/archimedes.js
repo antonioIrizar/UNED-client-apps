@@ -24,7 +24,7 @@
 
     Formula.prototype.constantValue = null;
 
-    Formula.prototype.idFormula = "prueba";
+    Formula.prototype.idFormula = "formula";
 
     Formula.prototype.equation = null;
 
