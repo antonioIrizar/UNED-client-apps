@@ -128,7 +128,7 @@
                       <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li role="presentation" draggable="true" ><a id="archimedes_formula" draggable="true" href="#">Archimedes formula</a></li>
-                      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Newton 1</a></li>
+                      <li role="presentation" draggable="true"><a id="newton_formula" draggable="true" href="#">Newton 1</a></li>
                     </ul>
                   </li>
                   <li><a href="#">Menu Item 4</a></li>
@@ -160,7 +160,7 @@
               <h3 class="panel-title">Information variables in formula</h3>
             </div>
             <div  id="constant_value" class="panel-body">
-              <dl class="dl-horizontal" id="Description_variables">
+              <dl class="dl-horizontal" id="description_variables">
               </dl>
             </div>
           </div>
@@ -181,7 +181,7 @@
     <script>
         
        
-          new Archimedes('formulas','archimedes_formula','constant_value','Description_variables');
+          new Init('formulas', 'archimedes_formula', 'newton_formula', 'constant_value', 'description_variables');
    
     </script>
 

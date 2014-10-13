@@ -20,7 +20,7 @@ class Formula
     inputsCorrect: true
     idInputRange: null
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
+    constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
@@ -28,30 +28,25 @@ class Formula
                 @executeEquation x
             ,'blue', 3, @mode
             
-        @liFormula = document.getElementById liFormula
-        @liFormula.setAttribute 'ondragstart' , ""
-        @liFormula.ondragstart = (e) => @drag(e)
-        @divPanel = document.getElementById divPanel
         @divFormula = document.createElement 'div'
-        @divPanel.setAttribute 'ondrop', ""
-        @divPanel.ondrop = (e) => @drop(e)
-        @divPanel.setAttribute 'ondragover', ""
-        @divPanel.ondragover = (e) => @allowDrop(e)
-        #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
-        @divPanel.setAttribute 'ondragenter', "return false"
         @divFormula.height = '300 px'
         @divFormula.width = '300 px'
-        paragraph = document.createElement 'p'
-        text = document.createTextNode "Please drop your formula here"
-        paragraph.appendChild text
-        @divPanel.appendChild paragraph
+       
         @divFormulaWithNumbers = document.createElement 'div'
+
         @divPanel.appendChild @divFormula
         @divPanel.appendChild @divFormulaWithNumbers
+
         @addListenerToFormula(@srcImage)
         @constantValue = document.getElementById constantValue
         @descriptionVariables = document.getElementById descriptionVariables
+
         @cloneCanvas()
+
+        img = document.createElement 'img'
+        img.src = @srcImage
+        @divFormula.appendChild img
+        @divFormulaWithNumbers.appendChild @drawFormula()
 
     addListenerToFormula: (srcImage) ->
         @liFormula.addEventListener( 'dragstart' , 
@@ -60,21 +55,6 @@ class Formula
                 img.src = srcImage
                 e.dataTransfer.setDragImage(img , 0 , 0)
         ,false)
-
-    allowDrop: (ev) => 
-        ev.preventDefault()
-
-    drag: (ev) ->
-        ev.dataTransfer.setData('text', ev.target.id)
-
-    drop: (ev) =>
-        ev.preventDefault()
-        data = ev.dataTransfer.getData("text")
-        if data is @liFormula.id
-            img = document.createElement 'img'
-            img.src = @srcImage
-            @divFormula.appendChild img
-            @divFormulaWithNumbers.appendChild @drawFormula()
 
     drawFormula: ->
         formula = document.createElement 'p'
@@ -448,7 +428,7 @@ class Formula
     
 class Archimedes extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         newtowns = new Variable("E" , "newtowns" , "description" , null)
         ###
         paragraph = document.createElement 'p'
@@ -461,21 +441,21 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        graph = new Graph()
+        
         density = new Variable("\u03C1" , "density" , "description" , null)
         gravity = new Variable("g" , "gravity" , "description" , null)
         volume = new Variable("V" , "volume" , "description" , null)
         variables = [newtowns,density,gravity,volume]
         
-        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
+        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation, graph)
     
     archimedesEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
 
 
-class Newtown1 extends Formula
+class Newton1 extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         force = new Variable("F" , "Force" , "description" , null)
         ###
         paragraph = document.createElement 'p'
@@ -488,20 +468,16 @@ class Newtown1 extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        graph = new Graph()
         mass = new Variable("m" , "Mass" , "description" , null)
         aceleration = new Variable("a" , "Aceleration" , "description" , null)
         variables = [force, mass, aceleration]
         
-        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
+        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/newtonFormula.png',variables, @newtowEquation, graph)
     
-    newtownEquation: (arrayVariables) ->
+    newtowEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1]
 
-    ###
-    archimedesEquation: (a,b,c) ->
-        a*b*c
-    ###
+
 class Variable 
     name: null #string but pass in htlm , if it need for example sub tag
     fullName: null #string to put in constant value
@@ -694,6 +670,58 @@ class Graph
 
         context.scale(@scaleX, - @scaleY)
 
-window.Archimedes = Archimedes
+class Init
 
-window.Formula = Formula
+    divPanel: null
+    archimedes: null
+    newton1: null
+    constantValue: null
+    descriptionVariables: null
+    graph: null
+
+    constructor: (divPanel, liArchimedes, liNewton1, @constantValue, @descriptionVariables) ->
+        @graph = new Graph()
+        @archimedes = document.getElementById liArchimedes
+        @archimedes.setAttribute 'ondragstart' , ""
+        @archimedes.ondragstart = (e) => @drag(e)
+
+        @newton1 = document.getElementById liNewton1
+        @newton1.setAttribute 'ondragstart' , ""
+        @newton1.ondragstart = (e) => @drag(e)
+
+        #document.body.setAttribute 'onresize', ""
+        #use resize, because google chrome have bug with it.
+        window.addEventListener "resize", =>
+            @graph.resizeCanvas (x) => 
+                @executeEquation x
+            ,'blue', 3, @mode
+            
+        @divPanel = document.getElementById divPanel
+
+        @divPanel.setAttribute 'ondrop', ""
+        @divPanel.ondrop = (e) => @drop(e)
+        @divPanel.setAttribute 'ondragover', ""
+        @divPanel.ondragover = (e) => @allowDrop(e)
+        #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
+        @divPanel.setAttribute 'ondragenter', "return false"
+
+        paragraph = document.createElement 'p'
+        text = document.createTextNode "Please drop your formula here"
+        paragraph.appendChild text
+        @divPanel.appendChild paragraph
+
+    allowDrop: (ev) => 
+        ev.preventDefault()
+
+    drag: (ev) ->
+        ev.dataTransfer.setData('text', ev.target.id)
+
+    drop: (ev) =>
+        ev.preventDefault()
+        data = ev.dataTransfer.getData("text")
+        if data is @archimedes.id
+            new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph
+        if data is @newton1.id
+            new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph
+
+window.Init = Init
