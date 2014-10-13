@@ -6,7 +6,7 @@ class Formula
     descriptionVariables: null
     srcImage: null
     textFormula: null
-    variables: null
+    variables: []
     constantValue: null
     idFormula: "prueba"
     equation: null
@@ -19,8 +19,9 @@ class Formula
     numberInputsFilled: 0
     inputsCorrect: true
     idInputRange: null
+    symbols: null
 
-    constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @variables, @equation, @graph) ->
+    constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @symbols, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
@@ -46,27 +47,36 @@ class Formula
         img.src = @srcImage
         @divFormula.appendChild img
         @divFormulaWithNumbers.appendChild @drawFormula()
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub])
 
     drawFormula: ->
         formula = document.createElement 'p'
         formula.setAttribute 'class', "formula-text"
         formula.setAttribute 'id', @idFormula
+        text = "`"
         form = document.createElement 'form'
         form.setAttribute 'id', "form-archimedes"
-        for id, variable of @variables
-            @descriptionVariables.appendChild @createDt variable.name, variable.fullName
-            @descriptionVariables.appendChild @createDd variable.description
-            if id is "0"
-                text = document.createTextNode variable.name + " = " 
-                formula.appendChild text
+        i = 0 
+        for id, variable of @symbols
+            if variable instanceof Operator
+                text = text + variable.operator
             else
-                form.appendChild @createInput id
-                text = document.createTextNode variable.name
-                formula.appendChild text
+                @variables[i] = variable
+                
+                @descriptionVariables.appendChild @createDt variable.name, variable.fullName
+                @descriptionVariables.appendChild @createDd variable.description
+                if i != 0
+                    form.appendChild @createInput i
+                text = text + variable.name
+                i++
+
+        text = text + "`"
+        formula.appendChild document.createTextNode text
         form.appendChild @createRadio("line", true)
         form.appendChild @createRadio("dots", false)
         form.appendChild @createButton()
         @constantValue.appendChild form
+
         formula
 
     createInput: (id) ->
@@ -390,19 +400,21 @@ class Formula
 
     drawNumbersFormula: () ->
         formula = document.getElementById @idFormula
-        text = ""
-        for id, variable of @variables
-            if variable.value isnt  null
-                if id is "1"
-                    text = text + " = " + variable.value
-                else
-                    text = text + variable.value
+        text = "`"
+        i = 0
+        for id, variable of @symbols
+            if variable instanceof Operator
+                text = text + variable.operator
             else
-                if id is "1"
-                    text = text + " = " + variable.name
+                if variable.value isnt  null
+                    text = text + @variables[i].value
                 else
-                    text = text + variable.name
+                    text = text + @variables[i].name
+                i++
+        text = text + "`"
+
         formula.innerHTML = text
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub])
 
     #Can optimize this function with refactor searchInputRange
     getVariableValues: ->
@@ -420,7 +432,8 @@ class Formula
 class Archimedes extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
-        newtowns = new Variable("E" , "newtowns" , "description" , null)
+        newtowns = new Variable("E" , "Newtowns" , "description" , null)
+        equals = new Operator "="
         ###
         paragraph = document.createElement 'p'
         text1 = document.createTextNode "\u03C1"
@@ -432,11 +445,11 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        
-        density = new Variable("\u03C1" , "density" , "description" , null)
-        gravity = new Variable("g" , "gravity" , "description" , null)
-        volume = new Variable("V" , "volume" , "description" , null)
-        variables = [newtowns,density,gravity,volume]
+        density = new Variable("\u03C1" , "Density" , "description" , null)
+        mult = new Operator "*"
+        gravity = new Variable("g" , "Gravity" , "description" , null)
+        volume = new Variable("V" , "Volume" , "description" , null)
+        variables = [newtowns, equals, density, mult, gravity, mult, volume]
         
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @archimedesEquation, graph)
     
@@ -447,7 +460,8 @@ class Archimedes extends Formula
 class Newton1 extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
-        force = new Variable("F" , "Force" , "description" , null)
+        force = new Variable "F" , "Force" , "description" , null
+        equals = new Operator "="
         ###
         paragraph = document.createElement 'p'
         text1 = document.createTextNode "\u03C1"
@@ -459,14 +473,41 @@ class Newton1 extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        mass = new Variable("m" , "Mass" , "description" , null)
-        aceleration = new Variable("a" , "Aceleration" , "description" , null)
-        variables = [force, mass, aceleration]
+        mass = new Variable "m" , "Mass" , "description" , null
+        mult = new Operator "*"
+        aceleration = new Variable "a" , "Aceleration" , "description" , null
+        simbols = [force, equals, mass, mult, aceleration]
+        
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, @newtowEquation, graph)
+    
+    newtowEquation: (arrayVariables) ->
+        arrayVariables[0] * arrayVariables[1]
+
+class PendulumFormula extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        force = new Variable("F" , "Force" , "description" , null)
+        equals = new Operator("=")
+        ###
+        paragraph = document.createElement 'p'
+        text1 = document.createTextNode "\u03C1"
+        subTag = document.createElement 'sub'
+        text2 = document.createTextNode "f"
+        subTag.appendChild text2
+        paragraph.appendChild text1
+        paragraph.appendChild subTag
+        console.log "aqui"
+        ###
+        #todo problems with sub tags
+        weight = new Variable("P" , "Weight pendulum" , "description" , null)
+        elongation = new Variable("e" , "Elongation" , "description" , null)
+        length = new Variable("\u03C1" , "Length pendulum" , "description" , null)
+        variables = [force, weight, elongation, length]
         
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @newtowEquation, graph)
     
     newtowEquation: (arrayVariables) ->
-        arrayVariables[0] * arrayVariables[1]
+        arrayVariables[0] * arrayVariables[1] / arrayVariables[2]
 
 
 class Variable 
@@ -479,6 +520,13 @@ class Variable
     endRange: null #float end range
 
     constructor: (@name,@fullName,@description,@value) ->
+
+
+class Operator
+    operator: null
+
+    constructor: (@operator) ->
+
 
 class Graph
     canvas: null
@@ -661,6 +709,7 @@ class Graph
 
         context.scale(@scaleX, - @scaleY)
 
+
 class Init
     divPanel: null
     archimedes: null
@@ -668,6 +717,10 @@ class Init
     newton1: null
     imgNewton1: 'images/newtonFormula.png'
     constantValue: null
+    pendulum: null
+    imgPendulum: 'images/pendulumFormula.png'
+    pendulumOscilation: null
+    imgPendulumOscilation: 'images/pendulumOscilationFormula.png'
     descriptionVariables: null
     graph: null
     paragraph: null
@@ -713,16 +766,19 @@ class Init
 
     drop: (ev) =>
         ev.preventDefault()
+        data = ev.dataTransfer.getData("text")
+        if data is @archimedes.id
+            @disabledDrop()
+            new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
+        if data is @newton1.id
+            @disabledDrop()
+            new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+
+    disabledDrop: ->
         @divPanel.removeAttribute 'ondrop'
         @divPanel.removeAttribute 'ondragover'
         @divPanel.removeAttribute 'ondragenter'
         @divPanel.removeChild @paragraph
-
-        data = ev.dataTransfer.getData("text")
-        if data is @archimedes.id
-            new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
-        if data is @newton1.id
-            new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
 
     addListenerToFormula: (formula, srcImage) ->
         formula.addEventListener( 'dragstart' , 
