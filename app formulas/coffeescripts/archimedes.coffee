@@ -461,7 +461,6 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        panel = document.getElementById 'caca'
         graph = new Graph()
         density = new Variable("\u03C1" , "density" , "description" , null)
         gravity = new Variable("g" , "gravity" , "description" , null)
@@ -470,11 +469,11 @@ class Archimedes extends Formula
         
         super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
     
-    newtownEquation: (arrayVariables) ->
-        arrayVariables[0] * arrayVariables[1]
+    archimedesEquation: (arrayVariables) ->
+        arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
 
 
-class Newton1 extends Formula
+class Newtown1 extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables) ->
         force = new Variable("F" , "Force" , "description" , null)
@@ -489,7 +488,6 @@ class Newton1 extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        panel = document.getElementById 'caca'
         graph = new Graph()
         mass = new Variable("m" , "Mass" , "description" , null)
         aceleration = new Variable("a" , "Aceleration" , "description" , null)
@@ -497,8 +495,9 @@ class Newton1 extends Formula
         
         super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
     
-    archimedesEquation: (arrayVariables) ->
-        arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
+    newtownEquation: (arrayVariables) ->
+        arrayVariables[0] * arrayVariables[1]
+
     ###
     archimedesEquation: (a,b,c) ->
         a*b*c
