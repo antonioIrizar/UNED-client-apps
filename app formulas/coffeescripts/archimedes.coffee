@@ -56,7 +56,7 @@ class Formula
     addListenerToFormula: (srcImage) ->
         @liFormula.addEventListener( 'dragstart' , 
             (e) =>
-                img = document.createElement("img") 
+                img = document.createElement("img")
                 img.src = srcImage
                 e.dataTransfer.setDragImage(img , 0 , 0)
         ,false)
@@ -65,14 +65,16 @@ class Formula
         ev.preventDefault()
 
     drag: (ev) ->
-        #ev.dataTransfer.setData('text/html', ev.target.id)
+        ev.dataTransfer.setData('text', ev.target.id)
 
     drop: (ev) =>
         ev.preventDefault()
-        img = document.createElement 'img'
-        img.src = @srcImage
-        @divFormula.appendChild img
-        @divFormulaWithNumbers.appendChild @drawFormula()
+        data = ev.dataTransfer.getData("text")
+        if data is @liFormula.id
+            img = document.createElement 'img'
+            img.src = @srcImage
+            @divFormula.appendChild img
+            @divFormulaWithNumbers.appendChild @drawFormula()
 
     drawFormula: ->
         formula = document.createElement 'p'
@@ -465,6 +467,33 @@ class Archimedes extends Formula
         gravity = new Variable("g" , "gravity" , "description" , null)
         volume = new Variable("V" , "volume" , "description" , null)
         variables = [newtowns,density,gravity,volume]
+        
+        super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
+    
+    newtownEquation: (arrayVariables) ->
+        arrayVariables[0] * arrayVariables[1]
+
+
+class Newton1 extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables) ->
+        force = new Variable("F" , "Force" , "description" , null)
+        ###
+        paragraph = document.createElement 'p'
+        text1 = document.createTextNode "\u03C1"
+        subTag = document.createElement 'sub'
+        text2 = document.createTextNode "f"
+        subTag.appendChild text2
+        paragraph.appendChild text1
+        paragraph.appendChild subTag
+        console.log "aqui"
+        ###
+        #todo problems with sub tags
+        panel = document.getElementById 'caca'
+        graph = new Graph()
+        mass = new Variable("m" , "Mass" , "description" , null)
+        aceleration = new Variable("a" , "Aceleration" , "description" , null)
+        variables = [force, mass, aceleration]
         
         super(divPanel , liFormula, constantValue, descriptionVariables, 'images/archimedesFormula.png',variables, @archimedesEquation,graph)
     
