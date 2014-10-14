@@ -385,14 +385,21 @@
           divForm.setAttribute('class', "form-group has-error has-feedback");
           spanControlStart.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
           spanControlEnd.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
-          return labelErrorOrdRange.setAttribute('class', "control-label");
+          labelErrorOrdRange.setAttribute('class', "control-label");
         } else {
           this.inputsRangeOrderCorrect = true;
           divForm.setAttribute('class', "form-group");
           spanControlStart.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
           spanControlEnd.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
-          return labelErrorOrdRange.setAttribute('class', "control-label sr-only");
+          labelErrorOrdRange.setAttribute('class', "control-label sr-only");
         }
+      }
+      if (this.numberInputsRangeFilled === 1) {
+        divForm.setAttribute('class', "form-group");
+        labelErrorOrdRange.setAttribute('class', "control-label sr-only");
+      }
+      if (this.numberInputsRangeFilled === 0) {
+        return this.inputsRangeOrderCorrect = true;
       }
     };
 
