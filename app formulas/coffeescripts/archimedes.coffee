@@ -31,18 +31,29 @@ class Formula
             @graph.resizeCanvas (x) => 
                 @executeEquation x
             ,'blue', 3, @mode
-            
+        
+        divAllFormulas = document.createElement 'div'
+        divAllFormulas.setAttribute 'id', "formula-created"
+        
         @divFormula = document.createElement 'div'
         @divFormula.height = '300 px'
         @divFormula.width = '300 px'
        
         @divFormulaWithNumbers = document.createElement 'div'
 
-        @divPanel.appendChild @divFormula
-        @divPanel.appendChild @divFormulaWithNumbers
+        
+        divAllFormulas.appendChild @divFormula
+        divAllFormulas.appendChild @divFormulaWithNumbers
+        @divPanel.appendChild divAllFormulas
 
         @constantValue = document.getElementById constantValue
-        @descriptionVariables = document.getElementById descriptionVariables
+
+        divDescriptionVariables = document.getElementById descriptionVariables
+
+        @descriptionVariables = document.createElement 'div'
+        @descriptionVariables.setAttribute 'id', "description-formula"
+
+        divDescriptionVariables.appendChild @descriptionVariables
 
         @cloneCanvas()
 
@@ -58,7 +69,7 @@ class Formula
         formula.setAttribute 'id', @idFormula
         text = "`"
         form = document.createElement 'form'
-        form.setAttribute 'id', "form-archimedes"
+        form.setAttribute 'id', "form-formula"
         i = 0 
         for id, variable of @symbols
             if variable instanceof Operator
@@ -198,7 +209,7 @@ class Formula
 
     remplaceInputs: (newChild, id) ->
         oldChild = document.getElementById 'div-form-' + id
-        parent = document.getElementById 'form-archimedes'
+        parent = document.getElementById 'form-formula'
         parent.replaceChild newChild, oldChild
 
     searchIdInputRange: ->
@@ -345,7 +356,6 @@ class Formula
             labelErrorOrdRange.setAttribute 'class', "control-label sr-only"
         if @numberInputsRangeFilled == 0
             @inputsRangeOrderCorrect = true
-
 
     isNumberInRange: (input, divForm, spanControl, labelForm, value, idInput, id) ->
         inputsRangeCorrect = @inputsRangeCorrect
@@ -856,6 +866,7 @@ class Init
     descriptionVariables: null
     graph: null
     paragraph: null
+    formula: null
 
     constructor: (divPanel, liArchimedes, liNewton1, lipendulum, @constantValue, @descriptionVariables) ->
         @graph = new Graph()
@@ -906,13 +917,16 @@ class Init
         data = ev.dataTransfer.getData("text")
         if data is @archimedes.id
             @disabledDrop()
-            new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
+            formula = new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
+            @divPanel.appendChild @createButton()
         if data is @newton1.id
             @disabledDrop()
-            new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+            @formula = new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+            @divPanel.appendChild @createButton()
         if data is @pendulum.id
             @disabledDrop()
-            new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+            @formula = new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+            @divPanel.appendChild @createButton()
 
     disabledDrop: ->
         @divPanel.removeAttribute 'ondrop'
@@ -928,4 +942,44 @@ class Init
                 e.dataTransfer.setDragImage(img , 0 , 0)
         ,false)
 
+    #improve this
+    createButton:  ->
+        divButton = document.createElement 'div'
+        divButton.setAttribute 'class', "btn-group"
+        divButton.setAttribute 'id', "button-remove"
+        button = document.createElement 'button'
+        button.setAttribute 'type', "button"
+        button.setAttribute 'class', "btn btn-primary"
+        button.setAttribute 'button.setAttribute', ""
+        button.addEventListener 'click', => @clickButton()
+        text = document.createTextNode "Remove Formula"
+        button.appendChild text
+        divButton.appendChild button
+        divButton
+
+    clickButton: ()->
+        @formula = null
+        @graph = new Graph()
+        @divPanel.removeChild document.getElementById 'formula-created' 
+        @divPanel.removeChild document.getElementById 'button-remove'
+        (document.getElementById @constantValue).removeChild document.getElementById 'form-formula'
+        (document.getElementById @descriptionVariables).removeChild document.getElementById 'description-formula'
+        @divPanel.setAttribute 'ondrop', ""
+        @divPanel.ondrop = (e) => @drop(e)
+        @divPanel.setAttribute 'ondragover', ""
+        @divPanel.ondragover = (e) => @allowDrop(e)
+        #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
+        @divPanel.setAttribute 'ondragenter', "return false"
+
+        @paragraph = document.createElement 'p'
+        text = document.createTextNode "Please drop your formula here"
+        @paragraph.appendChild text
+        @divPanel.appendChild @paragraph
+
+        window.addEventListener "resize", =>
+            @graph.resizeCanvas (x) => 
+                @executeEquation x
+            ,'blue', 3, @mode
+
+       
 window.Init = Init

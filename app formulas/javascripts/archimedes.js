@@ -55,7 +55,7 @@
     Formula.inputsRangeOrderCorrect = true;
 
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, symbols, equation, graph) {
-      var img;
+      var divAllFormulas, divDescriptionVariables, img;
       this.divPanel = divPanel;
       this.liFormula = liFormula;
       this.srcImage = srcImage;
@@ -69,14 +69,20 @@
           }, 'blue', 3, _this.mode);
         };
       })(this));
+      divAllFormulas = document.createElement('div');
+      divAllFormulas.setAttribute('id', "formula-created");
       this.divFormula = document.createElement('div');
       this.divFormula.height = '300 px';
       this.divFormula.width = '300 px';
       this.divFormulaWithNumbers = document.createElement('div');
-      this.divPanel.appendChild(this.divFormula);
-      this.divPanel.appendChild(this.divFormulaWithNumbers);
+      divAllFormulas.appendChild(this.divFormula);
+      divAllFormulas.appendChild(this.divFormulaWithNumbers);
+      this.divPanel.appendChild(divAllFormulas);
       this.constantValue = document.getElementById(constantValue);
-      this.descriptionVariables = document.getElementById(descriptionVariables);
+      divDescriptionVariables = document.getElementById(descriptionVariables);
+      this.descriptionVariables = document.createElement('div');
+      this.descriptionVariables.setAttribute('id', "description-formula");
+      divDescriptionVariables.appendChild(this.descriptionVariables);
       this.cloneCanvas();
       img = document.createElement('img');
       img.src = this.srcImage;
@@ -92,7 +98,7 @@
       formula.setAttribute('id', this.idFormula);
       text = "`";
       form = document.createElement('form');
-      form.setAttribute('id', "form-archimedes");
+      form.setAttribute('id', "form-formula");
       i = 0;
       _ref = this.symbols;
       for (id in _ref) {
@@ -249,7 +255,7 @@
     Formula.prototype.remplaceInputs = function(newChild, id) {
       var oldChild, parent;
       oldChild = document.getElementById('div-form-' + id);
-      parent = document.getElementById('form-archimedes');
+      parent = document.getElementById('form-formula');
       return parent.replaceChild(newChild, oldChild);
     };
 
@@ -1038,6 +1044,8 @@
 
     Init.prototype.paragraph = null;
 
+    Init.prototype.formula = null;
+
     function Init(divPanel, liArchimedes, liNewton1, lipendulum, constantValue, descriptionVariables) {
       var text;
       this.constantValue = constantValue;
@@ -1105,20 +1113,23 @@
     };
 
     Init.prototype.drop = function(ev) {
-      var data;
+      var data, formula;
       ev.preventDefault();
       data = ev.dataTransfer.getData("text");
       if (data === this.archimedes.id) {
         this.disabledDrop();
-        new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph, this.imgArchimedes);
+        formula = new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph, this.imgArchimedes);
+        this.divPanel.appendChild(this.createButton());
       }
       if (data === this.newton1.id) {
         this.disabledDrop();
-        new Newton1(this.divPanel, this.newton1, this.constantValue, this.descriptionVariables, this.graph, this.imgNewton1);
+        this.formula = new Newton1(this.divPanel, this.newton1, this.constantValue, this.descriptionVariables, this.graph, this.imgNewton1);
+        this.divPanel.appendChild(this.createButton());
       }
       if (data === this.pendulum.id) {
         this.disabledDrop();
-        return new Pendulum(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+        this.formula = new Pendulum(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+        return this.divPanel.appendChild(this.createButton());
       }
     };
 
@@ -1138,6 +1149,60 @@
           return e.dataTransfer.setDragImage(img, 0, 0);
         };
       })(this), false);
+    };
+
+    Init.prototype.createButton = function() {
+      var button, divButton, text;
+      divButton = document.createElement('div');
+      divButton.setAttribute('class', "btn-group");
+      divButton.setAttribute('id', "button-remove");
+      button = document.createElement('button');
+      button.setAttribute('type', "button");
+      button.setAttribute('class', "btn btn-primary");
+      button.setAttribute('button.setAttribute', "");
+      button.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.clickButton();
+        };
+      })(this));
+      text = document.createTextNode("Remove Formula");
+      button.appendChild(text);
+      divButton.appendChild(button);
+      return divButton;
+    };
+
+    Init.prototype.clickButton = function() {
+      var text;
+      this.formula = null;
+      this.graph = new Graph();
+      this.divPanel.removeChild(document.getElementById('formula-created'));
+      this.divPanel.removeChild(document.getElementById('button-remove'));
+      (document.getElementById(this.constantValue)).removeChild(document.getElementById('form-formula'));
+      (document.getElementById(this.descriptionVariables)).removeChild(document.getElementById('description-formula'));
+      this.divPanel.setAttribute('ondrop', "");
+      this.divPanel.ondrop = (function(_this) {
+        return function(e) {
+          return _this.drop(e);
+        };
+      })(this);
+      this.divPanel.setAttribute('ondragover', "");
+      this.divPanel.ondragover = (function(_this) {
+        return function(e) {
+          return _this.allowDrop(e);
+        };
+      })(this);
+      this.divPanel.setAttribute('ondragenter', "return false");
+      this.paragraph = document.createElement('p');
+      text = document.createTextNode("Please drop your formula here");
+      this.paragraph.appendChild(text);
+      this.divPanel.appendChild(this.paragraph);
+      return window.addEventListener("resize", (function(_this) {
+        return function() {
+          return _this.graph.resizeCanvas(function(x) {
+            return _this.executeEquation(x);
+          }, 'blue', 3, _this.mode);
+        };
+      })(this));
     };
 
     return Init;
