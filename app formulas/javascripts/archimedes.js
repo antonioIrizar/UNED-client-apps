@@ -50,6 +50,10 @@
 
     Formula.prototype.numberInputsRangeFilled = 0;
 
+    Formula.prototype.inputsRangeCorrect = true;
+
+    Formula.inputsRangeOrderCorrect = true;
+
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, symbols, equation, graph) {
       var img;
       this.divPanel = divPanel;
@@ -159,9 +163,7 @@
       newNumberInputsFilled = this.numberInputsFilled;
       if (input.value.length > 0) {
         if (isNaN(input.value)) {
-          divForm.setAttribute('class', "form-group has-error has-feedback");
-          spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
-          labelForm.setAttribute('class', "control-label");
+          this.inputError(divForm, spanControl, labelForm);
           if (this.variables[id].value !== null) {
             newNumberInputsFilled--;
           }
@@ -169,9 +171,7 @@
           this.variables[id].value = null;
           inputsCorrect = false;
         } else {
-          divForm.setAttribute('class', "form-group has-success has-feedback");
-          spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
-          labelForm.setAttribute('class', "control-label sr-only");
+          this.inputSuccess(divForm, spanControl, labelForm);
           if ((this.variables[id].value === null && this.variables[id].correct) || (this.variables[id].value === null && !this.variables[id].correct)) {
             newNumberInputsFilled++;
           }
@@ -186,9 +186,7 @@
         this.variables[id].correct = true;
         this.variables[id].value = null;
         inputsCorrect = true;
-        divForm.setAttribute('class', "form-group");
-        spanControl.setAttribute('class', "");
-        labelForm.setAttribute('class', "control-label sr-only");
+        this.inputNothing(divForm, spanControl, labelForm);
       }
       if (this.inputsCorrect && inputsCorrect) {
         if (newNumberInputsFilled !== this.numberInputsFilled) {
@@ -214,6 +212,24 @@
       }
       this.inputsCorrect = inputsCorrect;
       return this.numberInputsFilled = newNumberInputsFilled;
+    };
+
+    Formula.prototype.inputError = function(divForm, spanControl, labelForm) {
+      divForm.setAttribute('class', "form-group has-error has-feedback");
+      spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
+      return labelForm.setAttribute('class', "control-label");
+    };
+
+    Formula.prototype.inputSuccess = function(divForm, spanControl, labelForm) {
+      divForm.setAttribute('class', "form-group has-success has-feedback");
+      spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
+      return labelForm.setAttribute('class', "control-label sr-only");
+    };
+
+    Formula.prototype.inputNothing = function(divForm, spanControl, labelForm) {
+      divForm.setAttribute('class', "form-group");
+      spanControl.setAttribute('class', "");
+      return labelForm.setAttribute('class', "control-label sr-only");
     };
 
     Formula.prototype.valid = function() {
@@ -256,9 +272,9 @@
           input.setAttribute('disabled', "");
         }
         if (i === this.idInputRange) {
-          inputStart = document.getElementById('input-star');
+          inputStart = document.getElementById('input-range-0');
           inputStart.setAttribute('disabled', "");
-          inputEnd = document.getElementById('input-end');
+          inputEnd = document.getElementById('input-range-1');
           inputEnd.setAttribute('disabled', "");
         }
         _results.push(i++);
@@ -276,9 +292,9 @@
           input.removeAttribute('disabled');
         }
         if (i === this.idInputRange) {
-          inputStart = document.getElementById('input-star');
+          inputStart = document.getElementById('input-range-0');
           inputStart.removeAttribute('disabled');
-          inputEnd = document.getElementById('input-end');
+          inputEnd = document.getElementById('input-range-1');
           inputEnd.removeAttribute('disabled');
         }
         _results.push(i++);
@@ -287,11 +303,18 @@
     };
 
     Formula.prototype.createInputRange = function(id) {
-      var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelInputEnd, labelInputStar, labelText, spanControlEnd, spanControlStart, text;
+      var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelErrorOrdRange, labelInputEnd, labelInputStar, labelText, spanControlEnd, spanControlStart, text;
       this.numberInputsRangeFilled = 0;
+      this.inputsRangeCorrect = true;
+      this.inputsRangeOrderCorrect = true;
       divForm = document.createElement('div');
       divForm.setAttribute('class', "form-group");
       divForm.setAttribute('id', "div-form-" + id);
+      labelErrorOrdRange = document.createElement('label');
+      labelErrorOrdRange.setAttribute('class', "control-label sr-only");
+      text = document.createTextNode("The range is incorrect. It need start the small to the big");
+      labelErrorOrdRange.appendChild(text);
+      divForm.appendChild(labelErrorOrdRange);
       divLabel = document.createElement('div');
       divLabel.setAttribute('class', "form-group");
       labelText = document.createElement('label');
@@ -307,17 +330,12 @@
       labelInputStar.appendChild(text);
       divInputStart.appendChild(labelInputStar);
       inputStart = document.createElement('input');
-      inputStart.setAttribute('id', "input-star");
+      inputStart.setAttribute('id', "input-range-0");
       inputStart.setAttribute('type', "text");
       inputStart.setAttribute('class', "form-control");
       spanControlStart = document.createElement('span');
       spanControlStart.setAttribute('id', "span-control-start");
       inputStart.setAttribute('oninput', "");
-      inputStart.oninput = (function(_this) {
-        return function() {
-          return _this.variables[id].startRange = _this.isNumberInRange(inputStart, divInputStart, id, spanControlStart, labelInputStar);
-        };
-      })(this);
       divInputStart.appendChild(inputStart);
       divInputStart.appendChild(spanControlStart);
       divForm.appendChild(divInputStart);
@@ -336,7 +354,7 @@
       labelInputEnd.appendChild(text);
       divInputEnd.appendChild(labelInputEnd);
       inputEnd = document.createElement('input');
-      inputEnd.setAttribute('id', "input-end");
+      inputEnd.setAttribute('id', "input-range-1");
       inputEnd.setAttribute('type', "text");
       inputEnd.setAttribute('class', "form-control");
       spanControlEnd = document.createElement('span');
@@ -344,7 +362,14 @@
       inputEnd.setAttribute('oninput', "");
       inputEnd.oninput = (function(_this) {
         return function() {
-          return _this.variables[id].endRange = _this.isNumberInRange(inputEnd, divInputEnd, id, spanControlEnd, labelInputEnd);
+          _this.variables[id].endRange = _this.isNumberInRange(inputEnd, divInputEnd, spanControlEnd, labelInputEnd, _this.variables[id].endRange, 1, id);
+          return _this.inputsRangeOrder(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange);
+        };
+      })(this);
+      inputStart.oninput = (function(_this) {
+        return function() {
+          _this.variables[id].startRange = _this.isNumberInRange(inputStart, divInputStart, spanControlStart, labelInputStar, _this.variables[id].startRange, 0, id);
+          return _this.inputsRangeOrder(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange);
         };
       })(this);
       divInputEnd.appendChild(inputEnd);
@@ -353,26 +378,59 @@
       return divForm;
     };
 
-    Formula.prototype.isNumberInRange = function(input, divForm, id, spanControl, labelForm) {
-      var value;
-      value = null;
+    Formula.prototype.inputsRangeOrder = function(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange) {
+      if (this.numberInputsRangeFilled === 2 && this.inputsRangeCorrect) {
+        if (this.variables[id].startRange > this.variables[id].endRange) {
+          this.inputsRangeOrderCorrect = false;
+          divForm.setAttribute('class', "form-group has-error has-feedback");
+          spanControlStart.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
+          spanControlEnd.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
+          return labelErrorOrdRange.setAttribute('class', "control-label");
+        } else {
+          this.inputsRangeOrderCorrect = true;
+          divForm.setAttribute('class', "form-group");
+          spanControlStart.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
+          spanControlEnd.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
+          return labelErrorOrdRange.setAttribute('class', "control-label sr-only");
+        }
+      }
+    };
+
+    Formula.prototype.isNumberInRange = function(input, divForm, spanControl, labelForm, value, idInput, id) {
+      var inputAux, inputsRangeCorrect;
+      inputsRangeCorrect = this.inputsRangeCorrect;
       if (input.value.length > 0) {
         if (isNaN(input.value)) {
-          divForm.setAttribute('class', "form-group has-error has-feedback");
-          spanControl.setAttribute('class', "glyphicon glyphicon-remove form-control-feedback");
-          labelForm.setAttribute('class', "control-label");
-          value = null;
+          this.inputError(divForm, spanControl, labelForm);
+          if (value !== null) {
+            value = null;
+            this.numberInputsRangeFilled--;
+          }
+          inputsRangeCorrect = false;
         } else {
-          divForm.setAttribute('class', "form-group has-success has-feedback");
-          spanControl.setAttribute('class', "glyphicon glyphicon-ok form-control-feedback");
-          labelForm.setAttribute('class', "control-label sr-only");
+          this.inputSuccess(divForm, spanControl, labelForm);
+          if (value === null) {
+            this.numberInputsRangeFilled++;
+            inputsRangeCorrect = true;
+          }
           value = new Number(input.value);
         }
       } else {
-        this.variables[id].value = null;
-        divForm.setAttribute('class', "form-group");
-        spanControl.setAttribute('class', "");
-        labelForm.setAttribute('class', "control-label sr-only");
+        if (value !== null) {
+          value = null;
+          this.numberInputsRangeFilled--;
+        }
+        inputsRangeCorrect = true;
+        this.inputNothing(divForm, spanControl, labelForm);
+      }
+      if (inputsRangeCorrect !== this.inputsRangeCorrect) {
+        inputAux = document.getElementById('input-range-' + ((idInput + 1) % 2));
+        if (inputsRangeCorrect) {
+          inputAux.removeAttribute('disabled');
+        } else {
+          inputAux.setAttribute('disabled', "");
+        }
+        this.inputsRangeCorrect = inputsRangeCorrect;
       }
       return value;
     };
@@ -433,7 +491,7 @@
 
     Formula.prototype.clickButton = function() {
       var i, rads;
-      if (this.numberInputsFilled === this.variables.length - 2 && this.inputsCorrect) {
+      if (this.numberInputsFilled === this.variables.length - 2 && this.inputsCorrect && this.inputsRangeOrderCorrect && this.inputsRangeCorrect && (this.numberInputsRangeFilled === 0 || this.numberInputsRangeFilled === 2)) {
         this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
         this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
         rads = document.getElementsByName('modeLine');
@@ -501,13 +559,8 @@
           this.valueVariables[id] = null;
           this.positionValueVariableX = new Number(id);
           if (variable.startRange !== null && variable.endRange !== null) {
-            if (variable.startRange < variable.endRange) {
-              this.graph.xStart = variable.startRange;
-              this.graph.xEnd = variable.endRange;
-            } else {
-              this.graph.xStart = variable.endRange;
-              this.graph.xEnd = variable.startRange;
-            }
+            this.graph.xStart = variable.startRange;
+            this.graph.xEnd = variable.endRange;
             max = Math.max(Math.abs(variable.startRange), Math.abs(variable.endRange));
             this.graph.maxX = this.graph.maxY = max;
             this.graph.minY = this.graph.minX = -max;

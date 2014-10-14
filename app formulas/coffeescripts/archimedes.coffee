@@ -21,6 +21,8 @@ class Formula
     idInputRange: null
     symbols: null
     numberInputsRangeFilled: 0
+    inputsRangeCorrect: true
+    @inputsRangeOrderCorrect: true
 
     constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @symbols, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -127,18 +129,14 @@ class Formula
         if input.value.length > 0
 
             if isNaN input.value
-                divForm.setAttribute 'class', "form-group has-error has-feedback"
-                spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
-                labelForm.setAttribute 'class', "control-label"
+                @inputError divForm, spanControl, labelForm
                 if @variables[id].value isnt null
                     newNumberInputsFilled--
                 @variables[id].correct = false
                 @variables[id].value = null
                 inputsCorrect = false
             else
-                divForm.setAttribute 'class', "form-group has-success has-feedback"
-                spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
-                labelForm.setAttribute 'class', "control-label sr-only"
+                @inputSuccess divForm, spanControl, labelForm
                 if (@variables[id].value is null and @variables[id].correct) or (@variables[id].value is null and not @variables[id].correct)
                     newNumberInputsFilled++
                 @variables[id].correct = true
@@ -150,9 +148,7 @@ class Formula
             @variables[id].correct = true
             @variables[id].value = null
             inputsCorrect = true
-            divForm.setAttribute 'class', "form-group"
-            spanControl.setAttribute 'class', ""
-            labelForm.setAttribute 'class', "control-label sr-only"
+            @inputNothing divForm, spanControl, labelForm
 
         if @inputsCorrect and inputsCorrect
             if newNumberInputsFilled != @numberInputsFilled
@@ -170,8 +166,24 @@ class Formula
                 @disabledInputs id
             if not @inputsCorrect and inputsCorrect
                 @eneableInputs id
+
         @inputsCorrect = inputsCorrect
         @numberInputsFilled = newNumberInputsFilled
+
+    inputError: (divForm, spanControl, labelForm) ->
+        divForm.setAttribute 'class', "form-group has-error has-feedback"
+        spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
+        labelForm.setAttribute 'class', "control-label"
+
+    inputSuccess: (divForm, spanControl, labelForm) ->
+        divForm.setAttribute 'class', "form-group has-success has-feedback"
+        spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
+        labelForm.setAttribute 'class', "control-label sr-only"
+
+    inputNothing: (divForm, spanControl, labelForm) ->
+        divForm.setAttribute 'class', "form-group"
+        spanControl.setAttribute 'class', ""
+        labelForm.setAttribute 'class', "control-label sr-only"
 
     valid: ->
         idInputRange = 1
@@ -203,9 +215,9 @@ class Formula
                 input = document.getElementById @variables[i].fullName
                 input.setAttribute 'disabled', ""
             if i == @idInputRange
-                inputStart = document.getElementById 'input-star'
+                inputStart = document.getElementById 'input-range-0'
                 inputStart.setAttribute 'disabled', ""
-                inputEnd = document.getElementById 'input-end'
+                inputEnd = document.getElementById 'input-range-1'
                 inputEnd.setAttribute 'disabled', ""
             i++
 
@@ -216,17 +228,25 @@ class Formula
                 input = document.getElementById @variables[i].fullName
                 input.removeAttribute 'disabled'
             if i == @idInputRange
-                inputStart = document.getElementById 'input-star'
+                inputStart = document.getElementById 'input-range-0'
                 inputStart.removeAttribute 'disabled'
-                inputEnd = document.getElementById 'input-end'
+                inputEnd = document.getElementById 'input-range-1'
                 inputEnd.removeAttribute 'disabled'
             i++
 
     createInputRange:  (id)->
         @numberInputsRangeFilled = 0
+        @inputsRangeCorrect = true
+        @inputsRangeOrderCorrect = true
         divForm = document.createElement 'div'
         divForm.setAttribute 'class', "form-group"
         divForm.setAttribute 'id', "div-form-" + id
+
+        labelErrorOrdRange = document.createElement 'label'
+        labelErrorOrdRange.setAttribute 'class', "control-label sr-only"
+        text = document.createTextNode "The range is incorrect. It need start the small to the big"
+        labelErrorOrdRange.appendChild text
+        divForm.appendChild labelErrorOrdRange
 
         divLabel = document.createElement 'div'
         divLabel.setAttribute 'class', "form-group"
@@ -248,7 +268,8 @@ class Formula
         divInputStart.appendChild labelInputStar
 
         inputStart = document.createElement 'input'
-        inputStart.setAttribute 'id', "input-star"
+        #i put this id, because it's more easy to get it, when eneable or disable
+        inputStart.setAttribute 'id', "input-range-0"
         inputStart.setAttribute 'type', "text"
         inputStart.setAttribute 'class', "form-control"
 
@@ -256,8 +277,6 @@ class Formula
         spanControlStart.setAttribute 'id', "span-control-start"
 
         inputStart.setAttribute 'oninput', ""
-        inputStart.oninput = => 
-            @variables[id].startRange = @isNumberInRange inputStart, divInputStart, id, spanControlStart, labelInputStar
         
         divInputStart.appendChild inputStart
         divInputStart.appendChild spanControlStart
@@ -283,7 +302,8 @@ class Formula
         divInputEnd.appendChild labelInputEnd
 
         inputEnd = document.createElement 'input'
-        inputEnd.setAttribute 'id', "input-end"
+        #i put this id, because it's more easy to get it, when eneable or disabled
+        inputEnd.setAttribute 'id', "input-range-1"
         inputEnd.setAttribute 'type', "text"
         inputEnd.setAttribute 'class', "form-control"
         
@@ -291,8 +311,14 @@ class Formula
         spanControlEnd.setAttribute 'id', "span-control-end"
 
         inputEnd.setAttribute 'oninput', ""
+
         inputEnd.oninput = => 
-            @variables[id].endRange = @isNumberInRange inputEnd, divInputEnd, id, spanControlEnd, labelInputEnd
+            @variables[id].endRange = @isNumberInRange inputEnd, divInputEnd, spanControlEnd, labelInputEnd, @variables[id].endRange, 1, id
+            @inputsRangeOrder id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange
+
+        inputStart.oninput = => 
+            @variables[id].startRange = @isNumberInRange inputStart, divInputStart, spanControlStart, labelInputStar, @variables[id].startRange, 0, id
+            @inputsRangeOrder id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange
 
         divInputEnd.appendChild inputEnd
         divInputEnd.appendChild spanControlEnd
@@ -300,27 +326,53 @@ class Formula
 
         divForm
 
-    isNumberInRange: (input, divForm, id, spanControl, labelForm) ->
-        value = null
+    inputsRangeOrder: (id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange) ->
+        if @numberInputsRangeFilled == 2  and @inputsRangeCorrect
+            if @variables[id].startRange > @variables[id].endRange
+                @inputsRangeOrderCorrect = false
+                divForm.setAttribute 'class', "form-group has-error has-feedback"
+                spanControlStart.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
+                spanControlEnd.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
+                labelErrorOrdRange.setAttribute 'class', "control-label"
+            else
+                @inputsRangeOrderCorrect = true
+                divForm.setAttribute 'class', "form-group"
+                spanControlStart.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
+                spanControlEnd.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
+                labelErrorOrdRange.setAttribute 'class', "control-label sr-only"
 
+    isNumberInRange: (input, divForm, spanControl, labelForm, value, idInput, id) ->
+        inputsRangeCorrect = @inputsRangeCorrect
         if input.value.length > 0
 
             if isNaN input.value
-                divForm.setAttribute 'class', "form-group has-error has-feedback"
-                spanControl.setAttribute 'class', "glyphicon glyphicon-remove form-control-feedback"
-                labelForm.setAttribute 'class', "control-label"
-                value = null
+                @inputError divForm, spanControl, labelForm
+                if value isnt null
+                    value = null
+                    @numberInputsRangeFilled--
+                inputsRangeCorrect = false
             else
-                divForm.setAttribute 'class', "form-group has-success has-feedback"
-                spanControl.setAttribute 'class', "glyphicon glyphicon-ok form-control-feedback"
-                labelForm.setAttribute 'class', "control-label sr-only"
+                @inputSuccess divForm, spanControl, labelForm
+                if value is null
+                    @numberInputsRangeFilled++
+                    inputsRangeCorrect = true
                 value = new Number input.value
         else
-            @variables[id].value = null
-            divForm.setAttribute 'class', "form-group"
-            spanControl.setAttribute 'class', ""
-            labelForm.setAttribute 'class', "control-label sr-only"
+            if value isnt null
+                value = null
+                @numberInputsRangeFilled--
+            inputsRangeCorrect = true
+            @inputNothing divForm, spanControl, labelForm
 
+        if inputsRangeCorrect != @inputsRangeCorrect
+            inputAux = document.getElementById 'input-range-'+ ((idInput + 1) % 2)
+            if inputsRangeCorrect
+                inputAux.removeAttribute 'disabled'
+            else
+                inputAux.setAttribute 'disabled', ""
+            @inputsRangeCorrect = inputsRangeCorrect
+       
+            
         value
 
     createRadio: (name, checked) ->
@@ -365,7 +417,7 @@ class Formula
         dd
 
     clickButton: ->
-        if (@numberInputsFilled == @variables.length-2 and @inputsCorrect)
+        if (@numberInputsFilled == @variables.length-2 and @inputsCorrect and @inputsRangeOrderCorrect and @inputsRangeCorrect and (@numberInputsRangeFilled == 0 or @numberInputsRangeFilled == 2 ))
             @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
             @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
             
@@ -424,12 +476,8 @@ class Formula
                 @valueVariables[id] = null
                 @positionValueVariableX = new Number(id)
                 if variable.startRange isnt null and variable.endRange isnt null
-                    if variable.startRange < variable.endRange
-                        @graph.xStart = variable.startRange
-                        @graph.xEnd = variable.endRange
-                    else
-                        @graph.xStart = variable.endRange
-                        @graph.xEnd = variable.startRange
+                    @graph.xStart = variable.startRange
+                    @graph.xEnd = variable.endRange
                     max = Math.max (Math.abs variable.startRange), (Math.abs variable.endRange)
                     @graph.maxX = @graph.maxY = max
                     @graph.minY = @graph.minX = - max
