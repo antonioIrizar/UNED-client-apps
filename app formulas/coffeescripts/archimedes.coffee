@@ -20,6 +20,7 @@ class Formula
     inputsCorrect: true
     idInputRange: null
     symbols: null
+    numberInputsRangeFilled: 0
 
     constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @symbols, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -222,7 +223,7 @@ class Formula
             i++
 
     createInputRange:  (id)->
-     
+        @numberInputsRangeFilled = 0
         divForm = document.createElement 'div'
         divForm.setAttribute 'class', "form-group"
         divForm.setAttribute 'id', "div-form-" + id
@@ -422,6 +423,25 @@ class Formula
             if variable.value is null
                 @valueVariables[id] = null
                 @positionValueVariableX = new Number(id)
+                if variable.startRange isnt null and variable.endRange isnt null
+                    if variable.startRange < variable.endRange
+                        @graph.xStart = variable.startRange
+                        @graph.xEnd = variable.endRange
+                    else
+                        @graph.xStart = variable.endRange
+                        @graph.xEnd = variable.startRange
+                    max = Math.max (Math.abs variable.startRange), (Math.abs variable.endRange)
+                    @graph.maxX = @graph.maxY = max
+                    @graph.minY = @graph.minX = - max
+                    @graph.autoScale = false
+                    @graph.resizeCanvas (x) => 
+                            @executeEquation x
+                        ,'blue', 3, @mode
+                else
+                    @graph.autoScale = true
+                    @graph.resizeCanvas (x) => 
+                        @executeEquation x
+                    ,'blue', 3, @mode
             else
                 @valueVariables[id] = variable.value
 
@@ -516,6 +536,8 @@ class Graph
     minY: null
     maxX: null
     maxY: null
+    xStart: null
+    xEnd: null
     unitsPerTick: 1
     axisColor:"#aaa"
     font: "8pt Calibri"
@@ -532,6 +554,7 @@ class Graph
     scaleY: null
     x: null
     y: null
+    autoScale : true
 
     constructor: ->
         @canvas = document.getElementById "graph"
@@ -548,7 +571,7 @@ class Graph
         context.lineWidth = 2
         context.stroke()
 
-        xPosIncrement = @unitsPerTick * @unitX
+        xPosIncrement = @unitsPerTick * @unitX * 0.9
         context.font = @font
         context.textAlign = 'center'
         context.textBaseline = 'top'
@@ -585,7 +608,7 @@ class Graph
         context.lineWidth = 2
         context.stroke()
 
-        yPosIncrement = @unitsPerTick * @unitY
+        yPosIncrement = @unitsPerTick * @unitY * 0.9
         context.font = @font
         context.textAlign = 'right'
         context.textBaseline = 'middle'
@@ -627,20 +650,22 @@ class Graph
         @canvas.width = width * 0.85
         @canvas.height = @canvas.width
 
-        @maxX = ~~(width/2 /30)
-        @minX = -@maxX
-        @minY = @minX
-        @maxY = @maxX
-        console.log @maxX
+        if @autoScale
+            @maxX = ~~(width/2 /30)
+            @minX = -@maxX
+            @minY = @minX
+            @maxY = @maxX
+            @xStart = @minX
+            @xEnd = @maxX 
   
-        @rangeX = @maxX - @minX
-        @rangeY = @maxY - @minY
+        @rangeX = (Math.abs @maxX + Math.abs @minX)
+        @rangeY = (Math.abs @maxY + Math.abs @minY)
 
         @unitX = @canvas.width / @rangeX 
         @unitY = @canvas.height / @rangeY
         @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
         @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
-        @iteration = (@maxX - @minX) / 1000
+        @iteration = (@maxX + Math.abs @minX) / 1000
         @scaleX = @canvas.width / @rangeX
         @scaleY = @canvas.height / @rangeY
         @drawXAxis()
@@ -651,20 +676,23 @@ class Graph
     drawEquation: (equation, color, thickness, mode) ->
         context = @context
         iteration =  @iteration
-        x = @minX + iteration
+        x = @xStart + iteration
         verticalAsymptote = false
+        console.log @iteration
         if mode == "line"
+            #console.log "aqui"
             y = equation(x)
             context.save()
             context.save()
             @transformContext()
             context.beginPath()
-            context.moveTo(@minX, y)
+            context.moveTo(@xStart, y)
             auxX = x
             aux = y
             
-            while x <= @maxX
+            while x <= @xEnd
                 if @minY < y < @maxY
+                    #console.log "aqui"
                     context.lineTo(x, y)
                 else 
                     if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
@@ -683,13 +711,14 @@ class Graph
             context.restore()
             
             if verticalAsymptote
+
                 context.save()
                 x = x + iteration
                 y = equation(x)
                 @transformContext()
                 context.beginPath()
                 context.moveTo(x, y)
-                while x <= @maxX-1
+                while x <= @xEnd
                     if @minY < y < @maxY-1
                         context.lineTo(x, y)
                     x += iteration
@@ -704,14 +733,13 @@ class Graph
             
         if mode == "dots"
             iteration = 0.2
-            console.log "dots"
             endAngle = 2*Math.PI
             y = equation(x)
         
             auxX = x
             aux = y
 
-            while x <= @maxX
+            while x <= @xEnd
                 if @minY < y < @maxY
                     context.save()
                     context.save()
@@ -724,9 +752,6 @@ class Graph
                     context.restore()
                 else 
                     if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
-                        console.log auxY
-                        console.log y
-                        console.log "aqui"
                         verticalAsymptote = true
                         break
                     auxX = x
@@ -738,7 +763,7 @@ class Graph
             if verticalAsymptote
                 x = x + iteration
                 y = equation(x)
-                while x <= @maxX
+                while x <= @xEnd
                     if @minY < y < @maxY
                         context.save()
                         context.save()
@@ -752,11 +777,6 @@ class Graph
                     x += iteration
                     y = equation(x)
 
-            #context.restore()
-            #context.stroke()
-            #context.restore()
-            
-        #context.restore()
         @drawVariables()
 
     transformContext: ->

@@ -48,6 +48,8 @@
 
     Formula.prototype.symbols = null;
 
+    Formula.prototype.numberInputsRangeFilled = 0;
+
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, symbols, equation, graph) {
       var img;
       this.divPanel = divPanel;
@@ -286,6 +288,7 @@
 
     Formula.prototype.createInputRange = function(id) {
       var divForm, divInputEnd, divInputStart, divLabel, inputEnd, inputStart, labelInputEnd, labelInputStar, labelText, spanControlEnd, spanControlStart, text;
+      this.numberInputsRangeFilled = 0;
       divForm = document.createElement('div');
       divForm.setAttribute('class', "form-group");
       divForm.setAttribute('id', "div-form-" + id);
@@ -489,14 +492,39 @@
     };
 
     Formula.prototype.getVariableValues = function() {
-      var id, variable, _ref, _results;
+      var id, max, variable, _ref, _results;
       _ref = this.variables.slice(1);
       _results = [];
       for (id in _ref) {
         variable = _ref[id];
         if (variable.value === null) {
           this.valueVariables[id] = null;
-          _results.push(this.positionValueVariableX = new Number(id));
+          this.positionValueVariableX = new Number(id);
+          if (variable.startRange !== null && variable.endRange !== null) {
+            if (variable.startRange < variable.endRange) {
+              this.graph.xStart = variable.startRange;
+              this.graph.xEnd = variable.endRange;
+            } else {
+              this.graph.xStart = variable.endRange;
+              this.graph.xEnd = variable.startRange;
+            }
+            max = Math.max(Math.abs(variable.startRange), Math.abs(variable.endRange));
+            this.graph.maxX = this.graph.maxY = max;
+            this.graph.minY = this.graph.minX = -max;
+            this.graph.autoScale = false;
+            _results.push(this.graph.resizeCanvas((function(_this) {
+              return function(x) {
+                return _this.executeEquation(x);
+              };
+            })(this), 'blue', 3, this.mode));
+          } else {
+            this.graph.autoScale = true;
+            _results.push(this.graph.resizeCanvas((function(_this) {
+              return function(x) {
+                return _this.executeEquation(x);
+              };
+            })(this), 'blue', 3, this.mode));
+          }
         } else {
           _results.push(this.valueVariables[id] = variable.value);
         }
@@ -643,6 +671,10 @@
 
     Graph.prototype.maxY = null;
 
+    Graph.prototype.xStart = null;
+
+    Graph.prototype.xEnd = null;
+
     Graph.prototype.unitsPerTick = 1;
 
     Graph.prototype.axisColor = "#aaa";
@@ -675,6 +707,8 @@
 
     Graph.prototype.y = null;
 
+    Graph.prototype.autoScale = true;
+
     function Graph() {
       this.canvas = document.getElementById("graph");
       this.context = this.canvas.getContext('2d');
@@ -691,7 +725,7 @@
       context.strokeStyle = this.axisColor;
       context.lineWidth = 2;
       context.stroke();
-      xPosIncrement = this.unitsPerTick * this.unitX;
+      xPosIncrement = this.unitsPerTick * this.unitX * 0.9;
       context.font = this.font;
       context.textAlign = 'center';
       context.textBaseline = 'top';
@@ -728,7 +762,7 @@
       context.strokeStyle = this.axisColor;
       context.lineWidth = 2;
       context.stroke();
-      yPosIncrement = this.unitsPerTick * this.unitY;
+      yPosIncrement = this.unitsPerTick * this.unitY * 0.9;
       context.font = this.font;
       context.textAlign = 'right';
       context.textBaseline = 'middle';
@@ -773,18 +807,21 @@
       }
       this.canvas.width = width * 0.85;
       this.canvas.height = this.canvas.width;
-      this.maxX = ~~(width / 2 / 30);
-      this.minX = -this.maxX;
-      this.minY = this.minX;
-      this.maxY = this.maxX;
-      console.log(this.maxX);
-      this.rangeX = this.maxX - this.minX;
-      this.rangeY = this.maxY - this.minY;
+      if (this.autoScale) {
+        this.maxX = ~~(width / 2 / 30);
+        this.minX = -this.maxX;
+        this.minY = this.minX;
+        this.maxY = this.maxX;
+        this.xStart = this.minX;
+        this.xEnd = this.maxX;
+      }
+      this.rangeX = Math.abs(this.maxX + Math.abs(this.minX));
+      this.rangeY = Math.abs(this.maxY + Math.abs(this.minY));
       this.unitX = this.canvas.width / this.rangeX;
       this.unitY = this.canvas.height / this.rangeY;
       this.centerX = Math.round(Math.abs(this.minX / this.rangeX) * this.canvas.width);
       this.centerY = Math.round(Math.abs(this.minY / this.rangeY) * this.canvas.height);
-      this.iteration = (this.maxX - this.minX) / 1000;
+      this.iteration = (this.maxX + Math.abs(this.minX)) / 1000;
       this.scaleX = this.canvas.width / this.rangeX;
       this.scaleY = this.canvas.height / this.rangeY;
       this.drawXAxis();
@@ -798,18 +835,19 @@
       var aux, auxX, auxY, context, endAngle, iteration, verticalAsymptote, x, y;
       context = this.context;
       iteration = this.iteration;
-      x = this.minX + iteration;
+      x = this.xStart + iteration;
       verticalAsymptote = false;
+      console.log(this.iteration);
       if (mode === "line") {
         y = equation(x);
         context.save();
         context.save();
         this.transformContext();
         context.beginPath();
-        context.moveTo(this.minX, y);
+        context.moveTo(this.xStart, y);
         auxX = x;
         aux = y;
-        while (x <= this.maxX) {
+        while (x <= this.xEnd) {
           if ((this.minY < y && y < this.maxY)) {
             context.lineTo(x, y);
           } else {
@@ -836,7 +874,7 @@
           this.transformContext();
           context.beginPath();
           context.moveTo(x, y);
-          while (x <= this.maxX - 1) {
+          while (x <= this.xEnd) {
             if ((this.minY < y && y < this.maxY - 1)) {
               context.lineTo(x, y);
             }
@@ -853,12 +891,11 @@
       }
       if (mode === "dots") {
         iteration = 0.2;
-        console.log("dots");
         endAngle = 2 * Math.PI;
         y = equation(x);
         auxX = x;
         aux = y;
-        while (x <= this.maxX) {
+        while (x <= this.xEnd) {
           if ((this.minY < y && y < this.maxY)) {
             context.save();
             context.save();
@@ -871,9 +908,6 @@
             context.restore();
           } else {
             if ((auxY < 0 && y > 0) || (auxY > 0 && y < 0)) {
-              console.log(auxY);
-              console.log(y);
-              console.log("aqui");
               verticalAsymptote = true;
               break;
             }
@@ -886,7 +920,7 @@
         if (verticalAsymptote) {
           x = x + iteration;
           y = equation(x);
-          while (x <= this.maxX) {
+          while (x <= this.xEnd) {
             if ((this.minY < y && y < this.maxY)) {
               context.save();
               context.save();
