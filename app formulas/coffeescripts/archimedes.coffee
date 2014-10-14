@@ -486,10 +486,10 @@ class Pendulum extends Formula
         length = new Variable("\u03C1" , "Length pendulum" , "description" , null)
         variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length]
         
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @newtowEquation, graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @pendulumEquation, graph)
     
-    newtowEquation: (arrayVariables) ->
-        arrayVariables[0] * arrayVariables[1] / arrayVariables[2]
+    pendulumEquation: (arrayVariables) ->
+       (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2]
 
 
 class Variable 
@@ -512,10 +512,10 @@ class Operator
 
 class Graph
     canvas: null
-    minX: -10
-    minY: -10
-    maxX: 10
-    maxY: 10
+    minX: null
+    minY: null
+    maxX: null
+    maxY: null
     unitsPerTick: 1
     axisColor:"#aaa"
     font: "8pt Calibri"
@@ -627,6 +627,12 @@ class Graph
         @canvas.width = width * 0.85
         @canvas.height = @canvas.width
 
+        @maxX = ~~(width/2 /30)
+        @minX = -@maxX
+        @minY = @minX
+        @maxY = @maxX
+        console.log @maxX
+  
         @rangeX = @maxX - @minX
         @rangeY = @maxY - @minY
 
@@ -644,20 +650,28 @@ class Graph
 
     drawEquation: (equation, color, thickness, mode) ->
         context = @context
-        context.save()
-        context.save()
-        @transformContext()
-
-        context.beginPath()
-        iteration =  @iteration *10
+        iteration =  @iteration
         x = @minX + iteration
+        verticalAsymptote = false
         if mode == "line"
-
-            context.moveTo(@minX, equation(@minX))
             y = equation(x)
-           
-            while x <= @maxX && y <= @maxY
-                context.lineTo(x, equation(x))
+            context.save()
+            context.save()
+            @transformContext()
+            context.beginPath()
+            context.moveTo(@minX, y)
+            auxX = x
+            aux = y
+            
+            while x <= @maxX
+                if @minY < y < @maxY
+                    context.lineTo(x, y)
+                else 
+                    if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
+                        verticalAsymptote = true
+                        break
+                    auxX = x
+                    auxY = y
                 x += iteration
                 y = equation(x)
 
@@ -666,29 +680,91 @@ class Graph
             context.lineWidth = thickness
             context.strokeStyle = color
             context.stroke()
+            context.restore()
+            
+            if verticalAsymptote
+                context.save()
+                x = x + iteration
+                y = equation(x)
+                @transformContext()
+                context.beginPath()
+                context.moveTo(x, y)
+                while x <= @maxX-1
+                    if @minY < y < @maxY-1
+                        context.lineTo(x, y)
+                    x += iteration
+                    y = equation(x)
 
+                context.restore()
+                context.lineJoin = 'round'
+                context.lineWidth = thickness
+                context.strokeStyle = color
+                context.stroke()
+                context.restore()
+            
         if mode == "dots"
-
+            iteration = 0.2
+            console.log "dots"
             endAngle = 2*Math.PI
             y = equation(x)
+        
+            auxX = x
+            aux = y
 
-            while x <= @maxX && y <= @maxY
-                context.arc x, y, 0.09, 0,endAngle
+            while x <= @maxX
+                if @minY < y < @maxY
+                    context.save()
+                    context.save()
+                    @transformContext()
+                    context.beginPath()
+                    context.arc x, y, 0.09, 0,endAngle
+                    context.restore()
+                    context.fillStyle = color
+                    context.fill()
+                    context.restore()
+                else 
+                    if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
+                        console.log auxY
+                        console.log y
+                        console.log "aqui"
+                        verticalAsymptote = true
+                        break
+                    auxX = x
+                    auxY = y
+                
                 x += iteration
                 y = equation(x)
 
-            context.restore()
-            context.fillStyle = color
-            context.fill()
+            if verticalAsymptote
+                x = x + iteration
+                y = equation(x)
+                while x <= @maxX
+                    if @minY < y < @maxY
+                        context.save()
+                        context.save()
+                        @transformContext()
+                        context.beginPath()
+                        context.arc x, y, 0.09, 0,endAngle
+                        context.restore()
+                        context.fillStyle = color
+                        context.fill()
+                        context.restore()  
+                    x += iteration
+                    y = equation(x)
+
+            #context.restore()
+            #context.stroke()
+            #context.restore()
             
-        context.restore()
+        #context.restore()
         @drawVariables()
 
     transformContext: ->
         context = @context
 
+        #center in graph
         @context.translate(@centerX, @centerY)
-
+        #make more big the line or dots
         context.scale(@scaleX, - @scaleY)
 
 

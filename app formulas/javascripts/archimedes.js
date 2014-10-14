@@ -584,11 +584,11 @@
       division = new Operator("/");
       length = new Variable("\u03C1", "Length pendulum", "description", null);
       variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length];
-      Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, this.newtowEquation, graph);
+      Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, this.pendulumEquation, graph);
     }
 
-    Pendulum.prototype.newtowEquation = function(arrayVariables) {
-      return arrayVariables[0] * arrayVariables[1] / arrayVariables[2];
+    Pendulum.prototype.pendulumEquation = function(arrayVariables) {
+      return (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2];
     };
 
     return Pendulum;
@@ -635,13 +635,13 @@
   Graph = (function() {
     Graph.prototype.canvas = null;
 
-    Graph.prototype.minX = -10;
+    Graph.prototype.minX = null;
 
-    Graph.prototype.minY = -10;
+    Graph.prototype.minY = null;
 
-    Graph.prototype.maxX = 10;
+    Graph.prototype.maxX = null;
 
-    Graph.prototype.maxY = 10;
+    Graph.prototype.maxY = null;
 
     Graph.prototype.unitsPerTick = 1;
 
@@ -773,6 +773,11 @@
       }
       this.canvas.width = width * 0.85;
       this.canvas.height = this.canvas.width;
+      this.maxX = ~~(width / 2 / 30);
+      this.minX = -this.maxX;
+      this.minY = this.minX;
+      this.maxY = this.maxX;
+      console.log(this.maxX);
       this.rangeX = this.maxX - this.minX;
       this.rangeY = this.maxY - this.minY;
       this.unitX = this.canvas.width / this.rangeX;
@@ -790,19 +795,31 @@
     };
 
     Graph.prototype.drawEquation = function(equation, color, thickness, mode) {
-      var context, endAngle, iteration, x, y;
+      var aux, auxX, auxY, context, endAngle, iteration, verticalAsymptote, x, y;
       context = this.context;
-      context.save();
-      context.save();
-      this.transformContext();
-      context.beginPath();
-      iteration = this.iteration * 10;
+      iteration = this.iteration;
       x = this.minX + iteration;
+      verticalAsymptote = false;
       if (mode === "line") {
-        context.moveTo(this.minX, equation(this.minX));
         y = equation(x);
-        while (x <= this.maxX && y <= this.maxY) {
-          context.lineTo(x, equation(x));
+        context.save();
+        context.save();
+        this.transformContext();
+        context.beginPath();
+        context.moveTo(this.minX, y);
+        auxX = x;
+        aux = y;
+        while (x <= this.maxX) {
+          if ((this.minY < y && y < this.maxY)) {
+            context.lineTo(x, y);
+          } else {
+            if ((auxY < 0 && y > 0) || (auxY > 0 && y < 0)) {
+              verticalAsymptote = true;
+              break;
+            }
+            auxX = x;
+            auxY = y;
+          }
           x += iteration;
           y = equation(x);
         }
@@ -811,20 +828,81 @@
         context.lineWidth = thickness;
         context.strokeStyle = color;
         context.stroke();
+        context.restore();
+        if (verticalAsymptote) {
+          context.save();
+          x = x + iteration;
+          y = equation(x);
+          this.transformContext();
+          context.beginPath();
+          context.moveTo(x, y);
+          while (x <= this.maxX - 1) {
+            if ((this.minY < y && y < this.maxY - 1)) {
+              context.lineTo(x, y);
+            }
+            x += iteration;
+            y = equation(x);
+          }
+          context.restore();
+          context.lineJoin = 'round';
+          context.lineWidth = thickness;
+          context.strokeStyle = color;
+          context.stroke();
+          context.restore();
+        }
       }
       if (mode === "dots") {
+        iteration = 0.2;
+        console.log("dots");
         endAngle = 2 * Math.PI;
         y = equation(x);
-        while (x <= this.maxX && y <= this.maxY) {
-          context.arc(x, y, 0.09, 0, endAngle);
+        auxX = x;
+        aux = y;
+        while (x <= this.maxX) {
+          if ((this.minY < y && y < this.maxY)) {
+            context.save();
+            context.save();
+            this.transformContext();
+            context.beginPath();
+            context.arc(x, y, 0.09, 0, endAngle);
+            context.restore();
+            context.fillStyle = color;
+            context.fill();
+            context.restore();
+          } else {
+            if ((auxY < 0 && y > 0) || (auxY > 0 && y < 0)) {
+              console.log(auxY);
+              console.log(y);
+              console.log("aqui");
+              verticalAsymptote = true;
+              break;
+            }
+            auxX = x;
+            auxY = y;
+          }
           x += iteration;
           y = equation(x);
         }
-        context.restore();
-        context.fillStyle = color;
-        context.fill();
+        if (verticalAsymptote) {
+          x = x + iteration;
+          y = equation(x);
+          while (x <= this.maxX) {
+            if ((this.minY < y && y < this.maxY)) {
+              context.save();
+              context.save();
+              this.transformContext();
+              context.beginPath();
+              context.arc(x, y, 0.09, 0, endAngle);
+              context.restore();
+              context.fillStyle = color;
+              context.fill();
+              context.restore();
+            }
+            x += iteration;
+            y = equation(x);
+          }
+        }
       }
-      context.restore();
       return this.drawVariables();
     };
 
