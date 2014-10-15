@@ -877,22 +877,27 @@ class Init
     constructor: (divPanel, liArchimedes, liNewton1, lipendulum, @constantValue, @descriptionVariables) ->
         @graph = new Graph()
         @archimedes = document.getElementById liArchimedes
-        #$(@archimedes).draggable(helper: "clone",cursor: "move",containment: "#ut_tools_conceptmapper_root")
+        $(@archimedes).draggable(helper: "clone")
         
+        ###deprecated
         @archimedes.setAttribute 'ondragstart' , ""
         @archimedes.ondragstart = (e) => @drag(e)
-        
         @addListenerToFormula @archimedes, @imgArchimedes
-
+        ###
         @newton1 = document.getElementById liNewton1
+        $(@newton1).draggable(helper: "clone")
+        ###deprecated
         @newton1.setAttribute 'ondragstart' , ""
         @newton1.ondragstart = (e) => @drag(e)
         @addListenerToFormula @newton1, @imgNewton1
-
+        ###
         @pendulum = document.getElementById lipendulum
+        $(@pendulum).draggable(helper: "clone")
+        ###deprecated
         @pendulum.setAttribute 'ondragstart' , ""
         @pendulum.ondragstart = (e) => @drag(e)
         @addListenerToFormula @pendulum, @imgPendulum
+        ###
 
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
@@ -902,30 +907,34 @@ class Init
             ,'blue', 3, @mode
             
         @divPanel = document.getElementById divPanel
-        
+
+        ###deprecated
         @divPanel.setAttribute 'ondrop', ""
         @divPanel.ondrop = (e) => @drop(e)
         @divPanel.setAttribute 'ondragover', ""
         @divPanel.ondragover = (e) => @allowDrop(e)
         #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
         @divPanel.setAttribute 'ondragenter', "return false"
-        
-        #$(@divPanel).droppable(drop: (event, ui) =>@drop(event, ui))
+        ###
+
+        $(@divPanel).droppable(drop: (event, ui) =>@drop(event, ui))
         @paragraph = document.createElement 'p'
         text = document.createTextNode "Please drop your formula here"
         @paragraph.appendChild text
         @divPanel.appendChild @paragraph
 
+    ###deprecated
     allowDrop: (ev) => 
         ev.preventDefault()
     
     drag: (ev) ->
         ev.dataTransfer.setData('text', ev.target.id)      
-    
-    drop: (ev) =>
-        ev.preventDefault()
-        #data = ui.draggable.attr('id')
-        data = ev.dataTransfer.getData("text")
+    ###
+
+    drop: (event, ui) =>
+        event.preventDefault()
+        data = ui.draggable.attr('id')
+        #data = ev.dataTransfer.getData("text")
         if data is @archimedes.id
             @disabledDrop()
             formula = new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
@@ -940,9 +949,7 @@ class Init
             @divPanel.appendChild @createButton()
 
     disabledDrop: ->
-        @divPanel.removeAttribute 'ondrop'
-        @divPanel.removeAttribute 'ondragover'
-        @divPanel.removeAttribute 'ondragenter'
+        $(@divPanel).droppable( "option", "disabled", true)
         @divPanel.removeChild @paragraph
 
     addListenerToFormula: (formula, srcImage) ->
@@ -975,13 +982,16 @@ class Init
         @divPanel.removeChild document.getElementById 'button-remove'
         (document.getElementById @constantValue).removeChild document.getElementById 'form-formula'
         (document.getElementById @descriptionVariables).removeChild document.getElementById 'description-formula'
+        
+        ###deprecated
         @divPanel.setAttribute 'ondrop', ""
         @divPanel.ondrop = (e) => @drop(e)
         @divPanel.setAttribute 'ondragover', ""
         @divPanel.ondragover = (e) => @allowDrop(e)
         #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
         @divPanel.setAttribute 'ondragenter', "return false"
-
+        ###
+        $(@divPanel).droppable( "option", "disabled", false)
         @paragraph = document.createElement 'p'
         text = document.createTextNode "Please drop your formula here"
         @paragraph.appendChild text
@@ -991,6 +1001,5 @@ class Init
             @graph.resizeCanvas (x) => 
                 @executeEquation x
             ,'blue', 3, @mode
-
        
 window.Init = Init

@@ -1056,32 +1056,37 @@
       this.constantValue = constantValue;
       this.descriptionVariables = descriptionVariables;
       this.drop = __bind(this.drop, this);
-      this.allowDrop = __bind(this.allowDrop, this);
       this.graph = new Graph();
       this.archimedes = document.getElementById(liArchimedes);
-      this.archimedes.setAttribute('ondragstart', "");
-      this.archimedes.ondragstart = (function(_this) {
-        return function(e) {
-          return _this.drag(e);
-        };
-      })(this);
-      this.addListenerToFormula(this.archimedes, this.imgArchimedes);
+      $(this.archimedes).draggable({
+        helper: "clone"
+      });
+
+      /*deprecated
+      @archimedes.setAttribute 'ondragstart' , ""
+      @archimedes.ondragstart = (e) => @drag(e)
+      @addListenerToFormula @archimedes, @imgArchimedes
+       */
       this.newton1 = document.getElementById(liNewton1);
-      this.newton1.setAttribute('ondragstart', "");
-      this.newton1.ondragstart = (function(_this) {
-        return function(e) {
-          return _this.drag(e);
-        };
-      })(this);
-      this.addListenerToFormula(this.newton1, this.imgNewton1);
+      $(this.newton1).draggable({
+        helper: "clone"
+      });
+
+      /*deprecated
+      @newton1.setAttribute 'ondragstart' , ""
+      @newton1.ondragstart = (e) => @drag(e)
+      @addListenerToFormula @newton1, @imgNewton1
+       */
       this.pendulum = document.getElementById(lipendulum);
-      this.pendulum.setAttribute('ondragstart', "");
-      this.pendulum.ondragstart = (function(_this) {
-        return function(e) {
-          return _this.drag(e);
-        };
-      })(this);
-      this.addListenerToFormula(this.pendulum, this.imgPendulum);
+      $(this.pendulum).draggable({
+        helper: "clone"
+      });
+
+      /*deprecated
+      @pendulum.setAttribute 'ondragstart' , ""
+      @pendulum.ondragstart = (e) => @drag(e)
+      @addListenerToFormula @pendulum, @imgPendulum
+       */
       window.addEventListener("resize", (function(_this) {
         return function() {
           return _this.graph.resizeCanvas(function(x) {
@@ -1090,37 +1095,41 @@
         };
       })(this));
       this.divPanel = document.getElementById(divPanel);
-      this.divPanel.setAttribute('ondrop', "");
-      this.divPanel.ondrop = (function(_this) {
-        return function(e) {
-          return _this.drop(e);
-        };
-      })(this);
-      this.divPanel.setAttribute('ondragover', "");
-      this.divPanel.ondragover = (function(_this) {
-        return function(e) {
-          return _this.allowDrop(e);
-        };
-      })(this);
-      this.divPanel.setAttribute('ondragenter', "return false");
+
+      /*deprecated
+      @divPanel.setAttribute 'ondrop', ""
+      @divPanel.ondrop = (e) => @drop(e)
+      @divPanel.setAttribute 'ondragover', ""
+      @divPanel.ondragover = (e) => @allowDrop(e)
+       *Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
+      @divPanel.setAttribute 'ondragenter', "return false"
+       */
+      $(this.divPanel).droppable({
+        drop: (function(_this) {
+          return function(event, ui) {
+            return _this.drop(event, ui);
+          };
+        })(this)
+      });
       this.paragraph = document.createElement('p');
       text = document.createTextNode("Please drop your formula here");
       this.paragraph.appendChild(text);
       this.divPanel.appendChild(this.paragraph);
     }
 
-    Init.prototype.allowDrop = function(ev) {
-      return ev.preventDefault();
-    };
 
-    Init.prototype.drag = function(ev) {
-      return ev.dataTransfer.setData('text', ev.target.id);
-    };
+    /*deprecated
+    allowDrop: (ev) => 
+        ev.preventDefault()
+    
+    drag: (ev) ->
+        ev.dataTransfer.setData('text', ev.target.id)
+     */
 
-    Init.prototype.drop = function(ev) {
+    Init.prototype.drop = function(event, ui) {
       var data, formula;
-      ev.preventDefault();
-      data = ev.dataTransfer.getData("text");
+      event.preventDefault();
+      data = ui.draggable.attr('id');
       if (data === this.archimedes.id) {
         this.disabledDrop();
         formula = new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph, this.imgArchimedes);
@@ -1139,9 +1148,7 @@
     };
 
     Init.prototype.disabledDrop = function() {
-      this.divPanel.removeAttribute('ondrop');
-      this.divPanel.removeAttribute('ondragover');
-      this.divPanel.removeAttribute('ondragenter');
+      $(this.divPanel).droppable("option", "disabled", true);
       return this.divPanel.removeChild(this.paragraph);
     };
 
@@ -1184,19 +1191,16 @@
       this.divPanel.removeChild(document.getElementById('button-remove'));
       (document.getElementById(this.constantValue)).removeChild(document.getElementById('form-formula'));
       (document.getElementById(this.descriptionVariables)).removeChild(document.getElementById('description-formula'));
-      this.divPanel.setAttribute('ondrop', "");
-      this.divPanel.ondrop = (function(_this) {
-        return function(e) {
-          return _this.drop(e);
-        };
-      })(this);
-      this.divPanel.setAttribute('ondragover', "");
-      this.divPanel.ondragover = (function(_this) {
-        return function(e) {
-          return _this.allowDrop(e);
-        };
-      })(this);
-      this.divPanel.setAttribute('ondragenter', "return false");
+
+      /*deprecated
+      @divPanel.setAttribute 'ondrop', ""
+      @divPanel.ondrop = (e) => @drop(e)
+      @divPanel.setAttribute 'ondragover', ""
+      @divPanel.ondragover = (e) => @allowDrop(e)
+       *Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
+      @divPanel.setAttribute 'ondragenter', "return false"
+       */
+      $(this.divPanel).droppable("option", "disabled", false);
       this.paragraph = document.createElement('p');
       text = document.createTextNode("Please drop your formula here");
       this.paragraph.appendChild(text);
