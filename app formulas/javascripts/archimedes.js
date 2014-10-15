@@ -568,9 +568,8 @@
     };
 
     Formula.prototype.getVariableValues = function() {
-      var id, max, variable, _ref, _results;
+      var a, aux, b, id, max, min, variable, _ref;
       _ref = this.variables.slice(1);
-      _results = [];
       for (id in _ref) {
         variable = _ref[id];
         if (variable.value === null) {
@@ -583,24 +582,40 @@
             this.graph.maxX = this.graph.maxY = max;
             this.graph.minY = this.graph.minX = -max;
             this.graph.autoScale = false;
-            _results.push(this.graph.resizeCanvas((function(_this) {
+            this.graph.resizeCanvas((function(_this) {
               return function(x) {
                 return _this.executeEquation(x);
               };
-            })(this), 'blue', 3, this.mode));
+            })(this), 'blue', 3, this.mode);
           } else {
             this.graph.autoScale = true;
-            _results.push(this.graph.resizeCanvas((function(_this) {
+            this.graph.resizeCanvas((function(_this) {
               return function(x) {
                 return _this.executeEquation(x);
               };
-            })(this), 'blue', 3, this.mode));
+            })(this), 'blue', 3, this.mode);
           }
         } else {
-          _results.push(this.valueVariables[id] = variable.value);
+          this.valueVariables[id] = variable.value;
         }
       }
-      return _results;
+      aux = this.valueVariables;
+      aux[this.positionValueVariableX] = this.graph.xStart;
+      a = Math.round(this.equation(aux));
+      aux[this.positionValueVariableX] = this.graph.xEnd;
+      b = Math.round(this.equation(aux));
+      console.log(a);
+      console.log(b);
+      max = Math.max(a, b);
+      min = Math.min(a, b);
+      this.graph.maxX = this.graph.maxY = max + 10;
+      this.graph.minY = this.graph.minX = -(max + 1);
+      this.graph.autoScale = false;
+      return this.graph.resizeCanvas((function(_this) {
+        return function(x) {
+          return _this.executeEquation(x);
+        };
+      })(this), 'blue', 3, this.mode);
     };
 
     Formula.prototype.executeEquation = function(x) {
@@ -1015,6 +1030,9 @@
       var context;
       context = this.context;
       this.context.translate(this.centerX, this.centerY);
+      console.log("scale");
+      console.log(this.scaleX);
+      console.log(this.scaleY);
       return context.scale(this.scaleX, -this.scaleY);
     };
 
@@ -1128,7 +1146,6 @@
 
     Init.prototype.drop = function(event, ui) {
       var data, formula;
-      event.preventDefault();
       data = ui.draggable.attr('id');
       if (data === this.archimedes.id) {
         this.disabledDrop();

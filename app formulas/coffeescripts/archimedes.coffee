@@ -514,6 +514,23 @@ class Formula
                     ,'blue', 3, @mode
             else
                 @valueVariables[id] = variable.value
+ 
+        aux = @valueVariables
+        aux[@positionValueVariableX] = @graph.xStart
+        a = Math.round @equation aux
+        aux[@positionValueVariableX] = @graph.xEnd
+        b = Math.round @equation aux
+        console.log a
+        console.log b
+        max = Math.max a, b
+        min = Math.min a, b
+        @graph.maxX = @graph.maxY = max+10
+        @graph.minY = @graph.minX = - (max+1)
+        @graph.autoScale = false
+        @graph.resizeCanvas (x) => 
+            @executeEquation x
+        ,'blue', 3, @mode
+
 
     executeEquation: (x) ->
         @valueVariables[@positionValueVariableX] = x
@@ -855,6 +872,9 @@ class Graph
         #center in graph
         @context.translate(@centerX, @centerY)
         #make more big the line or dots
+        console.log "scale"
+        console.log @scaleX
+        console.log @scaleY
         context.scale(@scaleX, - @scaleY)
 
 
@@ -932,7 +952,7 @@ class Init
     ###
 
     drop: (event, ui) =>
-        event.preventDefault()
+        #event.preventDefault()
         data = ui.draggable.attr('id')
         #data = ev.dataTransfer.getData("text")
         if data is @archimedes.id
