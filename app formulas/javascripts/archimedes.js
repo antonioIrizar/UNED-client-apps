@@ -52,7 +52,7 @@
 
     Formula.prototype.inputsRangeCorrect = true;
 
-    Formula.inputsRangeOrderCorrect = true;
+    Formula.prototype.inputsRangeOrderCorrect = true;
 
     function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, symbols, equation, graph) {
       var divAllFormulas, divDescriptionVariables, img;
@@ -69,6 +69,8 @@
           }, 'blue', 3, _this.mode);
         };
       })(this));
+      this.variables = [];
+      this.valueVariables = [];
       divAllFormulas = document.createElement('div');
       divAllFormulas.setAttribute('id', "formula-created");
       this.divFormula = document.createElement('div');
@@ -195,8 +197,11 @@
         this.inputNothing(divForm, spanControl, labelForm);
       }
       if (this.inputsCorrect && inputsCorrect) {
+        console.log(newNumberInputsFilled);
         if (newNumberInputsFilled !== this.numberInputsFilled) {
+          console.log(this.variables.length);
           if (newNumberInputsFilled === (this.variables.length - 2)) {
+            console.log("aqui");
             this.idInputRange = this.searchIdInputRange();
             this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
           } else {

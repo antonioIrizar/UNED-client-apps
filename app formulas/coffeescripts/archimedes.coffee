@@ -22,7 +22,7 @@ class Formula
     symbols: null
     numberInputsRangeFilled: 0
     inputsRangeCorrect: true
-    @inputsRangeOrderCorrect: true
+    inputsRangeOrderCorrect: true
 
     constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @symbols, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -31,6 +31,9 @@ class Formula
             @graph.resizeCanvas (x) => 
                 @executeEquation x
             ,'blue', 3, @mode
+
+        @variables = []
+        @valueVariables = []
         
         divAllFormulas = document.createElement 'div'
         divAllFormulas.setAttribute 'id', "formula-created"
@@ -160,10 +163,13 @@ class Formula
             @variables[id].value = null
             inputsCorrect = true
             @inputNothing divForm, spanControl, labelForm
-
+        
         if @inputsCorrect and inputsCorrect
+            console.log newNumberInputsFilled
             if newNumberInputsFilled != @numberInputsFilled
+                console.log @variables.length
                 if newNumberInputsFilled == (@variables.length - 2) 
+                    console.log "aqui"
                     @idInputRange = @searchIdInputRange()
                     @remplaceInputs @createInputRange(@idInputRange), @idInputRange
                 else
@@ -871,8 +877,11 @@ class Init
     constructor: (divPanel, liArchimedes, liNewton1, lipendulum, @constantValue, @descriptionVariables) ->
         @graph = new Graph()
         @archimedes = document.getElementById liArchimedes
+        #$(@archimedes).draggable(helper: "clone",cursor: "move",containment: "#ut_tools_conceptmapper_root")
+        
         @archimedes.setAttribute 'ondragstart' , ""
         @archimedes.ondragstart = (e) => @drag(e)
+        
         @addListenerToFormula @archimedes, @imgArchimedes
 
         @newton1 = document.getElementById liNewton1
@@ -893,14 +902,15 @@ class Init
             ,'blue', 3, @mode
             
         @divPanel = document.getElementById divPanel
-
+        
         @divPanel.setAttribute 'ondrop', ""
         @divPanel.ondrop = (e) => @drop(e)
         @divPanel.setAttribute 'ondragover', ""
         @divPanel.ondragover = (e) => @allowDrop(e)
         #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
         @divPanel.setAttribute 'ondragenter', "return false"
-
+        
+        #$(@divPanel).droppable(drop: (event, ui) =>@drop(event, ui))
         @paragraph = document.createElement 'p'
         text = document.createTextNode "Please drop your formula here"
         @paragraph.appendChild text
@@ -908,12 +918,13 @@ class Init
 
     allowDrop: (ev) => 
         ev.preventDefault()
-
+    
     drag: (ev) ->
-        ev.dataTransfer.setData('text', ev.target.id)
-
+        ev.dataTransfer.setData('text', ev.target.id)      
+    
     drop: (ev) =>
         ev.preventDefault()
+        #data = ui.draggable.attr('id')
         data = ev.dataTransfer.getData("text")
         if data is @archimedes.id
             @disabledDrop()
@@ -975,7 +986,7 @@ class Init
         text = document.createTextNode "Please drop your formula here"
         @paragraph.appendChild text
         @divPanel.appendChild @paragraph
-
+        
         window.addEventListener "resize", =>
             @graph.resizeCanvas (x) => 
                 @executeEquation x
