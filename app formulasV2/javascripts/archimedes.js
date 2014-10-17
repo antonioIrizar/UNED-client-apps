@@ -85,7 +85,6 @@
       this.descriptionVariables = document.createElement('div');
       this.descriptionVariables.setAttribute('id', "description-formula");
       divDescriptionVariables.appendChild(this.descriptionVariables);
-      this.cloneCanvas();
       img = document.createElement('img');
       img.src = this.srcImage;
       this.divFormula.appendChild(img);
@@ -197,11 +196,8 @@
         this.inputNothing(divForm, spanControl, labelForm);
       }
       if (this.inputsCorrect && inputsCorrect) {
-        console.log(newNumberInputsFilled);
         if (newNumberInputsFilled !== this.numberInputsFilled) {
-          console.log(this.variables.length);
           if (newNumberInputsFilled === (this.variables.length - 2)) {
-            console.log("aqui");
             this.idInputRange = this.searchIdInputRange();
             this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
           } else {
@@ -510,8 +506,6 @@
     Formula.prototype.clickButton = function() {
       var i, rads;
       if (this.numberInputsFilled === this.variables.length - 2 && this.inputsCorrect && this.inputsRangeOrderCorrect && this.inputsRangeCorrect && (this.numberInputsRangeFilled === 0 || this.numberInputsRangeFilled === 2)) {
-        this.graph.context.clearRect(0, 0, this.graph.canvas.width, this.graph.canvas.height);
-        this.graph.context.drawImage(this.graphCloneCanvas, 0, 0);
         rads = document.getElementsByName('modeLine');
         i = 0;
         while (i < rads.length) {
@@ -604,8 +598,6 @@
       a = Math.round(this.equation(aux));
       aux[this.positionValueVariableX] = this.graph.xEnd;
       b = Math.round(this.equation(aux));
-      console.log(a);
-      console.log(b);
       max = Math.max(a, b);
       min = Math.min(a, b);
       this.graph.maxX = this.graph.maxY = max + 10;
@@ -781,11 +773,11 @@
 
     Graph.prototype.heightPanel = null;
 
-    Graph.prototype.minX = -10;
+    Graph.prototype.minX = -100;
 
     Graph.prototype.minY = -10;
 
-    Graph.prototype.maxX = 10;
+    Graph.prototype.maxX = 100;
 
     Graph.prototype.maxY = 10;
 
@@ -844,7 +836,7 @@
       this.width = width - this.padding.left - this.padding.right - this.margin.left - this.margin.right;
       this.height = width - this.padding.top - this.padding.bottom - this.margin.top - this.margin.bottom;
       this.xScale = d3.scale.linear().domain([this.minX, this.maxX]).range([0, this.width]);
-      this.yScale = d3.scale.linear().domain([this.minY, this.maxX]).range([0, this.height]);
+      this.yScale = d3.scale.linear().domain([this.minY, this.maxY]).range([this.height, 0]);
       this.xAxisFunction = d3.svg.axis().scale(this.xScale).orient("bottom");
       this.yAxisFunction = d3.svg.axis().scale(this.yScale).orient("left");
       this.svg = d3.select(this.panelGraph).append("svg").attr("width", this.widthPanel).attr("height", this.heightPanel);
@@ -882,7 +874,7 @@
       this.width = width - this.padding.left - this.padding.right - this.margin.left - this.margin.right;
       this.height = width - this.padding.top - this.padding.bottom - this.margin.top - this.margin.bottom;
       this.xScale.range([0, this.width]);
-      this.yScale.range([0, this.height]);
+      this.yScale.range([this.height, 0]);
       this.svg.attr("width", this.widthPanel).attr("height", this.heightPanel);
       this.xAxis.attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
       return this.yAxis.attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
@@ -956,12 +948,15 @@
     };
 
     Graph.prototype.drawEquation = function(equation, color, thickness, mode) {
-      var aux, auxX, auxY, context, endAngle, iteration, verticalAsymptote, x, y;
-      context = this.context;
-      iteration = this.iteration;
-      x = this.xStart + iteration;
-      verticalAsymptote = false;
-      console.log(this.iteration);
+
+      /*
+      context = @context
+      iteration =  @iteration
+      x = @xStart + iteration
+      verticalAsymptote = false
+      console.log @iteration
+       */
+      var aux, auxX, auxY, dataset, i, plotdata, verticalAsymptote, x, y;
       if (mode === "line") {
         y = equation(x);
         context.save();
@@ -1014,54 +1009,77 @@
         }
       }
       if (mode === "dots") {
-        iteration = 0.2;
-        endAngle = 2 * Math.PI;
-        y = equation(x);
-        auxX = x;
-        aux = y;
-        while (x <= this.xEnd) {
-          if ((this.minY < y && y < this.maxY)) {
-            context.save();
-            context.save();
-            this.transformContext();
-            context.beginPath();
-            context.arc(x, y, 0.09, 0, endAngle);
-            context.restore();
-            context.fillStyle = color;
-            context.fill();
-            context.restore();
-          } else {
-            if ((auxY < 0 && y > 0) || (auxY > 0 && y < 0)) {
-              verticalAsymptote = true;
-              break;
-            }
-            auxX = x;
-            auxY = y;
-          }
-          x += iteration;
-          y = equation(x);
+        plotdata = [];
+        i = 1;
+        dataset = [[5, 20], [480, 90], [250, 50], [100, 33], [330, 95], [410, 12], [475, 44], [25, 67], [85, 21], [220, 88]];
+        while (i < 100) {
+          plotdata.push([i, M(i)]);
+          i++;
         }
-        if (verticalAsymptote) {
-          x = x + iteration;
-          y = equation(x);
-          while (x <= this.xEnd) {
-            if ((this.minY < y && y < this.maxY)) {
-              context.save();
-              context.save();
-              this.transformContext();
-              context.beginPath();
-              context.arc(x, y, 0.09, 0, endAngle);
-              context.restore();
-              context.fillStyle = color;
-              context.fill();
-              context.restore();
-            }
-            x += iteration;
-            y = equation(x);
-          }
-        }
+        this.svg.selectAll('circle').data(plotdata).enter().append('svg:circle').attr('cx', ((function(_this) {
+          return function(d) {
+            var a;
+            a = _this.xScale(d[0]);
+            return console.log(a);
+          };
+        })(this))).attr('cy', (function(_this) {
+          return function(d) {
+            var b;
+            b = _this.yScale(d[1]);
+            return console.log(b);
+          };
+        })(this)).attr('r', 2);
+        return true;
+
+        /*
+        iteration = 0.2
+        endAngle = 2*Math.PI
+        y = equation(x)
+                
+        auxX = x
+        aux = y
+        
+        while x <= @xEnd
+            if @minY < y < @maxY
+                context.save()
+                context.save()
+                @transformContext()
+                context.beginPath()
+                context.arc x, y, 0.09, 0,endAngle
+                context.restore()
+                context.fillStyle = color
+                context.fill()
+                context.restore()
+            else 
+                if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
+                    verticalAsymptote = true
+                    break
+                auxX = x
+                auxY = y
+            
+            x += iteration
+            y = equation(x)
+        
+        if verticalAsymptote
+            x = x + iteration
+            y = equation(x)
+            while x <= @xEnd
+                if @minY < y < @maxY
+                    context.save()
+                    context.save()
+                    @transformContext()
+                    context.beginPath()
+                    context.arc x, y, 0.09, 0,endAngle
+                    context.restore()
+                    context.fillStyle = color
+                    context.fill()
+                    context.restore()  
+                x += iteration
+                y = equation(x)
+        
+                @drawVariables()
+         */
       }
-      return this.drawVariables();
     };
 
     Graph.prototype.transformContext = function() {

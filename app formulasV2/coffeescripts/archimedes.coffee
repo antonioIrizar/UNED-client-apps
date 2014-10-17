@@ -58,7 +58,7 @@ class Formula
 
         divDescriptionVariables.appendChild @descriptionVariables
 
-        @cloneCanvas()
+        #@cloneCanvas()
 
         img = document.createElement 'img'
         img.src = @srcImage
@@ -165,11 +165,8 @@ class Formula
             @inputNothing divForm, spanControl, labelForm
         
         if @inputsCorrect and inputsCorrect
-            console.log newNumberInputsFilled
             if newNumberInputsFilled != @numberInputsFilled
-                console.log @variables.length
                 if newNumberInputsFilled == (@variables.length - 2) 
-                    console.log "aqui"
                     @idInputRange = @searchIdInputRange()
                     @remplaceInputs @createInputRange(@idInputRange), @idInputRange
                 else
@@ -440,8 +437,8 @@ class Formula
 
     clickButton: ->
         if (@numberInputsFilled == @variables.length-2 and @inputsCorrect and @inputsRangeOrderCorrect and @inputsRangeCorrect and (@numberInputsRangeFilled == 0 or @numberInputsRangeFilled == 2 ))
-            @graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
-            @graph.context.drawImage(@graphCloneCanvas, 0, 0) 
+            #@graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
+            #@graph.context.drawImage(@graphCloneCanvas, 0, 0) 
             
             rads = document.getElementsByName 'modeLine'
 
@@ -520,8 +517,6 @@ class Formula
         a = Math.round @equation aux
         aux[@positionValueVariableX] = @graph.xEnd
         b = Math.round @equation aux
-        console.log a
-        console.log b
         max = Math.max a, b
         min = Math.min a, b
         @graph.maxX = @graph.maxY = max+10
@@ -630,9 +625,9 @@ class Graph
     panelGraph: null
     widthPanel: null
     heightPanel: null
-    minX: -10
+    minX: -100
     minY: -10
-    maxX: 10
+    maxX: 100
     maxY: 10
     xAxis:null
     yAxis:null
@@ -674,8 +669,8 @@ class Graph
             .range [0,@width]
 
         @yScale = d3.scale.linear()
-            .domain [@minY,@maxX]
-            .range [0,@height]
+            .domain [@minY,@maxY]
+            .range [@height,0]
 
         @xAxisFunction = d3.svg.axis()
             .scale @xScale 
@@ -733,7 +728,7 @@ class Graph
 
         @xScale.range [0,@width]
 
-        @yScale.range [0,@height]
+        @yScale.range [@height,0]
 
         @svg.attr "width", @widthPanel 
             .attr "height", @heightPanel
@@ -812,11 +807,13 @@ g.append("rect")
         ###
 
     drawEquation: (equation, color, thickness, mode) ->
+        ###
         context = @context
         iteration =  @iteration
         x = @xStart + iteration
         verticalAsymptote = false
         console.log @iteration
+        ###
         if mode == "line"
             #console.log "aqui"
             y = equation(x)
@@ -870,6 +867,44 @@ g.append("rect")
                 context.restore()
             
         if mode == "dots"
+            plotdata = []
+            i = 1
+            dataset = [
+                  [ 5,     20 ],
+                  [ 480,   90 ],
+                  [ 250,   50 ],
+                  [ 100,   33 ],
+                  [ 330,   95 ],
+                  [ 410,   12 ],
+                  [ 475,   44 ],
+                  [ 25,    67 ],
+                  [ 85,    21 ],
+                  [ 220,   88 ]
+              ];
+
+            while i<100
+                plotdata.push [i, M i]
+                i++
+
+            @svg.selectAll('circle')
+                .data(plotdata)
+                .enter()
+                .append('svg:circle')
+                .attr('cx', ((d) =>
+             
+                    a=@xScale(d[0])
+                    console.log a
+                    ))
+                .attr('cy', (d) =>
+
+                    b=@yScale(d[1])
+                    console.log b
+                    
+                    )
+                .attr('r', 2)
+
+                true
+            ###
             iteration = 0.2
             endAngle = 2*Math.PI
             y = equation(x)
@@ -916,6 +951,7 @@ g.append("rect")
                     y = equation(x)
 
         @drawVariables()
+        ###
 
     transformContext: ->
         context = @context
