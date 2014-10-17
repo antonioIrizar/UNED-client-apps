@@ -747,15 +747,51 @@
   })();
 
   Graph = (function() {
-    Graph.prototype.canvas = null;
+    Graph.prototype.margin = {
+      top: 20,
+      right: 20,
+      bottom: 20,
+      left: 20
+    };
 
-    Graph.prototype.minX = null;
+    Graph.prototype.padding = {
+      top: 30,
+      right: 30,
+      bottom: 30,
+      left: 30
+    };
 
-    Graph.prototype.minY = null;
+    Graph.prototype.width = null;
 
-    Graph.prototype.maxX = null;
+    Graph.prototype.height = null;
 
-    Graph.prototype.maxY = null;
+    Graph.prototype.xScale = null;
+
+    Graph.prototype.yScale = null;
+
+    Graph.prototype.xAxisFunction = null;
+
+    Graph.prototype.yAxisFunction = null;
+
+    Graph.prototype.svg = null;
+
+    Graph.prototype.panelGraph = null;
+
+    Graph.prototype.widthPanel = null;
+
+    Graph.prototype.heightPanel = null;
+
+    Graph.prototype.minX = -10;
+
+    Graph.prototype.minY = -10;
+
+    Graph.prototype.maxX = 10;
+
+    Graph.prototype.maxY = 10;
+
+    Graph.prototype.xAxis = null;
+
+    Graph.prototype.yAxis = null;
 
     Graph.prototype.xStart = null;
 
@@ -796,9 +832,32 @@
     Graph.prototype.autoScale = true;
 
     function Graph() {
-      this.canvas = document.getElementById("graph");
-      this.context = this.canvas.getContext('2d');
-      this.resizeCanvas();
+      var aux, g, width;
+      this.panelGraph = document.getElementById("panelGraph");
+      width = window.innerWidth;
+      if (width > 991) {
+        width = (width / 12) * 5;
+      }
+      width = width * 0.90;
+      this.widthPanel = width;
+      this.heightPanel = width;
+      this.width = width - this.padding.left - this.padding.right - this.margin.left - this.margin.right;
+      this.height = width - this.padding.top - this.padding.bottom - this.margin.top - this.margin.bottom;
+      this.xScale = d3.scale.linear().domain([this.minX, this.maxX]).range([0, this.width]);
+      this.yScale = d3.scale.linear().domain([this.minY, this.maxX]).range([0, this.height]);
+      this.xAxisFunction = d3.svg.axis().scale(this.xScale).orient("bottom");
+      this.yAxisFunction = d3.svg.axis().scale(this.yScale).orient("left");
+      this.svg = d3.select(this.panelGraph).append("svg").attr("width", this.widthPanel).attr("height", this.heightPanel);
+      aux = this.svg.append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+      this.xAxisFunction.tickValues(this.xScale.ticks(this.xAxisFunction.ticks()).filter(function(x) {
+        return x !== 0;
+      }));
+      this.yAxisFunction.tickValues(this.yScale.ticks(this.yAxisFunction.ticks()).filter(function(x) {
+        return x !== 0;
+      }));
+      g = aux.append("g").attr("transform", "translate(" + this.padding.left + "," + this.padding.top + ")");
+      this.xAxis = g.append("g").attr("id", "xAxis").attr("class", "x axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
+      this.yAxis = g.append("g").attr("id", "yAxis").attr("class", "y axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
     }
 
     Graph.prototype.drawXAxis = function() {
@@ -891,30 +950,83 @@
       if (width > 991) {
         width = (width / 12) * 5;
       }
-      this.canvas.width = width * 0.85;
-      this.canvas.height = this.canvas.width;
-      if (this.autoScale) {
-        this.maxX = ~~(width / 2 / 30);
-        this.minX = -this.maxX;
-        this.minY = this.minX;
-        this.maxY = this.maxX;
-        this.xStart = this.minX;
-        this.xEnd = this.maxX;
-      }
-      this.rangeX = Math.abs(this.maxX + Math.abs(this.minX));
-      this.rangeY = Math.abs(this.maxY + Math.abs(this.minY));
-      this.unitX = this.canvas.width / this.rangeX;
-      this.unitY = this.canvas.height / this.rangeY;
-      this.centerX = Math.round(Math.abs(this.minX / this.rangeX) * this.canvas.width);
-      this.centerY = Math.round(Math.abs(this.minY / this.rangeY) * this.canvas.height);
-      this.iteration = (this.maxX + Math.abs(this.minX)) / 1000;
-      this.scaleX = this.canvas.width / this.rangeX;
-      this.scaleY = this.canvas.height / this.rangeY;
-      this.drawXAxis();
-      this.drawYAxis();
-      if (this.x && this.y) {
-        return this.drawEquation(equation, color, thickness, mode);
-      }
+      width = width * 0.90;
+      this.widthPanel = width;
+      this.heightPanel = width;
+      this.width = width - this.padding.left - this.padding.right - this.margin.left - this.margin.right;
+      this.height = width - this.padding.top - this.padding.bottom - this.margin.top - this.margin.bottom;
+      this.xScale.range([0, this.width]);
+      this.yScale.range([0, this.height]);
+      this.svg.attr("width", this.widthPanel).attr("height", this.heightPanel);
+      this.xAxis.attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
+      return this.yAxis.attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
+
+      /*
+      
+       //El recuadro de dentro
+      var defs = svg.append("defs");
+      
+      defs.append("marker")
+          .attr("id", "triangle-start")
+          .attr("viewBox", "0 0 10 10")
+          .attr("refX", 10)
+          .attr("refY", 5)
+          .attr("markerWidth", 6)
+          .attr("markerHeight", 6)
+          .attr("orient", "auto")
+        .append("path")
+          .attr("d", "M 0 0 L 10 5 L 0 10 z");
+      
+      defs.append("marker")
+          .attr("id", "triangle-end")
+          .attr("viewBox", "0 0 10 10")
+          .attr("refX", 10)
+          .attr("refY", 5)
+          .attr("markerWidth", 6)
+          .attr("markerHeight", 6)
+          .attr("orient", "auto")
+        .append("path")
+          .attr("d", "M 0 0 L 10 5 L 0 10 z");
+      
+      svg.append("rect")
+          .attr("class", "outer")
+          .attr("width", widthinterno)
+          .attr("height", heightInterno);
+      
+      
+       lo de dentro
+      g.append("rect")
+          .attr("class", "inner")
+          .attr("width", width)
+          .attr("height", height);
+      
+          
+      @canvas.width = width * 0.85
+      @canvas.height = @canvas.width
+      
+      if @autoScale
+          @maxX = ~~(width/2 /30)
+          @minX = -@maxX
+          @minY = @minX
+          @maxY = @maxX
+          @xStart = @minX
+          @xEnd = @maxX 
+        
+      @rangeX = (Math.abs @maxX + Math.abs @minX)
+      @rangeY = (Math.abs @maxY + Math.abs @minY)
+      
+      @unitX = @canvas.width / @rangeX 
+      @unitY = @canvas.height / @rangeY
+      @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
+      @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
+      @iteration = (@maxX + Math.abs @minX) / 1000
+      @scaleX = @canvas.width / @rangeX
+      @scaleY = @canvas.height / @rangeY
+      @drawXAxis()
+      @drawYAxis()
+      if (@x and @y)
+          @drawEquation equation, color, thickness, mode
+       */
     };
 
     Graph.prototype.drawEquation = function(equation, color, thickness, mode) {

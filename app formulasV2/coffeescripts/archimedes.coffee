@@ -618,11 +618,24 @@ class Operator
 
 
 class Graph
-    canvas: null
-    minX: null
-    minY: null
-    maxX: null
-    maxY: null
+    margin : top: 20, right: 20, bottom: 20, left: 20
+    padding: top: 30, right: 30, bottom: 30, left: 30
+    width: null
+    height: null
+    xScale: null
+    yScale: null
+    xAxisFunction: null
+    yAxisFunction: null
+    svg: null
+    panelGraph: null
+    widthPanel: null
+    heightPanel: null
+    minX: -10
+    minY: -10
+    maxX: 10
+    maxY: 10
+    xAxis:null
+    yAxis:null
     xStart: null
     xEnd: null
     unitsPerTick: 1
@@ -644,9 +657,58 @@ class Graph
     autoScale : true
 
     constructor: ->
-        @canvas = document.getElementById "graph"
-        @context = @canvas.getContext '2d'
-        @resizeCanvas()
+        @panelGraph = document.getElementById "panelGraph"
+        width = window.innerWidth
+        if width > 991
+            width = ((width/12) * 5)
+
+        width = width *0.90
+        @widthPanel = width
+        @heightPanel = width
+
+        @width = width - @padding.left - @padding.right - @margin.left - @margin.right
+        @height = width - @padding.top - @padding.bottom - @margin.top - @margin.bottom
+
+        @xScale = d3.scale.linear()
+            .domain [@minX,@maxX]
+            .range [0,@width]
+
+        @yScale = d3.scale.linear()
+            .domain [@minY,@maxX]
+            .range [0,@height]
+
+        @xAxisFunction = d3.svg.axis()
+            .scale @xScale 
+            .orient "bottom"
+
+        @yAxisFunction = d3.svg.axis()
+            .scale @yScale
+            .orient "left"
+
+        @svg = d3.select(@panelGraph).append "svg"
+            .attr "width", @widthPanel 
+            .attr "height", @heightPanel
+        
+        aux = @svg.append "g"
+            .attr "transform", "translate(" + @margin.left + "," + @margin.top + ")"
+
+        @xAxisFunction.tickValues(@xScale.ticks(@xAxisFunction.ticks()).filter((x) -> x != 0))
+        @yAxisFunction.tickValues(@yScale.ticks(@yAxisFunction.ticks()).filter((x) -> x != 0))
+
+        g = aux.append "g"
+            .attr "transform", "translate(" + @padding.left + "," + @padding.top + ")"
+
+        @xAxis= g.append("g")
+            .attr("id", "xAxis")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + @yScale(0)+ ")")
+            .call @xAxisFunction
+
+        @yAxis = g.append("g")
+            .attr("id", "yAxis")
+            .attr "class", "y axis"
+            .attr "transform", "translate(" + @xScale(0) + ",0)"
+            .call @yAxisFunction
 
     drawXAxis: ->
         context = @context
@@ -733,7 +795,69 @@ class Graph
     resizeCanvas:  (equation, color, thickness, mode)->
         width = window.innerWidth
         if width > 991
-            width = (width/12) * 5
+            width = ((width/12) * 5)
+
+        width = width *0.90
+
+        @widthPanel = width
+        @heightPanel = width
+
+        @width = width - @padding.left - @padding.right - @margin.left - @margin.right
+        @height = width - @padding.top - @padding.bottom - @margin.top - @margin.bottom
+
+        @xScale.range [0,@width]
+
+        @yScale.range [0,@height]
+
+        @svg.attr "width", @widthPanel 
+            .attr "height", @heightPanel
+
+        @xAxis.attr("transform", "translate(0," + @yScale(0)+ ")")
+            .call @xAxisFunction
+           
+        @yAxis.attr("transform", "translate(" + @xScale(0) + ",0)")
+            .call @yAxisFunction
+        
+        ###
+
+ //El recuadro de dentro
+var defs = svg.append("defs");
+
+defs.append("marker")
+    .attr("id", "triangle-start")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+  .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z");
+
+defs.append("marker")
+    .attr("id", "triangle-end")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 10)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+  .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z");
+
+svg.append("rect")
+    .attr("class", "outer")
+    .attr("width", widthinterno)
+    .attr("height", heightInterno);
+
+
+ lo de dentro
+g.append("rect")
+    .attr("class", "inner")
+    .attr("width", width)
+    .attr("height", height);
+
+    
         @canvas.width = width * 0.85
         @canvas.height = @canvas.width
 
@@ -759,6 +883,7 @@ class Graph
         @drawYAxis()
         if (@x and @y)
             @drawEquation equation, color, thickness, mode
+        ###
 
     drawEquation: (equation, color, thickness, mode) ->
         context = @context

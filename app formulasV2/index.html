@@ -99,6 +99,31 @@
   }
 }
 #draggable { width: 150px; height: 150px; padding: 0.5em; }
+/*css graph */ 
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.outer,
+.inner {
+  shape-rendering: crispEdges;
+}
+
+.outer {
+  fill: none;
+  stroke: #000;
+}
+
+.inner {
+  fill: #ccc;
+  stroke: #000;
+  stroke-dasharray: 3, 4;
+}
+
 
 </style>
 
@@ -108,6 +133,7 @@
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
     <script src="javascripts/jquery.ui.touch-punch.min.js"></script>
+    <script src="http://d3js.org/d3.v2.js?2.9.5"></script>
     <script type="text/javascript" src="javascripts/archimedes.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full"></script>
 
@@ -181,13 +207,11 @@
               <h3 class="panel-title">Graphic</h3>
             </div>
             <div id="panelGraph" class="panel-body ">
-               <canvas id="graph"class="center-block" ></canvas>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <script>
 
       new Init('formulas', 'archimedes_formula', 'newton_formula', 'pendulum_formula', 'constant_value', 'description_variables');
