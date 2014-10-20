@@ -773,13 +773,19 @@
 
     Graph.prototype.heightPanel = null;
 
-    Graph.prototype.minX = -100;
+    Graph.prototype.minX = -10;
 
     Graph.prototype.minY = -10;
 
-    Graph.prototype.maxX = 100;
+    Graph.prototype.maxX = 10;
 
     Graph.prototype.maxY = 10;
+
+    Graph.prototype.lineFunction = null;
+
+    Graph.prototype.plotdata = [];
+
+    Graph.prototype.oldMode = null;
 
     Graph.prototype.xAxis = null;
 
@@ -853,17 +859,20 @@
     }
 
     Graph.prototype.drawVariables = function() {
-      var context;
-      context = this.context;
-      context.save();
-      context.font = "20px Georgia";
-      context.fillText(this.y, this.centerX - 40, 15);
-      context.fillText(this.x, this.canvas.width - 15, this.centerY + 40);
-      return context.restore();
+      return this.yAxis.append("text").attr("transform", "rotate(0)").attr("y", 6).attr("x", 15).attr("dy", ".71em").style("text-anchor", "end").text(this.y);
+
+      /*
+      context = @context
+      context.save()
+      context.font = "20px Georgia"
+      context.fillText(@y, @centerX - 40, 15)
+      context.fillText(@x, @canvas.width - 15, @centerY + 40)
+      context.restore()
+       */
     };
 
     Graph.prototype.resizeCanvas = function(equation, color, thickness, mode) {
-      var width;
+      var t0, t1, t2, width;
       width = window.innerWidth;
       if (width > 991) {
         width = (width / 12) * 5;
@@ -876,8 +885,25 @@
       this.xScale.range([0, this.width]);
       this.yScale.range([this.height, 0]);
       this.svg.attr("width", this.widthPanel).attr("height", this.heightPanel);
-      this.xAxis.attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
-      return this.yAxis.attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
+      t0 = this.svg.transition().duration(750);
+      t0.selectAll(".x.axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
+      t1 = t0;
+      t1.selectAll(".y.axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
+      if (this.x && this.y) {
+        t2 = t0;
+        if (mode === "line") {
+          return t2.selectAll(".line").attr("d", this.lineFunction);
+        } else {
+          return t2.selectAll(".line").attr("transform", (function(_this) {
+            return function(d) {
+              var x, y;
+              x = _this.xScale(d[0]) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d[1]) + _this.padding.top + _this.margin.top;
+              return "translate(" + x + "," + y + ")";
+            };
+          })(this)).attr("d", this.lineFunction);
+        }
+      }
 
       /*
       
@@ -956,80 +982,145 @@
       verticalAsymptote = false
       console.log @iteration
        */
-      var aux, auxX, auxY, dataset, i, plotdata, verticalAsymptote, x, y;
+      var a, aux, i;
+      i = -2;
+      this.plotdata = [];
+      while (i < 10) {
+        a = Math.random() * 10;
+        aux = {
+          "x": i,
+          "y": a
+        };
+        this.plotdata.push(aux);
+        i++;
+      }
       if (mode === "line") {
-        y = equation(x);
-        context.save();
-        context.save();
-        this.transformContext();
-        context.beginPath();
-        context.moveTo(this.xStart, y);
-        auxX = x;
-        aux = y;
-        while (x <= this.xEnd) {
-          if ((this.minY < y && y < this.maxY)) {
-            context.lineTo(x, y);
-          } else {
-            if ((auxY < 0 && y > 0) || (auxY > 0 && y < 0)) {
-              verticalAsymptote = true;
-              break;
-            }
-            auxX = x;
-            auxY = y;
+        if (this.oldMode === "line") {
+          d3.selectAll(".line").datum(this.plotdata).transition().duration(750).attr('d', this.lineFunction);
+        } else {
+          if (this.oldMode !== null) {
+            d3.selectAll(".line").remove();
           }
-          x += iteration;
-          y = equation(x);
+          this.lineFunction = d3.svg.line().interpolate('basis').x((function(_this) {
+            return function(d) {
+              console.log("aqui");
+              return _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+            };
+          })(this)).y((function(_this) {
+            return function(d) {
+              return _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+            };
+          })(this));
+          this.svg.append("path").datum(this.plotdata).attr('class', "line").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
+          this.oldMode = "line";
         }
-        context.restore();
-        context.lineJoin = 'round';
-        context.lineWidth = thickness;
-        context.strokeStyle = color;
-        context.stroke();
-        context.restore();
-        if (verticalAsymptote) {
-          context.save();
-          x = x + iteration;
-          y = equation(x);
-          this.transformContext();
-          context.beginPath();
-          context.moveTo(x, y);
-          while (x <= this.xEnd) {
-            if ((this.minY < y && y < this.maxY - 1)) {
-              context.lineTo(x, y);
-            }
-            x += iteration;
-            y = equation(x);
-          }
-          context.restore();
-          context.lineJoin = 'round';
-          context.lineWidth = thickness;
-          context.strokeStyle = color;
-          context.stroke();
-          context.restore();
-        }
+
+        /*
+        y = equation(x)
+        context.save()
+        context.save()
+        @transformContext()
+        context.beginPath()
+        context.moveTo(@xStart, y)
+        auxX = x
+        aux = y
+        
+        while x <= @xEnd
+            if @minY < y < @maxY
+                 *console.log "aqui"
+                context.lineTo(x, y)
+            else 
+                if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
+                    verticalAsymptote = true
+                    break
+                auxX = x
+                auxY = y
+            x += iteration
+            y = equation(x)
+        
+        context.restore()
+        context.lineJoin = 'round'
+        context.lineWidth = thickness
+        context.strokeStyle = color
+        context.stroke()
+        context.restore()
+        
+        if verticalAsymptote
+        
+            context.save()
+            x = x + iteration
+            y = equation(x)
+            @transformContext()
+            context.beginPath()
+            context.moveTo(x, y)
+            while x <= @xEnd
+                if @minY < y < @maxY-1
+                    context.lineTo(x, y)
+                x += iteration
+                y = equation(x)
+        
+            context.restore()
+            context.lineJoin = 'round'
+            context.lineWidth = thickness
+            context.strokeStyle = color
+            context.stroke()
+            context.restore()
+         */
       }
       if (mode === "dots") {
-        plotdata = [];
-        i = 1;
-        dataset = [[5, 20], [480, 90], [250, 50], [100, 33], [330, 95], [410, 12], [475, 44], [25, 67], [85, 21], [220, 88]];
-        while (i < 100) {
-          plotdata.push([i, M(i)]);
-          i++;
+        if (this.oldMode === "dots") {
+          this.lineFunction = d3.svg.symbol();
+          d3.selectAll(".line").data(this.plotdata).transition().duration(750).attr("transform", (function(_this) {
+            return function(d) {
+              var x, y;
+              console.log("aqui");
+              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+              return "translate(" + x + "," + y + ")";
+            };
+          })(this)).attr("d", this.lineFunction);
+        } else {
+          if (this.oldMode !== null) {
+            d3.selectAll(".line").remove();
+          }
+          a = null;
+          this.plotdata.unshift(a);
+          this.plotdata.unshift(a);
+          this.lineFunction = d3.svg.symbol();
+          this.svg.selectAll("path").data(this.plotdata).enter().append("path").attr('class', "line").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
+            return function(d) {
+              var x, y;
+              console.log(d);
+              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+              return "translate(" + x + "," + y + ")";
+            };
+          })(this)).attr("d", this.lineFunction);
+          this.oldMode = "dots";
+
+          /*
+                      @svg.selectAll('circle')
+          .data(@plotdata)
+          .enter()
+          .append('svg:circle')
+          .attr('cx', ((d) =>
+                       
+              a = @xScale(d[0])
+              a+@padding.left+@margin.left
+           
+              ))
+          .attr('cy', (d) =>
+          
+              b = @yScale(d[1])
+              b+@padding.top+@margin.top
+              
+              )
+          .style('stroke', "rgb(6, 120, 155)")
+          .attr('r', 2)
+                      
+          true
+           */
         }
-        this.svg.selectAll('circle').data(plotdata).enter().append('svg:circle').attr('cx', ((function(_this) {
-          return function(d) {
-            var a;
-            a = _this.xScale(d[0]);
-            return console.log(a);
-          };
-        })(this))).attr('cy', (function(_this) {
-          return function(d) {
-            var b;
-            b = _this.yScale(d[1]);
-            return console.log(b);
-          };
-        })(this)).attr('r', 2);
-        return true;
 
         /*
         iteration = 0.2
@@ -1080,6 +1171,7 @@
                 @drawVariables()
          */
       }
+      return this.drawVariables();
     };
 
     Graph.prototype.transformContext = function() {

@@ -625,12 +625,15 @@ class Graph
     panelGraph: null
     widthPanel: null
     heightPanel: null
-    minX: -100
+    minX: -10
     minY: -10
-    maxX: 100
+    maxX: 10
     maxY: 10
-    xAxis:null
-    yAxis:null
+    lineFunction: null
+    plotdata: []
+    oldMode: null
+    xAxis: null
+    yAxis: null
     xStart: null
     xEnd: null
     unitsPerTick: 1
@@ -704,15 +707,25 @@ class Graph
             .attr "class", "y axis"
             .attr "transform", "translate(" + @xScale(0) + ",0)"
             .call @yAxisFunction
+
    
     drawVariables: ->
+        @yAxis.append("text")
+            .attr("transform", "rotate(0)")
+            .attr("y", 6)
+            .attr("x", 15)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(@y)
+
+        ###
         context = @context
         context.save()
         context.font = "20px Georgia"
         context.fillText(@y, @centerX - 40, 15)
         context.fillText(@x, @canvas.width - 15, @centerY + 40)
         context.restore()       
-
+        ###
     resizeCanvas:  (equation, color, thickness, mode)->
         width = window.innerWidth
         if width > 991
@@ -733,12 +746,28 @@ class Graph
         @svg.attr "width", @widthPanel 
             .attr "height", @heightPanel
 
-        @xAxis.attr("transform", "translate(0," + @yScale(0)+ ")")
+        t0 = @svg.transition().duration(750)
+
+        t0.selectAll(".x.axis").attr("transform", "translate(0," + @yScale(0)+ ")")
             .call @xAxisFunction
-           
-        @yAxis.attr("transform", "translate(" + @xScale(0) + ",0)")
+        
+        t1 =t0
+        t1.selectAll(".y.axis").attr("transform", "translate(" + @xScale(0) + ",0)")
             .call @yAxisFunction
         
+        if (@x and @y)
+            # @drawEquation equation, color, thickness, mode
+            t2=t0
+            if mode is "line"
+                t2.selectAll(".line")
+                .attr("d", @lineFunction)
+            else
+                t2.selectAll(".line")
+                .attr("transform", (d) =>
+                    x = @xScale(d[0]) + @padding.left + @margin.left
+                    y = @yScale(d[1]) + @padding.top + @margin.top
+                    "translate(" + x + "," + y + ")")
+                .attr("d", @lineFunction)
         ###
 
  //El recuadro de dentro
@@ -814,8 +843,47 @@ g.append("rect")
         verticalAsymptote = false
         console.log @iteration
         ###
+        
+        i = -2
+        @plotdata = []
+        while i<10
+            a =(Math.random() *10)
+            aux = 
+                "x": i
+                "y": a
+            @plotdata.push aux
+            i++
         if mode == "line"
+           
+            if @oldMode is "line"
+                d3.selectAll(".line")
+                    .datum(@plotdata)
+                    .transition()
+                    .duration(750)
+                    .attr('d', @lineFunction)
+            else
+                if @oldMode isnt null
+                    d3.selectAll(".line").remove()
+
+                @lineFunction = d3.svg.line()
+                .interpolate('basis')
+                .x((d) =>
+                    console.log "aqui"
+                    @xScale(d.x)+@padding.left+@margin.left )
+                .y((d) => @yScale(d.y)+@padding.top+@margin.top )  
+
+                @svg.append("path")
+                .datum(@plotdata)
+                .attr('class', "line")
+                .style('stroke', "rgb(6, 120, 155)")
+                .style('stroke-width', "2")
+                .style('fill', "none")
+                .attr('d', @lineFunction)
+                @oldMode = "line"
+
+
             #console.log "aqui"
+            ###
             y = equation(x)
             context.save()
             context.save()
@@ -865,45 +933,70 @@ g.append("rect")
                 context.strokeStyle = color
                 context.stroke()
                 context.restore()
-            
+        ###   
         if mode == "dots"
-            plotdata = []
-            i = 1
-            dataset = [
-                  [ 5,     20 ],
-                  [ 480,   90 ],
-                  [ 250,   50 ],
-                  [ 100,   33 ],
-                  [ 330,   95 ],
-                  [ 410,   12 ],
-                  [ 475,   44 ],
-                  [ 25,    67 ],
-                  [ 85,    21 ],
-                  [ 220,   88 ]
-              ];
+            
 
-            while i<100
-                plotdata.push [i, M i]
-                i++
+            if @oldMode is "dots"
+                @lineFunction = d3.svg.symbol()
+                #@lineFunction.type("circle")
+                d3.selectAll(".line")
+                    .data(@plotdata)
+                    .transition()
+                    .duration(750)
+                    .attr("transform", (d) =>
+                        console.log "aqui"
+                       
+                        x = @xScale(d.x) + @padding.left + @margin.left
+                        y = @yScale(d.y) + @padding.top + @margin.top
+                        "translate(" + x + "," + y + ")")
+                    .attr("d", @lineFunction)
+            else
 
+                if @oldMode isnt null
+                    d3.selectAll(".line").remove()
+                # i don't know, but i need put 2 elements of trahs because it remove automatically 2 first elements
+                a = null
+                @plotdata.unshift a
+                @plotdata.unshift a
+    
+                @lineFunction = d3.svg.symbol()
+                @svg.selectAll("path")
+                .data(@plotdata)
+                .enter().append("path")
+                .attr('class', "line")
+                .style('stroke', "rgb(6, 120, 155)")
+                .style('stroke-width', "1")
+                .style('fill', "none")
+                .attr("transform", (d) =>
+                    console.log d
+                    x = @xScale(d.x) + @padding.left + @margin.left
+                    y = @yScale(d.y) + @padding.top + @margin.top
+                    "translate(" + x + "," + y + ")")
+                .attr("d", @lineFunction)
+                @oldMode = "dots"
+                ###
             @svg.selectAll('circle')
-                .data(plotdata)
+                .data(@plotdata)
                 .enter()
                 .append('svg:circle')
                 .attr('cx', ((d) =>
              
-                    a=@xScale(d[0])
-                    console.log a
+                    a = @xScale(d[0])
+                    a+@padding.left+@margin.left
+                 
                     ))
                 .attr('cy', (d) =>
 
-                    b=@yScale(d[1])
-                    console.log b
+                    b = @yScale(d[1])
+                    b+@padding.top+@margin.top
                     
                     )
+                .style('stroke', "rgb(6, 120, 155)")
                 .attr('r', 2)
-
+            
                 true
+            ###
             ###
             iteration = 0.2
             endAngle = 2*Math.PI
@@ -952,6 +1045,7 @@ g.append("rect")
 
         @drawVariables()
         ###
+        @drawVariables()
 
     transformContext: ->
         context = @context
