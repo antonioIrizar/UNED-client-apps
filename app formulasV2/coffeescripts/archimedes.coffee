@@ -10,7 +10,7 @@ class Formula
     constantValue: null
     idFormula: "formula_with_numbers"
     equation: null
-    valueVariables: []
+    valueVariables: {}
     positionValueVariableX: null
     graph: null
     graphCloneCanvas: null
@@ -33,7 +33,7 @@ class Formula
             ,'blue', 3, @mode
 
         @variables = []
-        @valueVariables = []
+        @valueVariables = {}
         
         divAllFormulas = document.createElement 'div'
         divAllFormulas.setAttribute 'id', "formula-created"
@@ -451,12 +451,8 @@ class Formula
 
             @drawNumbersFormula()
             @getVariableValues()
-            @graph.x = @variables[@positionValueVariableX + 1].name
             @graph.y = @variables[0].name
-            @graph.drawEquation (x) => 
-                @executeEquation x
-                
-            ,'blue', 3, @mode
+            @graph.drawEquation @equation, @valueVariables, @positionValueVariableX, 'blue', 3, @mode
         else
             alert "The form have errors or it's not filled"
 
@@ -492,49 +488,28 @@ class Formula
     getVariableValues: ->
         for id, variable of @variables[1..]
             if variable.value is null
-                @valueVariables[id] = null
-                @positionValueVariableX = new Number(id)
+                @valueVariables[variable.id] = null
+                @positionValueVariableX = variable.id
+                @graph.x = variable.name
                 if variable.startRange isnt null and variable.endRange isnt null
-                    @graph.xStart = variable.startRange
-                    @graph.xEnd = variable.endRange
-                    max = Math.max (Math.abs variable.startRange), (Math.abs variable.endRange)
-                    @graph.maxX = @graph.maxY = max
-                    @graph.minY = @graph.minX = - max
+                    @graph.minX = @graph.xStart = variable.startRange
+                    @graph.maxX = @graph.xEnd = variable.endRange
                     @graph.autoScale = false
-                    @graph.resizeCanvas (x) => 
-                            @executeEquation x
-                        ,'blue', 3, @mode
                 else
                     @graph.autoScale = true
-                    @graph.resizeCanvas (x) => 
-                        @executeEquation x
-                    ,'blue', 3, @mode
             else
-                @valueVariables[id] = variable.value
- 
-        aux = @valueVariables
-        aux[@positionValueVariableX] = @graph.xStart
-        a = Math.round @equation aux
-        aux[@positionValueVariableX] = @graph.xEnd
-        b = Math.round @equation aux
-        max = Math.max a, b
-        min = Math.min a, b
-        @graph.maxX = @graph.maxY = max+10
-        @graph.minY = @graph.minX = - (max+1)
-        @graph.autoScale = false
-        @graph.resizeCanvas (x) => 
-            @executeEquation x
-        ,'blue', 3, @mode
+                @valueVariables[variable.id] = variable.value
 
-
+    ###
     executeEquation: (x) ->
         @valueVariables[@positionValueVariableX] = x
-        @equation @valueVariables
+        @equation.eval @valueVariables
+    ###
     
 class Archimedes extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
-        newtowns = new Variable("E" , "Newtowns" , "description" , null)
+        newtowns = new Variable("e", "E" , "Newtowns" , "description" , null)
         equals = new Operator "="
         ###
         paragraph = document.createElement 'p'
@@ -547,13 +522,13 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        density = new Variable("\u03C1" , "Density" , "description" , null)
+        density = new Variable("ro", "\u03C1" , "Density" , "description" , null)
         mult = new Operator "*"
-        gravity = new Variable("g" , "Gravity" , "description" , null)
-        volume = new Variable("V" , "Volume" , "description" , null)
+        gravity = new Variable("g", "g" , "Gravity" , "description" , null)
+        volume = new Variable("v", "V" , "Volume" , "description" , null)
         variables = [newtowns, equals, density, mult, gravity, mult, volume]
-        
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @archimedesEquation, graph)
+        equation = 'e=ro*g*v'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
     
     archimedesEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
@@ -595,6 +570,7 @@ class Pendulum extends Formula
 
 
 class Variable 
+    id: null #string with id to library mathjs, it can't use special chars example ñ,ç...
     name: null #string but pass in htlm , if it need for example sub tag
     fullName: null #string to put in constant value
     description: null # small description of variable
@@ -603,7 +579,7 @@ class Variable
     startRange: null #float star range
     endRange: null #float end range
 
-    constructor: (@name,@fullName,@description,@value) ->
+    constructor: (@id, @name, @fullName, @description, @value) ->
 
 
 class Operator
@@ -634,8 +610,8 @@ class Graph
     oldMode: null
     xAxis: null
     yAxis: null
-    xStart: null
-    xEnd: null
+    xStart: -10
+    xEnd: 10
     unitsPerTick: 1
     axisColor:"#aaa"
     font: "8pt Calibri"
@@ -834,8 +810,7 @@ g.append("rect")
         if (@x and @y)
             @drawEquation equation, color, thickness, mode
         ###
-
-    drawEquation: (equation, color, thickness, mode) ->
+    drawEquation: (equation, valueVariables, positionValueVariableX, color, thickness, mode) ->
         ###
         context = @context
         iteration =  @iteration
@@ -843,7 +818,63 @@ g.append("rect")
         verticalAsymptote = false
         console.log @iteration
         ###
-        
+        iteration = Math.abs (@xEnd - @xStart) /100
+        x = @xStart
+        @plotdata = []
+        verticalAsymptote = false
+        valueVariables[positionValueVariableX] = x
+        console.log valueVariables
+        #coffeScript can't traslate correcly with function eval
+        y =  `equation.eval(valueVariables)`
+        x += iteration
+        lastY = y
+        maxY = y
+        minY = y
+        while x <= @xEnd
+            #coffeScript can't traslate correcly with function eval
+            valueVariables[positionValueVariableX] = x
+            y =  `equation.eval(valueVariables)`
+
+            if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
+                verticalAsymptote = true
+                break
+
+            minY = Math.min minY, y
+            maxY = Math.max maxY, y
+
+            aux = 
+                "x": x
+                "y": y
+            @plotdata.push aux
+
+            lastY = y
+            x += iteration
+
+       
+        ###
+        thinking about asymptote
+            if verticalAsymptote
+
+                x += iteration
+                valueVariables[positionValueVariableX] = x
+                y = equation(x)
+                @transformContext()
+                context.beginPath()
+                context.moveTo(x, y)
+                while x <= @xEnd
+                    if @minY < y < @maxY-1
+                        context.lineTo(x, y)
+                    x += iteration
+                    y = equation(x)
+
+                context.restore()
+                context.lineJoin = 'round'
+                context.lineWidth = thickness
+                context.strokeStyle = color
+                context.stroke()
+                context.restore()
+        ###
+        ###
         i = -2
         @plotdata = []
         while i<10
@@ -853,6 +884,7 @@ g.append("rect")
                 "y": a
             @plotdata.push aux
             i++
+        ###
         if mode == "line"
            
             if @oldMode is "line"
@@ -880,7 +912,6 @@ g.append("rect")
                 .style('fill', "none")
                 .attr('d', @lineFunction)
                 @oldMode = "line"
-
 
             #console.log "aqui"
             ###
@@ -955,10 +986,11 @@ g.append("rect")
 
                 if @oldMode isnt null
                     d3.selectAll(".line").remove()
-                # i don't know, but i need put 2 elements of trahs because it remove automatically 2 first elements
-                a = null
-                @plotdata.unshift a
-                @plotdata.unshift a
+
+                # i don't know, but i need put 2 elements of trash because it remove automatically 2 first elements
+                trash = null
+                @plotdata.unshift trash
+                @plotdata.unshift trash
     
                 @lineFunction = d3.svg.symbol()
                 @svg.selectAll("path")
@@ -969,7 +1001,6 @@ g.append("rect")
                 .style('stroke-width', "1")
                 .style('fill', "none")
                 .attr("transform", (d) =>
-                    console.log d
                     x = @xScale(d.x) + @padding.left + @margin.left
                     y = @yScale(d.y) + @padding.top + @margin.top
                     "translate(" + x + "," + y + ")")

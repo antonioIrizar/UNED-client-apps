@@ -28,7 +28,7 @@
 
     Formula.prototype.equation = null;
 
-    Formula.prototype.valueVariables = [];
+    Formula.prototype.valueVariables = {};
 
     Formula.prototype.positionValueVariableX = null;
 
@@ -70,7 +70,7 @@
         };
       })(this));
       this.variables = [];
-      this.valueVariables = [];
+      this.valueVariables = {};
       divAllFormulas = document.createElement('div');
       divAllFormulas.setAttribute('id', "formula-created");
       this.divFormula = document.createElement('div');
@@ -517,13 +517,8 @@
         }
         this.drawNumbersFormula();
         this.getVariableValues();
-        this.graph.x = this.variables[this.positionValueVariableX + 1].name;
         this.graph.y = this.variables[0].name;
-        return this.graph.drawEquation((function(_this) {
-          return function(x) {
-            return _this.executeEquation(x);
-          };
-        })(this), 'blue', 3, this.mode);
+        return this.graph.drawEquation(this.equation, this.valueVariables, this.positionValueVariableX, 'blue', 3, this.mode);
       } else {
         return alert("The form have errors or it's not filled");
       }
@@ -562,58 +557,35 @@
     };
 
     Formula.prototype.getVariableValues = function() {
-      var a, aux, b, id, max, min, variable, _ref;
+      var id, variable, _ref, _results;
       _ref = this.variables.slice(1);
+      _results = [];
       for (id in _ref) {
         variable = _ref[id];
         if (variable.value === null) {
-          this.valueVariables[id] = null;
-          this.positionValueVariableX = new Number(id);
+          this.valueVariables[variable.id] = null;
+          this.positionValueVariableX = variable.id;
+          this.graph.x = variable.name;
           if (variable.startRange !== null && variable.endRange !== null) {
-            this.graph.xStart = variable.startRange;
-            this.graph.xEnd = variable.endRange;
-            max = Math.max(Math.abs(variable.startRange), Math.abs(variable.endRange));
-            this.graph.maxX = this.graph.maxY = max;
-            this.graph.minY = this.graph.minX = -max;
-            this.graph.autoScale = false;
-            this.graph.resizeCanvas((function(_this) {
-              return function(x) {
-                return _this.executeEquation(x);
-              };
-            })(this), 'blue', 3, this.mode);
+            this.graph.minX = this.graph.xStart = variable.startRange;
+            this.graph.maxX = this.graph.xEnd = variable.endRange;
+            _results.push(this.graph.autoScale = false);
           } else {
-            this.graph.autoScale = true;
-            this.graph.resizeCanvas((function(_this) {
-              return function(x) {
-                return _this.executeEquation(x);
-              };
-            })(this), 'blue', 3, this.mode);
+            _results.push(this.graph.autoScale = true);
           }
         } else {
-          this.valueVariables[id] = variable.value;
+          _results.push(this.valueVariables[variable.id] = variable.value);
         }
       }
-      aux = this.valueVariables;
-      aux[this.positionValueVariableX] = this.graph.xStart;
-      a = Math.round(this.equation(aux));
-      aux[this.positionValueVariableX] = this.graph.xEnd;
-      b = Math.round(this.equation(aux));
-      max = Math.max(a, b);
-      min = Math.min(a, b);
-      this.graph.maxX = this.graph.maxY = max + 10;
-      this.graph.minY = this.graph.minX = -(max + 1);
-      this.graph.autoScale = false;
-      return this.graph.resizeCanvas((function(_this) {
-        return function(x) {
-          return _this.executeEquation(x);
-        };
-      })(this), 'blue', 3, this.mode);
+      return _results;
     };
 
-    Formula.prototype.executeEquation = function(x) {
-      this.valueVariables[this.positionValueVariableX] = x;
-      return this.equation(this.valueVariables);
-    };
+
+    /*
+    executeEquation: (x) ->
+        @valueVariables[@positionValueVariableX] = x
+        @equation.eval @valueVariables
+     */
 
     return Formula;
 
@@ -623,8 +595,8 @@
     __extends(Archimedes, _super);
 
     function Archimedes(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
-      var density, equals, gravity, mult, newtowns, variables, volume;
-      newtowns = new Variable("E", "Newtowns", "description", null);
+      var density, equals, equation, gravity, mult, newtowns, variables, volume;
+      newtowns = new Variable("e", "E", "Newtowns", "description", null);
       equals = new Operator("=");
 
       /*
@@ -637,12 +609,13 @@
       paragraph.appendChild subTag
       console.log "aqui"
        */
-      density = new Variable("\u03C1", "Density", "description", null);
+      density = new Variable("ro", "\u03C1", "Density", "description", null);
       mult = new Operator("*");
-      gravity = new Variable("g", "Gravity", "description", null);
-      volume = new Variable("V", "Volume", "description", null);
+      gravity = new Variable("g", "g", "Gravity", "description", null);
+      volume = new Variable("v", "V", "Volume", "description", null);
       variables = [newtowns, equals, density, mult, gravity, mult, volume];
-      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, this.archimedesEquation, graph);
+      equation = 'e=ro*g*v';
+      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
     }
 
     Archimedes.prototype.archimedesEquation = function(arrayVariables) {
@@ -702,6 +675,8 @@
   })(Formula);
 
   Variable = (function() {
+    Variable.prototype.id = null;
+
     Variable.prototype.name = null;
 
     Variable.prototype.fullName = null;
@@ -716,7 +691,8 @@
 
     Variable.prototype.endRange = null;
 
-    function Variable(name, fullName, description, value) {
+    function Variable(id, name, fullName, description, value) {
+      this.id = id;
       this.name = name;
       this.fullName = fullName;
       this.description = description;
@@ -791,9 +767,9 @@
 
     Graph.prototype.yAxis = null;
 
-    Graph.prototype.xStart = null;
+    Graph.prototype.xStart = -10;
 
-    Graph.prototype.xEnd = null;
+    Graph.prototype.xEnd = 10;
 
     Graph.prototype.unitsPerTick = 1;
 
@@ -973,7 +949,7 @@
        */
     };
 
-    Graph.prototype.drawEquation = function(equation, color, thickness, mode) {
+    Graph.prototype.drawEquation = function(equation, valueVariables, positionValueVariableX, color, thickness, mode) {
 
       /*
       context = @context
@@ -982,18 +958,71 @@
       verticalAsymptote = false
       console.log @iteration
        */
-      var a, aux, i;
-      i = -2;
+      var aux, iteration, lastY, maxY, minY, trash, verticalAsymptote, x, y;
+      iteration = Math.abs((this.xEnd - this.xStart) / 100);
+      x = this.xStart;
       this.plotdata = [];
-      while (i < 10) {
-        a = Math.random() * 10;
+      verticalAsymptote = false;
+      valueVariables[positionValueVariableX] = x;
+      console.log(valueVariables);
+      y = equation.eval(valueVariables);
+      x += iteration;
+      lastY = y;
+      maxY = y;
+      minY = y;
+      while (x <= this.xEnd) {
+        valueVariables[positionValueVariableX] = x;
+        y = equation.eval(valueVariables);
+        if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
+          verticalAsymptote = true;
+          break;
+        }
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
         aux = {
-          "x": i,
-          "y": a
+          "x": x,
+          "y": y
         };
         this.plotdata.push(aux);
-        i++;
+        lastY = y;
+        x += iteration;
       }
+
+      /*
+      thinking about asymptote
+          if verticalAsymptote
+      
+              x += iteration
+              valueVariables[positionValueVariableX] = x
+              y = equation(x)
+              @transformContext()
+              context.beginPath()
+              context.moveTo(x, y)
+              while x <= @xEnd
+                  if @minY < y < @maxY-1
+                      context.lineTo(x, y)
+                  x += iteration
+                  y = equation(x)
+      
+              context.restore()
+              context.lineJoin = 'round'
+              context.lineWidth = thickness
+              context.strokeStyle = color
+              context.stroke()
+              context.restore()
+       */
+
+      /*
+      i = -2
+      @plotdata = []
+      while i<10
+          a =(Math.random() *10)
+          aux = 
+              "x": i
+              "y": a
+          @plotdata.push aux
+          i++
+       */
       if (mode === "line") {
         if (this.oldMode === "line") {
           d3.selectAll(".line").datum(this.plotdata).transition().duration(750).attr('d', this.lineFunction);
@@ -1072,7 +1101,6 @@
           this.lineFunction = d3.svg.symbol();
           d3.selectAll(".line").data(this.plotdata).transition().duration(750).attr("transform", (function(_this) {
             return function(d) {
-              var x, y;
               console.log("aqui");
               x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
               y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
@@ -1083,14 +1111,12 @@
           if (this.oldMode !== null) {
             d3.selectAll(".line").remove();
           }
-          a = null;
-          this.plotdata.unshift(a);
-          this.plotdata.unshift(a);
+          trash = null;
+          this.plotdata.unshift(trash);
+          this.plotdata.unshift(trash);
           this.lineFunction = d3.svg.symbol();
           this.svg.selectAll("path").data(this.plotdata).enter().append("path").attr('class', "line").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
             return function(d) {
-              var x, y;
-              console.log(d);
               x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
               y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
               return "translate(" + x + "," + y + ")";
