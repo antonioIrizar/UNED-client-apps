@@ -537,14 +537,15 @@ class Archimedes extends Formula
 class Newton1 extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
-        force = new Variable "F" , "Force" , "description" , null
+        force = new Variable "f", "F" , "Force" , "description" , null
         equals = new Operator "="
-        mass = new Variable "m" , "Mass" , "description" , null
+        mass = new Variable "m", "m" , "Mass" , "description" , null
         mult = new Operator "*"
-        aceleration = new Variable "a" , "Aceleration" , "description" , null
+        aceleration = new Variable "a", "a" , "Aceleration" , "description" , null
         simbols = [force, equals, mass, mult, aceleration]
+        equation = 'f=m*a'
         
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, @newtowEquation, graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, math.parse(equation).compile(math), graph)
     
     newtowEquation: (arrayVariables) ->
         arrayVariables[0] * arrayVariables[1]
@@ -552,18 +553,18 @@ class Newton1 extends Formula
 class Pendulum extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
-        force = new Variable("F" , "Force" , "description" , null)
+        force = new Variable( "f", "F" , "Force" , "description" , null)
         equals = new Operator("=")
         parenthesisOpen = new Operator "("
-        weight = new Variable("P" , "Weight pendulum" , "description" , null)
+        weight = new Variable("p", "P" , "Weight pendulum" , "description" , null)
         mult = new Operator "*"
-        elongation = new Variable("e" , "Elongation" , "description" , null)
+        elongation = new Variable("e", "e" , "Elongation" , "description" , null)
         parenthesisClose = new Operator ")"
         division = new Operator "/"
-        length = new Variable("\u03C1" , "Length pendulum" , "description" , null)
+        length = new Variable("ro", "\u03C1" , "Length pendulum" , "description" , null)
         variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length]
-        
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, @pendulumEquation, graph)
+        equation = 'f=(p*e)/ro'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
     
     pendulumEquation: (arrayVariables) ->
        (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2]
@@ -642,7 +643,7 @@ class Graph
 
         @width = width - @padding.left - @padding.right - @margin.left - @margin.right
         @height = width - @padding.top - @padding.bottom - @margin.top - @margin.bottom
-
+        
         @xScale = d3.scale.linear()
             .domain [@minX,@maxX]
             .range [0,@width]
@@ -826,35 +827,103 @@ g.append("rect")
         verticalAsymptote = false
         console.log @iteration
         ###
-        iteration = Math.abs (@xEnd - @xStart) /100
+        iteration = Math.abs (@xEnd - @xStart) / 50
+
         #console.log iteration
         x = @xStart
-        @plotdata = []
+        @plotdata = [[]]
+        numberVerticalAsymptote = 0
         verticalAsymptote = false
         valueVariables[positionValueVariableX] = x
-        console.log valueVariables
         #coffeScript can't traslate correcly with function eval
         y =  `equation.eval(valueVariables)`
         x += iteration
         lastY = y
         maxY = 0
         minY = 0
-        while x < @xEnd
+        
+        while x < (@xEnd+iteration) 
+            console.log "otra vuelta"
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
             y =  `equation.eval(valueVariables)`
+            #console.log "la x: " + x
+            #console.log "la y: " + y
+            if y is Number.POSITIVE_INFINITY or y is Number.NEGATIVE_INFINITY
+                x += iteration
+                verticalAsymptote = true
+                numberVerticalAsymptote++
+                break
 
-            minY = Math.min minY, y
-            maxY = Math.max maxY, y
+            if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
+                console.log "comprobar asintota"
+                auxY = y
+                lastAuxY= lastY
+                smallX = x - iteration
+                bigX = x
+                smallIteration = Math.abs(bigX - smallX) / 2
+                while true
 
-            aux = 
-                "x": x
-                "y": y
-            @plotdata.push aux
+                    if smallIteration is Number.MIN_VALUE
+                        break
+
+                    valueVariables[positionValueVariableX] = smallX + smallIteration
+                    
+                    tmpY = `equation.eval(valueVariables)`
+                    if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
+                        console.log " asintota" 
+                        numberVerticalAsymptote++
+                        verticalAsymptote = true
+                        break
+
+                    if (lastAuxY < 0 and tmpY > 0 ) or (lastAuxY > 0 and tmpY < 0)
+                        auxY = tmpY
+                        bigX = smallX + smallIteration
+
+                    else
+                        if (auxY < 0 and tmpY > 0 ) or (auxY > 0 and tmpY < 0)
+
+                            lastAuxY = tmpY
+                            smallX = smallX + smallIteration
+                        else
+                            break
+
+                    smallIteration = Math.abs(bigX - smallX) / 2
+
+            #think from this scale of asyntotes. NEDD IMPROVE
+            if verticalAsymptote
+                @plotdata[numberVerticalAsymptote] = new Array()
+                console.log @plotdata
+                verticalAsymptote = false
+                if ((minY/1000) < @minY && (minY/1000)< @minX) or ((maxY/1000) > @maxY && (maxY/1000) > @maxX)
+                        console.log "aqui"
+                        @plotdata[numberVerticalAsymptote-1].pop()
+                else
+                       @minY = minY
+                       @maxY = maxY
+            else
+                @minY = minY
+                @maxY = maxY
+
+                minY = Math.min minY, y
+                maxY = Math.max maxY, y
+
+                aux = 
+                    "x": x
+                    "y": y
+                @plotdata[numberVerticalAsymptote].push aux
 
             lastY = y
             x += iteration
 
+        ###
+        i = 0
+        while i< @plotdata.length
+            console.log  @plotdata[i]
+            i++
+        ###
+        console.log @plotdata.length
+        ### todo this don't work correctly. I think put with a percent formula
         if Math.abs(minY) >  5
             @minY = Math.round minY
         else
@@ -864,14 +933,15 @@ g.append("rect")
             @maxY = Math.round maxY
         else
             @maxY = maxY
-      
+        ###
         if not (@minX < 0 < @maxX)
             if @maxX > 0
                 @minX = 0
             else
                 @maxX = 0
-        console.log "miny "+ Math.round @minY
-        console.log "maxy "+ Math.round @maxY
+
+        #console.log "miny "+ Math.round @minY
+        #console.log "maxy "+ Math.round @maxY
 
         @xScale.domain [@minX,@maxX]
         @yScale.domain [@minY,@maxY]
@@ -925,11 +995,14 @@ g.append("rect")
         if mode == "line"
            
             if @oldMode is "line"
-                d3.selectAll(".line")
-                    .datum(@plotdata)
-                    .transition()
-                    .duration(750)
-                    .attr('d', @lineFunction)
+                i = 0
+                while i <= numberVerticalAsymptote
+                    d3.selectAll(".line"+i )
+                        .datum(@plotdata[i])
+                        .transition()
+                        .duration(750)
+                        .attr('d', @lineFunction)
+                    i++
             else
                 if @oldMode isnt null
                     d3.selectAll(".line").remove()
@@ -937,17 +1010,19 @@ g.append("rect")
                 @lineFunction = d3.svg.line()
                 .interpolate('basis')
                 .x((d) =>
-                    console.log "aqui"
                     @xScale(d.x)+@padding.left+@margin.left )
                 .y((d) => @yScale(d.y)+@padding.top+@margin.top )  
 
-                @svg.append("path")
-                .datum(@plotdata)
-                .attr('class', "line")
-                .style('stroke', "rgb(6, 120, 155)")
-                .style('stroke-width', "2")
-                .style('fill', "none")
-                .attr('d', @lineFunction)
+                i = 0
+                while i <= numberVerticalAsymptote 
+                    @svg.append("path")
+                    .datum(@plotdata[i])
+                    .attr('class', "line"+i )
+                    .style('stroke', "rgb(6, 120, 155)")
+                    .style('stroke-width', "2")
+                    .style('fill', "none")
+                    .attr('d', @lineFunction)
+                    i++
                 @oldMode = "line"
 
             #console.log "aqui"
@@ -1008,28 +1083,29 @@ g.append("rect")
             if @oldMode is "dots"
                 @lineFunction = d3.svg.symbol()
                 #@lineFunction.type("circle")
-                d3.selectAll(".line")
-                    .data(@plotdata)
-                    .transition()
-                    .duration(750)
-                    .attr("transform", (d) =>
-                        console.log "aqui"
-                       
-                        x = @xScale(d.x) + @padding.left + @margin.left
-                        y = @yScale(d.y) + @padding.top + @margin.top
-                        "translate(" + x + "," + y + ")")
-                    .attr("d", @lineFunction)
+                i = 0
+                while i <= numberVerticalAsymptote
+                    d3.selectAll(".line"+i)
+                        .data(@plotdata[i])
+                        .transition()
+                        .duration(750)
+                        .attr("transform", (d) =>
+                           
+                            x = @xScale(d.x) + @padding.left + @margin.left
+                            y = @yScale(d.y) + @padding.top + @margin.top
+                            "translate(" + x + "," + y + ")")
+                        .attr("d", @lineFunction)
+                    i++
             else
 
                 if @oldMode isnt null
                     d3.selectAll(".line").remove()
 
                 # i don't know, but i need put 2 elements of trash because it remove automatically 2 first elements
-                trash = null
-                @plotdata.unshift trash
-                @plotdata.unshift trash
+                
     
                 @lineFunction = d3.svg.symbol()
+                i = 0
                 @svg.selectAll("path")
                 .data(@plotdata)
                 .enter().append("path")
@@ -1037,11 +1113,12 @@ g.append("rect")
                 .style('stroke', "rgb(6, 120, 155)")
                 .style('stroke-width', "1")
                 .style('fill', "none")
-                .attr("transform", (d) =>
-                    x = @xScale(d.x) + @padding.left + @margin.left
-                    y = @yScale(d.y) + @padding.top + @margin.top
+                .attr("transform", (d,i) =>
+                    x = @xScale(d[i].x) + @padding.left + @margin.left
+                    y = @yScale(d[i].y) + @padding.top + @margin.top
                     "translate(" + x + "," + y + ")")
                 .attr("d", @lineFunction)
+                i++
                 @oldMode = "dots"
                 ###
             @svg.selectAll('circle')

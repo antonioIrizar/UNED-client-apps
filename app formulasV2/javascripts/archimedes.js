@@ -630,14 +630,15 @@
     __extends(Newton1, _super);
 
     function Newton1(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
-      var aceleration, equals, force, mass, mult, simbols;
-      force = new Variable("F", "Force", "description", null);
+      var aceleration, equals, equation, force, mass, mult, simbols;
+      force = new Variable("f", "F", "Force", "description", null);
       equals = new Operator("=");
-      mass = new Variable("m", "Mass", "description", null);
+      mass = new Variable("m", "m", "Mass", "description", null);
       mult = new Operator("*");
-      aceleration = new Variable("a", "Aceleration", "description", null);
+      aceleration = new Variable("a", "a", "Aceleration", "description", null);
       simbols = [force, equals, mass, mult, aceleration];
-      Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, this.newtowEquation, graph);
+      equation = 'f=m*a';
+      Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, math.parse(equation).compile(math), graph);
     }
 
     Newton1.prototype.newtowEquation = function(arrayVariables) {
@@ -652,18 +653,19 @@
     __extends(Pendulum, _super);
 
     function Pendulum(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
-      var division, elongation, equals, force, length, mult, parenthesisClose, parenthesisOpen, variables, weight;
-      force = new Variable("F", "Force", "description", null);
+      var division, elongation, equals, equation, force, length, mult, parenthesisClose, parenthesisOpen, variables, weight;
+      force = new Variable("f", "F", "Force", "description", null);
       equals = new Operator("=");
       parenthesisOpen = new Operator("(");
-      weight = new Variable("P", "Weight pendulum", "description", null);
+      weight = new Variable("p", "P", "Weight pendulum", "description", null);
       mult = new Operator("*");
-      elongation = new Variable("e", "Elongation", "description", null);
+      elongation = new Variable("e", "e", "Elongation", "description", null);
       parenthesisClose = new Operator(")");
       division = new Operator("/");
-      length = new Variable("\u03C1", "Length pendulum", "description", null);
+      length = new Variable("ro", "\u03C1", "Length pendulum", "description", null);
       variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length];
-      Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, this.pendulumEquation, graph);
+      equation = 'f=(p*e)/ro';
+      Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
     }
 
     Pendulum.prototype.pendulumEquation = function(arrayVariables) {
@@ -959,41 +961,106 @@
       verticalAsymptote = false
       console.log @iteration
        */
-      var aux, iteration, lastY, maxY, minY, t0, t1, trash, verticalAsymptote, x, y;
-      iteration = Math.abs((this.xEnd - this.xStart) / 100);
+      var aux, auxY, bigX, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
+      iteration = Math.abs((this.xEnd - this.xStart) / 50);
       x = this.xStart;
-      this.plotdata = [];
+      this.plotdata = [[]];
+      numberVerticalAsymptote = 0;
       verticalAsymptote = false;
       valueVariables[positionValueVariableX] = x;
-      console.log(valueVariables);
       y = equation.eval(valueVariables);
       x += iteration;
       lastY = y;
       maxY = 0;
       minY = 0;
-      while (x < this.xEnd) {
+      while (x < (this.xEnd + iteration)) {
+        console.log("otra vuelta");
         valueVariables[positionValueVariableX] = x;
         y = equation.eval(valueVariables);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-        aux = {
-          "x": x,
-          "y": y
-        };
-        this.plotdata.push(aux);
+        if (y === Number.POSITIVE_INFINITY || y === Number.NEGATIVE_INFINITY) {
+          x += iteration;
+          verticalAsymptote = true;
+          numberVerticalAsymptote++;
+          break;
+        }
+        if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
+          console.log("comprobar asintota");
+          auxY = y;
+          lastAuxY = lastY;
+          smallX = x - iteration;
+          bigX = x;
+          smallIteration = Math.abs(bigX - smallX) / 2;
+          while (true) {
+            if (smallIteration === Number.MIN_VALUE) {
+              break;
+            }
+            valueVariables[positionValueVariableX] = smallX + smallIteration;
+            tmpY = equation.eval(valueVariables);
+            if (tmpY === Number.POSITIVE_INFINITY || tmpY === Number.NEGATIVE_INFINITY) {
+              console.log(" asintota");
+              numberVerticalAsymptote++;
+              verticalAsymptote = true;
+              break;
+            }
+            if ((lastAuxY < 0 && tmpY > 0) || (lastAuxY > 0 && tmpY < 0)) {
+              auxY = tmpY;
+              bigX = smallX + smallIteration;
+            } else {
+              if ((auxY < 0 && tmpY > 0) || (auxY > 0 && tmpY < 0)) {
+                lastAuxY = tmpY;
+                smallX = smallX + smallIteration;
+              } else {
+                break;
+              }
+            }
+            smallIteration = Math.abs(bigX - smallX) / 2;
+          }
+        }
+        if (verticalAsymptote) {
+          this.plotdata[numberVerticalAsymptote] = new Array();
+          console.log(this.plotdata);
+          verticalAsymptote = false;
+          if (((minY / 1000) < this.minY && (minY / 1000) < this.minX) || ((maxY / 1000) > this.maxY && (maxY / 1000) > this.maxX)) {
+            console.log("aqui");
+            this.plotdata[numberVerticalAsymptote - 1].pop();
+          } else {
+            this.minY = minY;
+            this.maxY = maxY;
+          }
+        } else {
+          this.minY = minY;
+          this.maxY = maxY;
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y);
+          aux = {
+            "x": x,
+            "y": y
+          };
+          this.plotdata[numberVerticalAsymptote].push(aux);
+        }
         lastY = y;
         x += iteration;
       }
-      if (Math.abs(minY) > 5) {
-        this.minY = Math.round(minY);
-      } else {
-        this.minY = minY;
-      }
-      if (Math.abs(maxY) > 5) {
-        this.maxY = Math.round(maxY);
-      } else {
-        this.maxY = maxY;
-      }
+
+      /*
+      i = 0
+      while i< @plotdata.length
+          console.log  @plotdata[i]
+          i++
+       */
+      console.log(this.plotdata.length);
+
+      /* todo this don't work correctly. I think put with a percent formula
+      if Math.abs(minY) >  5
+          @minY = Math.round minY
+      else
+          @minY = minY
+      
+      if Math.abs(maxY) > 5
+          @maxY = Math.round maxY
+      else
+          @maxY = maxY
+       */
       if (!((this.minX < 0 && 0 < this.maxX))) {
         if (this.maxX > 0) {
           this.minX = 0;
@@ -1001,8 +1068,6 @@
           this.maxX = 0;
         }
       }
-      console.log("miny " + Math.round(this.minY));
-      console.log("maxy " + Math.round(this.maxY));
       this.xScale.domain([this.minX, this.maxX]);
       this.yScale.domain([this.minY, this.maxY]);
       this.xAxisFunction.tickValues(this.xScale.ticks(this.xAxisFunction.ticks()).filter(function(x) {
@@ -1053,14 +1118,17 @@
        */
       if (mode === "line") {
         if (this.oldMode === "line") {
-          d3.selectAll(".line").datum(this.plotdata).transition().duration(750).attr('d', this.lineFunction);
+          i = 0;
+          while (i <= numberVerticalAsymptote) {
+            d3.selectAll(".line" + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
+            i++;
+          }
         } else {
           if (this.oldMode !== null) {
             d3.selectAll(".line").remove();
           }
           this.lineFunction = d3.svg.line().interpolate('basis').x((function(_this) {
             return function(d) {
-              console.log("aqui");
               return _this.xScale(d.x) + _this.padding.left + _this.margin.left;
             };
           })(this)).y((function(_this) {
@@ -1068,7 +1136,11 @@
               return _this.yScale(d.y) + _this.padding.top + _this.margin.top;
             };
           })(this));
-          this.svg.append("path").datum(this.plotdata).attr('class', "line").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
+          i = 0;
+          while (i <= numberVerticalAsymptote) {
+            this.svg.append("path").datum(this.plotdata[i]).attr('class', "line" + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
+            i++;
+          }
           this.oldMode = "line";
         }
 
@@ -1127,29 +1199,31 @@
       if (mode === "dots") {
         if (this.oldMode === "dots") {
           this.lineFunction = d3.svg.symbol();
-          d3.selectAll(".line").data(this.plotdata).transition().duration(750).attr("transform", (function(_this) {
-            return function(d) {
-              console.log("aqui");
-              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
-              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
-              return "translate(" + x + "," + y + ")";
-            };
-          })(this)).attr("d", this.lineFunction);
+          i = 0;
+          while (i <= numberVerticalAsymptote) {
+            d3.selectAll(".line" + i).data(this.plotdata[i]).transition().duration(750).attr("transform", (function(_this) {
+              return function(d) {
+                x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+                y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+                return "translate(" + x + "," + y + ")";
+              };
+            })(this)).attr("d", this.lineFunction);
+            i++;
+          }
         } else {
           if (this.oldMode !== null) {
             d3.selectAll(".line").remove();
           }
-          trash = null;
-          this.plotdata.unshift(trash);
-          this.plotdata.unshift(trash);
           this.lineFunction = d3.svg.symbol();
+          i = 0;
           this.svg.selectAll("path").data(this.plotdata).enter().append("path").attr('class', "line").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
-            return function(d) {
-              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
-              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+            return function(d, i) {
+              x = _this.xScale(d[i].x) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d[i].y) + _this.padding.top + _this.margin.top;
               return "translate(" + x + "," + y + ")";
             };
           })(this)).attr("d", this.lineFunction);
+          i++;
           this.oldMode = "dots";
 
           /*
