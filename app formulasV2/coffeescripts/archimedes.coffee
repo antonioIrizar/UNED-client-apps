@@ -830,14 +830,12 @@ g.append("rect")
         lastY = y
         maxY = y
         minY = y
-        while x <= @xEnd
+        while x < @xEnd
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
             y =  `equation.eval(valueVariables)`
 
-            if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
-                verticalAsymptote = true
-                break
+
 
             minY = Math.min minY, y
             maxY = Math.max maxY, y
@@ -850,6 +848,22 @@ g.append("rect")
             lastY = y
             x += iteration
 
+        @xScale.domain [@minX,@maxX]
+        @minY = minY
+        @maxY = maxY
+        @yScale.domain [@minY,@maxY]
+
+        @xAxisFunction.tickValues(@xScale.ticks(@xAxisFunction.ticks()).filter((x) -> x != 0))
+        @yAxisFunction.tickValues(@yScale.ticks(@yAxisFunction.ticks()).filter((x) -> x != 0))
+
+        t0 = @svg.transition().duration(750)
+
+        t0.selectAll(".x.axis").attr("transform", "translate(0," + @yScale(0)+ ")")
+            .call @xAxisFunction
+        
+        t1 =t0
+        t1.selectAll(".y.axis").attr("transform", "translate(" + @xScale(0) + ",0)")
+            .call @yAxisFunction
        
         ###
         thinking about asymptote

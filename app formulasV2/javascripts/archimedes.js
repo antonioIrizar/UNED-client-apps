@@ -958,7 +958,7 @@
       verticalAsymptote = false
       console.log @iteration
        */
-      var aux, iteration, lastY, maxY, minY, trash, verticalAsymptote, x, y;
+      var aux, iteration, lastY, maxY, minY, t0, t1, trash, verticalAsymptote, x, y;
       iteration = Math.abs((this.xEnd - this.xStart) / 100);
       x = this.xStart;
       this.plotdata = [];
@@ -970,13 +970,9 @@
       lastY = y;
       maxY = y;
       minY = y;
-      while (x <= this.xEnd) {
+      while (x < this.xEnd) {
         valueVariables[positionValueVariableX] = x;
         y = equation.eval(valueVariables);
-        if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
-          verticalAsymptote = true;
-          break;
-        }
         minY = Math.min(minY, y);
         maxY = Math.max(maxY, y);
         aux = {
@@ -987,6 +983,20 @@
         lastY = y;
         x += iteration;
       }
+      this.xScale.domain([this.minX, this.maxX]);
+      this.minY = minY;
+      this.maxY = maxY;
+      this.yScale.domain([this.minY, this.maxY]);
+      this.xAxisFunction.tickValues(this.xScale.ticks(this.xAxisFunction.ticks()).filter(function(x) {
+        return x !== 0;
+      }));
+      this.yAxisFunction.tickValues(this.yScale.ticks(this.yAxisFunction.ticks()).filter(function(x) {
+        return x !== 0;
+      }));
+      t0 = this.svg.transition().duration(750);
+      t0.selectAll(".x.axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
+      t1 = t0;
+      t1.selectAll(".y.axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
 
       /*
       thinking about asymptote
