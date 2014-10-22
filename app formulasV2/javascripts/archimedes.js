@@ -874,8 +874,8 @@
           return t2.selectAll(".line").attr("transform", (function(_this) {
             return function(d) {
               var x, y;
-              x = _this.xScale(d[0]) + _this.padding.left + _this.margin.left;
-              y = _this.yScale(d[1]) + _this.padding.top + _this.margin.top;
+              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
               return "translate(" + x + "," + y + ")";
             };
           })(this)).attr("d", this.lineFunction);

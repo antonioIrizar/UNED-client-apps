@@ -748,8 +748,8 @@ class Graph
             else
                 t2.selectAll(".line")
                 .attr("transform", (d) =>
-                    x = @xScale(d[0]) + @padding.left + @margin.left
-                    y = @yScale(d[1]) + @padding.top + @margin.top
+                    x = @xScale(d.x) + @padding.left + @margin.left
+                    y = @yScale(d.y) + @padding.top + @margin.top
                     "translate(" + x + "," + y + ")")
                 .attr("d", @lineFunction)
         ###
