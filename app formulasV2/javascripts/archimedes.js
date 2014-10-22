@@ -835,7 +835,8 @@
     }
 
     Graph.prototype.drawVariables = function() {
-      return this.yAxis.append("text").attr("transform", "rotate(0)").attr("y", 6).attr("x", 15).attr("dy", ".71em").style("text-anchor", "end").text(this.y);
+      this.yAxis.append("text").attr("transform", "rotate(0)").attr("y", 6).attr("x", 15).attr("dy", ".71em").style("text-anchor", "end").text(this.y);
+      return this.xAxis.append("text").attr("transform", "rotate(0)").attr("y", 26).attr("x", this.width).attr("dy", ".71em").style("text-anchor", "end").text(this.x);
 
       /*
       context = @context

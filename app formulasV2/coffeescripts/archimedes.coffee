@@ -694,6 +694,14 @@ class Graph
             .style("text-anchor", "end")
             .text(@y)
 
+        @xAxis.append("text")
+            .attr("transform", "rotate(0)")
+            .attr("y", 26)
+            .attr("x", @width)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(@x)
+
         ###
         context = @context
         context.save()
@@ -835,8 +843,6 @@ g.append("rect")
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
             y =  `equation.eval(valueVariables)`
-
-
 
             minY = Math.min minY, y
             maxY = Math.max maxY, y
