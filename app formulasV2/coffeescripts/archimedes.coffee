@@ -819,6 +819,7 @@ g.append("rect")
         console.log @iteration
         ###
         iteration = Math.abs (@xEnd - @xStart) /100
+        #console.log iteration
         x = @xStart
         @plotdata = []
         verticalAsymptote = false
@@ -828,8 +829,8 @@ g.append("rect")
         y =  `equation.eval(valueVariables)`
         x += iteration
         lastY = y
-        maxY = y
-        minY = y
+        maxY = 0
+        minY = 0
         while x < @xEnd
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
@@ -848,9 +849,25 @@ g.append("rect")
             lastY = y
             x += iteration
 
+        if Math.abs(minY) >  5
+            @minY = Math.round minY
+        else
+            @minY = minY
+
+        if Math.abs(maxY) > 5
+            @maxY = Math.round maxY
+        else
+            @maxY = maxY
+      
+        if not (@minX < 0 < @maxX)
+            if @maxX > 0
+                @minX = 0
+            else
+                @maxX = 0
+        console.log "miny "+ Math.round @minY
+        console.log "maxy "+ Math.round @maxY
+
         @xScale.domain [@minX,@maxX]
-        @minY = minY
-        @maxY = maxY
         @yScale.domain [@minY,@maxY]
 
         @xAxisFunction.tickValues(@xScale.ticks(@xAxisFunction.ticks()).filter((x) -> x != 0))

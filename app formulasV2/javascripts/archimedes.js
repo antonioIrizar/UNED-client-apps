@@ -968,8 +968,8 @@
       y = equation.eval(valueVariables);
       x += iteration;
       lastY = y;
-      maxY = y;
-      minY = y;
+      maxY = 0;
+      minY = 0;
       while (x < this.xEnd) {
         valueVariables[positionValueVariableX] = x;
         y = equation.eval(valueVariables);
@@ -983,9 +983,26 @@
         lastY = y;
         x += iteration;
       }
+      if (Math.abs(minY) > 5) {
+        this.minY = Math.round(minY);
+      } else {
+        this.minY = minY;
+      }
+      if (Math.abs(maxY) > 5) {
+        this.maxY = Math.round(maxY);
+      } else {
+        this.maxY = maxY;
+      }
+      if (!((this.minX < 0 && 0 < this.maxX))) {
+        if (this.maxX > 0) {
+          this.minX = 0;
+        } else {
+          this.maxX = 0;
+        }
+      }
+      console.log("miny " + Math.round(this.minY));
+      console.log("maxy " + Math.round(this.maxY));
       this.xScale.domain([this.minX, this.maxX]);
-      this.minY = minY;
-      this.maxY = maxY;
       this.yScale.domain([this.minY, this.maxY]);
       this.xAxisFunction.tickValues(this.xScale.ticks(this.xAxisFunction.ticks()).filter(function(x) {
         return x !== 0;
