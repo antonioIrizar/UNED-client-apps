@@ -630,6 +630,8 @@ class Graph
     scaleY: null
     x: null
     y: null
+    textX: null
+    textY: null
     autoScale : true
 
     constructor: ->
@@ -687,11 +689,44 @@ class Graph
             .attr "transform", "translate(" + @xScale(0) + ",0)"
             .call @yAxisFunction
 
+        @textX = @xAxis.append("text")
+            .attr("class", "textX")
+
+        @textY = @yAxis.append("text")
+            .attr("class", "textY")
+
     remove: ->
 
         @svg.remove()
 
     drawVariables: ->
+        switch
+            when @minY is 0 and @minX is 0 
+                @writeVar(@textY, @y, 6, 15)
+                @writeVar(@textX, @x, 26, @width)
+            when @minY is 0 and @maxX is 0 
+                @writeVar(@textY, @y, 6, 15)
+                @writeVar(@textX, @x, 26, 6)
+            when @maxY is 0 and @maxX is 0 
+                @writeVar(@textY, @y, @height, 15)
+                @writeVar(@textX, @x, 26, 6)
+            when @maxY is 0 and @minX is 0 
+                @writeVar(@textY, @y, @height, 15)
+                @writeVar(@textX, @x, 26, @width)
+            else
+                @writeVar(@textY, @y, 6, 15)
+                @writeVar(@textX, @x, 26, @width)
+
+    writeVar: (place, text, cordY, cordX) ->
+
+        place
+            .attr("transform", "rotate(0)")
+            .attr("y", cordY)
+            .attr("x", cordX)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(text)
+        ###
         @yAxis.append("text")
             .attr("transform", "rotate(0)")
             .attr("y", 6)
@@ -707,7 +742,7 @@ class Graph
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(@x)
-
+        ###
         ###
         context = @context
         context.save()

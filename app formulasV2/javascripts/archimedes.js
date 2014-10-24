@@ -807,6 +807,10 @@
 
     Graph.prototype.y = null;
 
+    Graph.prototype.textX = null;
+
+    Graph.prototype.textY = null;
+
     Graph.prototype.autoScale = true;
 
     function Graph() {
@@ -837,6 +841,8 @@
       g = aux.append("g").attr("transform", "translate(" + this.padding.left + "," + this.padding.top + ")");
       this.xAxis = g.append("g").attr("id", "xAxis").attr("class", "x axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
       this.yAxis = g.append("g").attr("id", "yAxis").attr("class", "y axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
+      this.textX = this.xAxis.append("text").attr("class", "textX");
+      this.textY = this.yAxis.append("text").attr("class", "textY");
     }
 
     Graph.prototype.remove = function() {
@@ -844,8 +850,45 @@
     };
 
     Graph.prototype.drawVariables = function() {
-      this.yAxis.append("text").attr("transform", "rotate(0)").attr("y", 6).attr("x", 15).attr("dy", ".71em").style("text-anchor", "end").text(this.y);
-      return this.xAxis.append("text").attr("transform", "rotate(0)").attr("y", 26).attr("x", this.width).attr("dy", ".71em").style("text-anchor", "end").text(this.x);
+      switch (false) {
+        case !(this.minY === 0 && this.minX === 0):
+          this.writeVar(this.textY, this.y, 6, 15);
+          return this.writeVar(this.textX, this.x, 26, this.width);
+        case !(this.minY === 0 && this.maxX === 0):
+          this.writeVar(this.textY, this.y, 6, 15);
+          return this.writeVar(this.textX, this.x, 26, 6);
+        case !(this.maxY === 0 && this.maxX === 0):
+          this.writeVar(this.textY, this.y, this.height, 15);
+          return this.writeVar(this.textX, this.x, 26, 6);
+        case !(this.maxY === 0 && this.minX === 0):
+          this.writeVar(this.textY, this.y, this.height, 15);
+          return this.writeVar(this.textX, this.x, 26, this.width);
+        default:
+          this.writeVar(this.textY, this.y, 6, 15);
+          return this.writeVar(this.textX, this.x, 26, this.width);
+      }
+    };
+
+    Graph.prototype.writeVar = function(place, text, cordY, cordX) {
+      return place.attr("transform", "rotate(0)").attr("y", cordY).attr("x", cordX).attr("dy", ".71em").style("text-anchor", "end").text(text);
+
+      /*
+      @yAxis.append("text")
+          .attr("transform", "rotate(0)")
+          .attr("y", 6)
+          .attr("x", 15)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text(@y)
+      
+      @xAxis.append("text")
+          .attr("transform", "rotate(0)")
+          .attr("y", 26)
+          .attr("x", @width)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text(@x)
+       */
 
       /*
       context = @context
