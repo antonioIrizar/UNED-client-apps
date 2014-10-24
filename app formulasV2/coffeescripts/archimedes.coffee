@@ -613,6 +613,7 @@ class Graph
     yAxis: null
     xStart: -10
     xEnd: 10
+    numberVerticalAsymptote: 0
     unitsPerTick: 1
     axisColor:"#aaa"
     font: "8pt Calibri"
@@ -847,6 +848,12 @@ g.append("rect")
         
         while x < (@xEnd+iteration) 
             console.log "otra vuelta"
+            #think from this scale of asyntotes. NEED IMPROVE
+            if verticalAsymptote
+                numberVerticalAsymptote++
+                @plotdata[numberVerticalAsymptote] = new Array()
+                console.log @plotdata
+                verticalAsymptote = false
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
             y =  `equation.eval(valueVariables)`
@@ -873,7 +880,6 @@ g.append("rect")
 
                     if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
                         console.log " asintota" 
-                        numberVerticalAsymptote++
                         verticalAsymptote = true
                         break
 
@@ -893,12 +899,9 @@ g.append("rect")
 
             #think from this scale of asyntotes. NEED IMPROVE
             if verticalAsymptote
-                @plotdata[numberVerticalAsymptote] = new Array()
-                console.log @plotdata
-                verticalAsymptote = false
 
                 if ((minY/1000) < @minY && (minY/1000)< @minX) or ((maxY/1000) > @maxY && (maxY/1000) > @maxX)
-                        @plotdata[numberVerticalAsymptote-1].pop()
+                        @plotdata[numberVerticalAsymptote].pop()
                 else
                        @minY = minY
                        @maxY = maxY
@@ -996,17 +999,29 @@ g.append("rect")
         if mode == "line"
            
             if @oldMode is "line"
+                console.log "numero: "+ numberVerticalAsymptote
+                if @numberVerticalAsymptote > numberVerticalAsymptote
+                    console.log "cadasda"
+                    i = numberVerticalAsymptote + 1
+                    while i <= @numberVerticalAsymptote
+                        d3.selectAll(".line"+i)
+                        .remove()
+                        i++
                 i = 0
                 while i <= numberVerticalAsymptote
-                    d3.selectAll(".line "+i )
+                    d3.selectAll(".line"+i )
                         .datum(@plotdata[i])
                         .transition()
                         .duration(750)
                         .attr('d', @lineFunction)
                     i++
+    
+                
             else
+                console.log "else"
                 if @oldMode isnt null
-                    d3.selectAll(".dot").remove()
+                    d3.selectAll(".dot")
+                    .remove()
 
                 @lineFunction = d3.svg.line()
                 .interpolate('basis')
@@ -1018,13 +1033,14 @@ g.append("rect")
                 while i <= numberVerticalAsymptote 
                     @svg.append("path")
                     .datum(@plotdata[i])
-                    .attr('class', "line "+i )
+                    .attr('class', "line line"+i )
                     .style('stroke', "rgb(6, 120, 155)")
                     .style('stroke-width', "2")
                     .style('fill', "none")
                     .attr('d', @lineFunction)
                     i++
                 @oldMode = "line"
+            @numberVerticalAsymptote = numberVerticalAsymptote
 
             #console.log "aqui"
             ###
@@ -1106,7 +1122,8 @@ g.append("rect")
                 allData.unshift null
 
                 if @oldMode isnt null
-                    d3.selectAll(".line").remove()
+                    d3.selectAll(".line")
+                    .remove()
                 
                 @lineFunction = d3.svg.symbol()
 

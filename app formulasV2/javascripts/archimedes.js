@@ -773,6 +773,8 @@
 
     Graph.prototype.xEnd = 10;
 
+    Graph.prototype.numberVerticalAsymptote = 0;
+
     Graph.prototype.unitsPerTick = 1;
 
     Graph.prototype.axisColor = "#aaa";
@@ -980,6 +982,12 @@
       minY = 0;
       while (x < (this.xEnd + iteration)) {
         console.log("otra vuelta");
+        if (verticalAsymptote) {
+          numberVerticalAsymptote++;
+          this.plotdata[numberVerticalAsymptote] = new Array();
+          console.log(this.plotdata);
+          verticalAsymptote = false;
+        }
         valueVariables[positionValueVariableX] = x;
         y = equation.eval(valueVariables);
         if (y === Number.POSITIVE_INFINITY || y === Number.NEGATIVE_INFINITY) {
@@ -1002,7 +1010,6 @@
             tmpY = equation.eval(valueVariables);
             if (tmpY === Number.POSITIVE_INFINITY || tmpY === Number.NEGATIVE_INFINITY) {
               console.log(" asintota");
-              numberVerticalAsymptote++;
               verticalAsymptote = true;
               break;
             }
@@ -1021,11 +1028,8 @@
           }
         }
         if (verticalAsymptote) {
-          this.plotdata[numberVerticalAsymptote] = new Array();
-          console.log(this.plotdata);
-          verticalAsymptote = false;
           if (((minY / 1000) < this.minY && (minY / 1000) < this.minX) || ((maxY / 1000) > this.maxY && (maxY / 1000) > this.maxX)) {
-            this.plotdata[numberVerticalAsymptote - 1].pop();
+            this.plotdata[numberVerticalAsymptote].pop();
           } else {
             this.minY = minY;
             this.maxY = maxY;
@@ -1121,12 +1125,22 @@
        */
       if (mode === "line") {
         if (this.oldMode === "line") {
+          console.log("numero: " + numberVerticalAsymptote);
+          if (this.numberVerticalAsymptote > numberVerticalAsymptote) {
+            console.log("cadasda");
+            i = numberVerticalAsymptote + 1;
+            while (i <= this.numberVerticalAsymptote) {
+              d3.selectAll(".line" + i).remove();
+              i++;
+            }
+          }
           i = 0;
           while (i <= numberVerticalAsymptote) {
-            d3.selectAll(".line " + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
+            d3.selectAll(".line" + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
             i++;
           }
         } else {
+          console.log("else");
           if (this.oldMode !== null) {
             d3.selectAll(".dot").remove();
           }
@@ -1141,11 +1155,12 @@
           })(this));
           i = 0;
           while (i <= numberVerticalAsymptote) {
-            this.svg.append("path").datum(this.plotdata[i]).attr('class', "line " + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
+            this.svg.append("path").datum(this.plotdata[i]).attr('class', "line line" + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
             i++;
           }
           this.oldMode = "line";
         }
+        this.numberVerticalAsymptote = numberVerticalAsymptote;
 
         /*
         y = equation(x)
