@@ -809,6 +809,7 @@
 
     function Graph() {
       var aux, g, width;
+      this.plotdata = [[]];
       this.panelGraph = document.getElementById("panelGraph");
       width = window.innerWidth;
       if (width > 991) {
@@ -835,6 +836,10 @@
       this.xAxis = g.append("g").attr("id", "xAxis").attr("class", "x axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
       this.yAxis = g.append("g").attr("id", "yAxis").attr("class", "y axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
     }
+
+    Graph.prototype.remove = function() {
+      return this.svg.remove();
+    };
 
     Graph.prototype.drawVariables = function() {
       this.yAxis.append("text").attr("transform", "rotate(0)").attr("y", 6).attr("x", 15).attr("dy", ".71em").style("text-anchor", "end").text(this.y);
@@ -984,7 +989,6 @@
           break;
         }
         if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
-          console.log("comprobar asintota");
           auxY = y;
           lastAuxY = lastY;
           smallX = x - iteration;
@@ -1021,7 +1025,6 @@
           console.log(this.plotdata);
           verticalAsymptote = false;
           if (((minY / 1000) < this.minY && (minY / 1000) < this.minX) || ((maxY / 1000) > this.maxY && (maxY / 1000) > this.maxX)) {
-            console.log("aqui");
             this.plotdata[numberVerticalAsymptote - 1].pop();
           } else {
             this.minY = minY;
@@ -1481,6 +1484,7 @@
     Init.prototype.clickButton = function() {
       var text;
       this.formula = null;
+      this.graph.remove();
       this.graph = new Graph();
       this.divPanel.removeChild(document.getElementById('formula-created'));
       this.divPanel.removeChild(document.getElementById('button-remove'));

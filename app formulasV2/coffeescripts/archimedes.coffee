@@ -632,6 +632,7 @@ class Graph
     autoScale : true
 
     constructor: ->
+        @plotdata = [[]]
         @panelGraph = document.getElementById "panelGraph"
         width = window.innerWidth
         if width > 991
@@ -685,7 +686,10 @@ class Graph
             .attr "transform", "translate(" + @xScale(0) + ",0)"
             .call @yAxisFunction
 
-   
+    remove: ->
+
+        @svg.remove()
+
     drawVariables: ->
         @yAxis.append("text")
             .attr("transform", "rotate(0)")
@@ -829,7 +833,6 @@ g.append("rect")
         ###
         iteration = Math.abs (@xEnd - @xStart) / 50
 
-        #console.log iteration
         x = @xStart
         @plotdata = [[]]
         numberVerticalAsymptote = 0
@@ -847,8 +850,6 @@ g.append("rect")
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
             y =  `equation.eval(valueVariables)`
-            #console.log "la x: " + x
-            #console.log "la y: " + y
             if y is Number.POSITIVE_INFINITY or y is Number.NEGATIVE_INFINITY
                 x += iteration
                 verticalAsymptote = true
@@ -856,7 +857,6 @@ g.append("rect")
                 break
 
             if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
-                console.log "comprobar asintota"
                 auxY = y
                 lastAuxY= lastY
                 smallX = x - iteration
@@ -870,6 +870,7 @@ g.append("rect")
                     valueVariables[positionValueVariableX] = smallX + smallIteration
                     
                     tmpY = `equation.eval(valueVariables)`
+
                     if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
                         console.log " asintota" 
                         numberVerticalAsymptote++
@@ -890,13 +891,13 @@ g.append("rect")
 
                     smallIteration = Math.abs(bigX - smallX) / 2
 
-            #think from this scale of asyntotes. NEDD IMPROVE
+            #think from this scale of asyntotes. NEED IMPROVE
             if verticalAsymptote
                 @plotdata[numberVerticalAsymptote] = new Array()
                 console.log @plotdata
                 verticalAsymptote = false
+
                 if ((minY/1000) < @minY && (minY/1000)< @minX) or ((maxY/1000) > @maxY && (maxY/1000) > @maxX)
-                        console.log "aqui"
                         @plotdata[numberVerticalAsymptote-1].pop()
                 else
                        @minY = minY
@@ -1326,6 +1327,7 @@ class Init
 
     clickButton: ()->
         @formula = null
+        @graph.remove()
         @graph = new Graph()
         @divPanel.removeChild document.getElementById 'formula-created' 
         @divPanel.removeChild document.getElementById 'button-remove'
