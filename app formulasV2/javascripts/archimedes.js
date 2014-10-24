@@ -961,7 +961,7 @@
       verticalAsymptote = false
       console.log @iteration
        */
-      var aux, auxY, bigX, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
+      var allData, aux, auxY, bigX, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
       iteration = Math.abs((this.xEnd - this.xStart) / 50);
       x = this.xStart;
       this.plotdata = [[]];
@@ -1120,12 +1120,12 @@
         if (this.oldMode === "line") {
           i = 0;
           while (i <= numberVerticalAsymptote) {
-            d3.selectAll(".line" + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
+            d3.selectAll(".line " + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
             i++;
           }
         } else {
           if (this.oldMode !== null) {
-            d3.selectAll(".line").remove();
+            d3.selectAll(".dot").remove();
           }
           this.lineFunction = d3.svg.line().interpolate('basis').x((function(_this) {
             return function(d) {
@@ -1138,7 +1138,7 @@
           })(this));
           i = 0;
           while (i <= numberVerticalAsymptote) {
-            this.svg.append("path").datum(this.plotdata[i]).attr('class', "line" + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
+            this.svg.append("path").datum(this.plotdata[i]).attr('class', "line " + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
             i++;
           }
           this.oldMode = "line";
@@ -1197,33 +1197,35 @@
          */
       }
       if (mode === "dots") {
+        i = 0;
+        allData = [];
+        while (i <= numberVerticalAsymptote) {
+          allData = allData.concat(this.plotdata[i]);
+          i++;
+        }
         if (this.oldMode === "dots") {
           this.lineFunction = d3.svg.symbol();
-          i = 0;
-          while (i <= numberVerticalAsymptote) {
-            d3.selectAll(".line" + i).data(this.plotdata[i]).transition().duration(750).attr("transform", (function(_this) {
-              return function(d) {
-                x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
-                y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
-                return "translate(" + x + "," + y + ")";
-              };
-            })(this)).attr("d", this.lineFunction);
-            i++;
-          }
+          d3.selectAll(".dot").data(allData).transition().duration(750).attr("transform", (function(_this) {
+            return function(d) {
+              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+              return "translate(" + x + "," + y + ")";
+            };
+          })(this)).attr("d", this.lineFunction);
         } else {
+          allData.unshift(null);
+          allData.unshift(null);
           if (this.oldMode !== null) {
             d3.selectAll(".line").remove();
           }
           this.lineFunction = d3.svg.symbol();
-          i = 0;
-          this.svg.selectAll("path").data(this.plotdata).enter().append("path").attr('class', "line").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
-            return function(d, i) {
-              x = _this.xScale(d[i].x) + _this.padding.left + _this.margin.left;
-              y = _this.yScale(d[i].y) + _this.padding.top + _this.margin.top;
+          this.svg.selectAll("path").data(allData).enter().append("path").attr('class', "dot").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
+            return function(d) {
+              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
               return "translate(" + x + "," + y + ")";
             };
           })(this)).attr("d", this.lineFunction);
-          i++;
           this.oldMode = "dots";
 
           /*

@@ -997,7 +997,7 @@ g.append("rect")
             if @oldMode is "line"
                 i = 0
                 while i <= numberVerticalAsymptote
-                    d3.selectAll(".line"+i )
+                    d3.selectAll(".line "+i )
                         .datum(@plotdata[i])
                         .transition()
                         .duration(750)
@@ -1005,7 +1005,7 @@ g.append("rect")
                     i++
             else
                 if @oldMode isnt null
-                    d3.selectAll(".line").remove()
+                    d3.selectAll(".dot").remove()
 
                 @lineFunction = d3.svg.line()
                 .interpolate('basis')
@@ -1017,7 +1017,7 @@ g.append("rect")
                 while i <= numberVerticalAsymptote 
                     @svg.append("path")
                     .datum(@plotdata[i])
-                    .attr('class', "line"+i )
+                    .attr('class', "line "+i )
                     .style('stroke', "rgb(6, 120, 155)")
                     .style('stroke-width', "2")
                     .style('fill', "none")
@@ -1078,47 +1078,50 @@ g.append("rect")
                 context.restore()
         ###   
         if mode == "dots"
-            
 
+            i = 0
+            allData = []
+            while i<= numberVerticalAsymptote
+                allData = allData.concat @plotdata[i]
+                i++
+            
             if @oldMode is "dots"
+               
                 @lineFunction = d3.svg.symbol()
+
                 #@lineFunction.type("circle")
-                i = 0
-                while i <= numberVerticalAsymptote
-                    d3.selectAll(".line"+i)
-                        .data(@plotdata[i])
-                        .transition()
-                        .duration(750)
-                        .attr("transform", (d) =>
-                           
-                            x = @xScale(d.x) + @padding.left + @margin.left
-                            y = @yScale(d.y) + @padding.top + @margin.top
-                            "translate(" + x + "," + y + ")")
-                        .attr("d", @lineFunction)
-                    i++
+                d3.selectAll(".dot")
+                    .data(allData)
+                    .transition()
+                    .duration(750)
+                    .attr("transform", (d) =>
+                        x = @xScale(d.x) + @padding.left + @margin.left
+                        y = @yScale(d.y) + @padding.top + @margin.top
+                        "translate(" + x + "," + y + ")")
+                    .attr("d", @lineFunction)
             else
+                # I don't know, but i need put 2 elements of trash because it remove automatically 2 first elements
+                allData.unshift null
+                allData.unshift null
 
                 if @oldMode isnt null
                     d3.selectAll(".line").remove()
-
-                # i don't know, but i need put 2 elements of trash because it remove automatically 2 first elements
                 
-    
                 @lineFunction = d3.svg.symbol()
-                i = 0
+
                 @svg.selectAll("path")
-                .data(@plotdata)
-                .enter().append("path")
-                .attr('class', "line")
-                .style('stroke', "rgb(6, 120, 155)")
-                .style('stroke-width', "1")
-                .style('fill', "none")
-                .attr("transform", (d,i) =>
-                    x = @xScale(d[i].x) + @padding.left + @margin.left
-                    y = @yScale(d[i].y) + @padding.top + @margin.top
-                    "translate(" + x + "," + y + ")")
-                .attr("d", @lineFunction)
-                i++
+                    .data(allData)
+                    .enter().append("path")
+                    .attr('class', "dot" )
+                    .style('stroke', "rgb(6, 120, 155)")
+                    .style('stroke-width', "1")
+                    .style('fill', "none")
+                    .attr("transform", (d) =>
+                        x = @xScale(d.x) + @padding.left + @margin.left
+                        y = @yScale(d.y) + @padding.top + @margin.top
+                        "translate(" + x + "," + y + ")")
+                    .attr("d", @lineFunction)
+                    
                 @oldMode = "dots"
                 ###
             @svg.selectAll('circle')
