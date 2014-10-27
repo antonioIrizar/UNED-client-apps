@@ -881,8 +881,7 @@ g.append("rect")
         maxY = 0
         minY = 0
         
-        while x < (@xEnd+iteration) 
-            console.log "otra vuelta"
+        while x < (@xEnd+iteration)
             #think from this scale of asyntotes. NEED IMPROVE
             if verticalAsymptote
                 numberVerticalAsymptote++
@@ -892,45 +891,43 @@ g.append("rect")
             #coffeScript can't traslate correcly with function eval
             valueVariables[positionValueVariableX] = x
             y =  `equation.eval(valueVariables)`
+
             if y is Number.POSITIVE_INFINITY or y is Number.NEGATIVE_INFINITY
                 x += iteration
                 verticalAsymptote = true
-                numberVerticalAsymptote++
-                break
+            else
+                if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
+                    auxY = y
+                    lastAuxY= lastY
+                    smallX = x - iteration
+                    bigX = x
+                    smallIteration = Math.abs(bigX - smallX) / 2
+                    while true
 
-            if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
-                auxY = y
-                lastAuxY= lastY
-                smallX = x - iteration
-                bigX = x
-                smallIteration = Math.abs(bigX - smallX) / 2
-                while true
-
-                    if smallIteration is Number.MIN_VALUE
-                        break
-
-                    valueVariables[positionValueVariableX] = smallX + smallIteration
-                    
-                    tmpY = `equation.eval(valueVariables)`
-
-                    if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
-                        console.log " asintota" 
-                        verticalAsymptote = true
-                        break
-
-                    if (lastAuxY < 0 and tmpY > 0 ) or (lastAuxY > 0 and tmpY < 0)
-                        auxY = tmpY
-                        bigX = smallX + smallIteration
-
-                    else
-                        if (auxY < 0 and tmpY > 0 ) or (auxY > 0 and tmpY < 0)
-
-                            lastAuxY = tmpY
-                            smallX = smallX + smallIteration
-                        else
+                        if smallIteration is Number.MIN_VALUE
                             break
 
-                    smallIteration = Math.abs(bigX - smallX) / 2
+                        valueVariables[positionValueVariableX] = smallX + smallIteration
+                        
+                        tmpY = `equation.eval(valueVariables)`
+
+                        if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
+                            verticalAsymptote = true
+                            break
+
+                        if (lastAuxY < 0 and tmpY > 0 ) or (lastAuxY > 0 and tmpY < 0)
+                            auxY = tmpY
+                            bigX = smallX + smallIteration
+
+                        else
+                            if (auxY < 0 and tmpY > 0 ) or (auxY > 0 and tmpY < 0)
+
+                                lastAuxY = tmpY
+                                smallX = smallX + smallIteration
+                            else
+                                break
+
+                        smallIteration = Math.abs(bigX - smallX) / 2
 
             #think from this scale of asyntotes. NEED IMPROVE
             if verticalAsymptote
@@ -938,9 +935,11 @@ g.append("rect")
                 if ((minY/1000) < @minY && (minY/1000)< @minX) or ((maxY/1000) > @maxY && (maxY/1000) > @maxX)
                         @plotdata[numberVerticalAsymptote].pop()
                 else
-                       @minY = minY
-                       @maxY = maxY
+                        @minY = minY
+                        @maxY = maxY
             else
+                #if x <= @xEnd
+                #console.log x
                 @minY = minY
                 @maxY = maxY
 
@@ -961,7 +960,6 @@ g.append("rect")
             console.log  @plotdata[i]
             i++
         ###
-        console.log @plotdata.length
         ### todo this don't work correctly. I think put with a percent formula
         if Math.abs(minY) >  5
             @minY = Math.round minY
@@ -1034,9 +1032,8 @@ g.append("rect")
         if mode == "line"
            
             if @oldMode is "line"
-                console.log "numero: "+ numberVerticalAsymptote
+
                 if @numberVerticalAsymptote > numberVerticalAsymptote
-                    console.log "cadasda"
                     i = numberVerticalAsymptote + 1
                     while i <= @numberVerticalAsymptote
                         d3.selectAll(".line"+i)
@@ -1053,7 +1050,6 @@ g.append("rect")
     
                 
             else
-                console.log "else"
                 if @oldMode isnt null
                     d3.selectAll(".dot")
                     .remove()
@@ -1061,8 +1057,14 @@ g.append("rect")
                 @lineFunction = d3.svg.line()
                 .interpolate('basis')
                 .x((d) =>
+                    #console.log "x: " + d.x
+                    #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
                     @xScale(d.x)+@padding.left+@margin.left )
-                .y((d) => @yScale(d.y)+@padding.top+@margin.top )  
+
+                .y((d) => 
+                    #console.log "y: " + d.y
+                    #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
+                    @yScale(d.y)+@padding.top+@margin.top ) 
 
                 i = 0
                 while i <= numberVerticalAsymptote 

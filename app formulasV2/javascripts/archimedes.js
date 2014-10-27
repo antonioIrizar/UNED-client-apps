@@ -1024,7 +1024,6 @@
       maxY = 0;
       minY = 0;
       while (x < (this.xEnd + iteration)) {
-        console.log("otra vuelta");
         if (verticalAsymptote) {
           numberVerticalAsymptote++;
           this.plotdata[numberVerticalAsymptote] = new Array();
@@ -1036,38 +1035,36 @@
         if (y === Number.POSITIVE_INFINITY || y === Number.NEGATIVE_INFINITY) {
           x += iteration;
           verticalAsymptote = true;
-          numberVerticalAsymptote++;
-          break;
-        }
-        if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
-          auxY = y;
-          lastAuxY = lastY;
-          smallX = x - iteration;
-          bigX = x;
-          smallIteration = Math.abs(bigX - smallX) / 2;
-          while (true) {
-            if (smallIteration === Number.MIN_VALUE) {
-              break;
-            }
-            valueVariables[positionValueVariableX] = smallX + smallIteration;
-            tmpY = equation.eval(valueVariables);
-            if (tmpY === Number.POSITIVE_INFINITY || tmpY === Number.NEGATIVE_INFINITY) {
-              console.log(" asintota");
-              verticalAsymptote = true;
-              break;
-            }
-            if ((lastAuxY < 0 && tmpY > 0) || (lastAuxY > 0 && tmpY < 0)) {
-              auxY = tmpY;
-              bigX = smallX + smallIteration;
-            } else {
-              if ((auxY < 0 && tmpY > 0) || (auxY > 0 && tmpY < 0)) {
-                lastAuxY = tmpY;
-                smallX = smallX + smallIteration;
-              } else {
+        } else {
+          if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
+            auxY = y;
+            lastAuxY = lastY;
+            smallX = x - iteration;
+            bigX = x;
+            smallIteration = Math.abs(bigX - smallX) / 2;
+            while (true) {
+              if (smallIteration === Number.MIN_VALUE) {
                 break;
               }
+              valueVariables[positionValueVariableX] = smallX + smallIteration;
+              tmpY = equation.eval(valueVariables);
+              if (tmpY === Number.POSITIVE_INFINITY || tmpY === Number.NEGATIVE_INFINITY) {
+                verticalAsymptote = true;
+                break;
+              }
+              if ((lastAuxY < 0 && tmpY > 0) || (lastAuxY > 0 && tmpY < 0)) {
+                auxY = tmpY;
+                bigX = smallX + smallIteration;
+              } else {
+                if ((auxY < 0 && tmpY > 0) || (auxY > 0 && tmpY < 0)) {
+                  lastAuxY = tmpY;
+                  smallX = smallX + smallIteration;
+                } else {
+                  break;
+                }
+              }
+              smallIteration = Math.abs(bigX - smallX) / 2;
             }
-            smallIteration = Math.abs(bigX - smallX) / 2;
           }
         }
         if (verticalAsymptote) {
@@ -1098,7 +1095,6 @@
           console.log  @plotdata[i]
           i++
        */
-      console.log(this.plotdata.length);
 
       /* todo this don't work correctly. I think put with a percent formula
       if Math.abs(minY) >  5
@@ -1168,9 +1164,7 @@
        */
       if (mode === "line") {
         if (this.oldMode === "line") {
-          console.log("numero: " + numberVerticalAsymptote);
           if (this.numberVerticalAsymptote > numberVerticalAsymptote) {
-            console.log("cadasda");
             i = numberVerticalAsymptote + 1;
             while (i <= this.numberVerticalAsymptote) {
               d3.selectAll(".line" + i).remove();
@@ -1183,7 +1177,6 @@
             i++;
           }
         } else {
-          console.log("else");
           if (this.oldMode !== null) {
             d3.selectAll(".dot").remove();
           }
