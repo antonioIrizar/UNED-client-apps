@@ -1082,30 +1082,6 @@
       t1.selectAll(".y.axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
 
       /*
-      thinking about asymptote
-          if verticalAsymptote
-      
-              x += iteration
-              valueVariables[positionValueVariableX] = x
-              y = equation(x)
-              @transformContext()
-              context.beginPath()
-              context.moveTo(x, y)
-              while x <= @xEnd
-                  if @minY < y < @maxY-1
-                      context.lineTo(x, y)
-                  x += iteration
-                  y = equation(x)
-      
-              context.restore()
-              context.lineJoin = 'round'
-              context.lineWidth = thickness
-              context.strokeStyle = color
-              context.stroke()
-              context.restore()
-       */
-
-      /*
       i = -2
       @plotdata = []
       while i<10
