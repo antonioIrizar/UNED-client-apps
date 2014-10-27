@@ -509,7 +509,7 @@ class Formula
 class Archimedes extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
-        newtowns = new Variable("e", "E" , "Newtowns" , "description" , null)
+        newtowns = new Variable("e", "E" , "Newtowns" , "Buoyant force of a given body." , null)
         equals = new Operator "="
         ###
         paragraph = document.createElement 'p'
@@ -522,10 +522,10 @@ class Archimedes extends Formula
         console.log "aqui"
         ###
         #todo problems with sub tags
-        density = new Variable("ro", "\u03C1" , "Density" , "description" , null)
+        density = new Variable("ro", "\u03C1" , "Density" , "Density of the fluid." , null)
         mult = new Operator "*"
-        gravity = new Variable("g", "g" , "Gravity" , "description" , null)
-        volume = new Variable("v", "V" , "Volume" , "description" , null)
+        gravity = new Variable("g", "g" , "Gravity" , "Acceleration due to gravity." , null)
+        volume = new Variable("v", "V" , "Volume" , "Volume of the displaced fluid." , null)
         variables = [newtowns, equals, density, mult, gravity, mult, volume]
         equation = 'e=ro*g*v'
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
