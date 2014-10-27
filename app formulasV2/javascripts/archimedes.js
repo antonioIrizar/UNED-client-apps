@@ -16,8 +16,6 @@
 
     Formula.prototype.descriptionVariables = null;
 
-    Formula.prototype.srcImage = null;
-
     Formula.prototype.textFormula = null;
 
     Formula.prototype.variables = [];
@@ -52,11 +50,10 @@
 
     Formula.prototype.inputsRangeOrderCorrect = true;
 
-    function Formula(divPanel, liFormula, constantValue, descriptionVariables, srcImage, symbols, equation, graph) {
-      var divAllFormulas, divDescriptionVariables, img;
+    function Formula(divPanel, liFormula, constantValue, descriptionVariables, symbols, equation, graph) {
+      var divAllFormulas, divDescriptionVariables;
       this.divPanel = divPanel;
       this.liFormula = liFormula;
-      this.srcImage = srcImage;
       this.symbols = symbols;
       this.equation = equation;
       this.graph = graph;
@@ -81,9 +78,6 @@
       this.descriptionVariables = document.createElement('div');
       this.descriptionVariables.setAttribute('id', "description-formula");
       divDescriptionVariables.appendChild(this.descriptionVariables);
-      img = document.createElement('img');
-      img.src = this.srcImage;
-      this.divFormula.appendChild(img);
       this.divFormulaWithNumbers.appendChild(this.drawFormula());
       MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
     }
@@ -574,7 +568,7 @@
   Archimedes = (function(_super) {
     __extends(Archimedes, _super);
 
-    function Archimedes(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function Archimedes(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var density, equals, equation, gravity, mult, newtowns, variables, volume;
       newtowns = new Variable("e", "E", "Newtowns", "Buoyant force of a given body.", null);
       equals = new Operator("=");
@@ -595,7 +589,7 @@
       volume = new Variable("v", "V", "Volume", "Volume of the displaced fluid.", null);
       variables = [newtowns, equals, density, mult, gravity, mult, volume];
       equation = 'e=ro*g*v';
-      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return Archimedes;
@@ -605,7 +599,7 @@
   Newton1 = (function(_super) {
     __extends(Newton1, _super);
 
-    function Newton1(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function Newton1(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var aceleration, equals, equation, force, mass, mult, simbols;
       force = new Variable("f", "F", "Force", "description", null);
       equals = new Operator("=");
@@ -614,7 +608,7 @@
       aceleration = new Variable("a", "a", "Aceleration", "description", null);
       simbols = [force, equals, mass, mult, aceleration];
       equation = 'f=m*a';
-      Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, math.parse(equation).compile(math), graph);
+      Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, simbols, math.parse(equation).compile(math), graph);
     }
 
     return Newton1;
@@ -624,7 +618,7 @@
   Pendulum = (function(_super) {
     __extends(Pendulum, _super);
 
-    function Pendulum(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function Pendulum(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var division, elongation, equals, equation, force, length, mult, parenthesisClose, parenthesisOpen, variables, weight;
       force = new Variable("f", "F", "Force", "description", null);
       equals = new Operator("=");
@@ -637,7 +631,7 @@
       length = new Variable("ro", "\u03C1", "Length pendulum", "description", null);
       variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length];
       equation = 'f=(p*e)/ro';
-      Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return Pendulum;
@@ -647,7 +641,7 @@
   FrictionForce = (function(_super) {
     __extends(FrictionForce, _super);
 
-    function FrictionForce(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function FrictionForce(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var coefficientFriction, equals, equation, force, mult, normalForce, variables;
       force = new Variable("f", "F", "Frection force", "Description", null);
       equals = new Operator("=");
@@ -656,7 +650,7 @@
       normalForce = new Variable("n", "N", "Normal force", "Description", null);
       variables = [force, equals, coefficientFriction, mult, normalForce];
       equation = 'f=mic * n';
-      FrictionForce.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      FrictionForce.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return FrictionForce;
@@ -666,7 +660,7 @@
   Impulse = (function(_super) {
     __extends(Impulse, _super);
 
-    function Impulse(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function Impulse(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var equals, equation, force, improve, mult, time, variables;
       improve = new Variable("i", "i", "Impulse", "Description", null);
       equals = new Operator("=");
@@ -675,7 +669,7 @@
       time = new Variable("t", "T", "Time", "Description", null);
       variables = [force, equals, force, mult, time];
       equation = 'i=f * t';
-      Impulse.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      Impulse.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return Impulse;
@@ -685,7 +679,7 @@
   Momentum = (function(_super) {
     __extends(Momentum, _super);
 
-    function Momentum(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function Momentum(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var equals, equation, mass, momentum, mult, variables, velocity;
       momentum = new Variable("p", "\u03C1", "Momentum", "Description", null);
       equals = new Operator("=");
@@ -694,7 +688,7 @@
       velocity = new Variable("v", "V", "Velocity of the body", "Description", null);
       variables = [momentum, equals, mass, mult, velocity];
       equation = 'p=m * v';
-      Momentum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      Momentum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return Momentum;
@@ -704,7 +698,7 @@
   PotentialEnergy = (function(_super) {
     __extends(PotentialEnergy, _super);
 
-    function PotentialEnergy(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function PotentialEnergy(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var equals, equation, gravity, height, mass, mult, potentialEnergy, variables;
       potentialEnergy = new Variable("u", "U", "Potential Energy", "Description", null);
       equals = new Operator("=");
@@ -714,7 +708,7 @@
       height = new Variable("h", "h", "Height", "Description", null);
       variables = [potentialEnergy, equals, mass, mult, gravity, mult, height];
       equation = 'u=m * g * h';
-      PotentialEnergy.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      PotentialEnergy.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return PotentialEnergy;
@@ -724,7 +718,7 @@
   OhmLaw = (function(_super) {
     __extends(OhmLaw, _super);
 
-    function OhmLaw(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function OhmLaw(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var current, division, equals, equation, potential, resistance, variables;
       current = new Variable("i", "I", "Electric current", "Description", null);
       equals = new Operator("=");
@@ -733,7 +727,7 @@
       resistance = new Variable("r", "R", "Resistance", "Description", null);
       variables = [current, equals, potential, division, resistance];
       equation = 'i=v / r';
-      OhmLaw.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      OhmLaw.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return OhmLaw;
@@ -743,7 +737,7 @@
   ResistivityConductivity = (function(_super) {
     __extends(ResistivityConductivity, _super);
 
-    function ResistivityConductivity(divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) {
+    function ResistivityConductivity(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var division, electricalResistivity, equals, equation, length, mult, resistance, section, variables;
       resistance = new Variable("r", "R", "Resistance", "Description", null);
       equals = new Operator("=");
@@ -754,7 +748,7 @@
       section = new Variable("a", "A", "Cross-sectional area", "Description", null);
       variables = [resistance, equals, electricalResistivity, mult, length, division, section];
       equation = 'r=p * l / a';
-      ResistivityConductivity.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
+      ResistivityConductivity.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
     }
 
     return ResistivityConductivity;
@@ -1203,21 +1197,13 @@
 
     Init.prototype.archimedes = null;
 
-    Init.prototype.imgArchimedes = 'images/archimedesFormula.png';
-
     Init.prototype.newton1 = null;
-
-    Init.prototype.imgNewton1 = 'images/newtonFormula.png';
 
     Init.prototype.constantValue = null;
 
     Init.prototype.pendulum = null;
 
-    Init.prototype.imgPendulum = 'images/pendulumFormula.png';
-
     Init.prototype.pendulumOscilation = null;
-
-    Init.prototype.imgPendulumOscilation = 'images/pendulumOscilationFormula.png';
 
     Init.prototype.frictionForce = null;
 
@@ -1342,39 +1328,39 @@
       switch (false) {
         case data !== this.archimedes.id:
           this.disabledDrop();
-          formula = new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph, this.imgArchimedes);
+          formula = new Archimedes(this.divPanel, this.archimedes, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.newton1.id:
           this.disabledDrop();
-          this.formula = new Newton1(this.divPanel, this.newton1, this.constantValue, this.descriptionVariables, this.graph, this.imgNewton1);
+          this.formula = new Newton1(this.divPanel, this.newton1, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.pendulum.id:
           this.disabledDrop();
-          this.formula = new Pendulum(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new Pendulum(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.frictionForce.id:
           this.disabledDrop();
-          this.formula = new FrictionForce(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new FrictionForce(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.impulse.id:
           this.disabledDrop();
-          this.formula = new Impulse(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new Impulse(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.momentum.id:
           this.disabledDrop();
-          this.formula = new Momentum(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new Momentum(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.potentialEnergy.id:
           this.disabledDrop();
-          this.formula = new PotentialEnergy(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new PotentialEnergy(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.ohmLaw.id:
           this.disabledDrop();
-          this.formula = new OhmLaw(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new OhmLaw(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
         case data !== this.resistivityConductivity.id:
           this.disabledDrop();
-          this.formula = new ResistivityConductivity(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph, this.imgPendulum);
+          this.formula = new ResistivityConductivity(this.divPanel, this.pendulum, this.constantValue, this.descriptionVariables, this.graph);
           return this.divPanel.appendChild(this.createButton());
       }
     };

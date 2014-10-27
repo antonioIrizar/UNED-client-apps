@@ -4,7 +4,6 @@ class Formula
     divPanel: null
     liFormula: null
     descriptionVariables: null
-    srcImage: null
     textFormula: null
     variables: []
     constantValue: null
@@ -23,7 +22,7 @@ class Formula
     inputsRangeCorrect: true
     inputsRangeOrderCorrect: true
 
-    constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @srcImage, @symbols, @equation, @graph) ->
+    constructor: (@divPanel, @liFormula, constantValue, descriptionVariables, @symbols, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
@@ -55,9 +54,6 @@ class Formula
 
         divDescriptionVariables.appendChild @descriptionVariables
 
-        img = document.createElement 'img'
-        img.src = @srcImage
-        @divFormula.appendChild img
         @divFormulaWithNumbers.appendChild @drawFormula()
         MathJax.Hub.Queue(["Typeset",MathJax.Hub])
 
@@ -481,7 +477,7 @@ class Formula
    
 class Archimedes extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         newtowns = new Variable("e", "E" , "Newtowns" , "Buoyant force of a given body." , null)
         equals = new Operator "="
         ###
@@ -501,11 +497,11 @@ class Archimedes extends Formula
         volume = new Variable("v", "V" , "Volume" , "Volume of the displaced fluid." , null)
         variables = [newtowns, equals, density, mult, gravity, mult, volume]
         equation = 'e=ro*g*v'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class Newton1 extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         force = new Variable "f", "F" , "Force" , "description" , null
         equals = new Operator "="
         mass = new Variable "m", "m" , "Mass" , "description" , null
@@ -514,11 +510,11 @@ class Newton1 extends Formula
         simbols = [force, equals, mass, mult, aceleration]
         equation = 'f=m*a'
         
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, simbols, math.parse(equation).compile(math), graph)
 
 class Pendulum extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         force = new Variable( "f", "F" , "Force" , "description" , null)
         equals = new Operator("=")
         parenthesisOpen = new Operator "("
@@ -530,11 +526,11 @@ class Pendulum extends Formula
         length = new Variable("ro", "\u03C1" , "Length pendulum" , "description" , null)
         variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length]
         equation = 'f=(p*e)/ro'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class FrictionForce extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         force = new Variable("f", "F", "Frection force", "Description", null)
         equals = new Operator("=")
         coefficientFriction = new Variable("mic", "\u00B5", "Coefficient of friction", "Description", null)
@@ -542,11 +538,11 @@ class FrictionForce extends Formula
         normalForce = new Variable("n", "N", "Normal force", "Description", null)
         variables = [force, equals, coefficientFriction, mult, normalForce]
         equation = 'f=mic * n'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class Impulse extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         improve = new Variable("i", "i", "Impulse", "Description", null)
         equals = new Operator("=")
         force = new Variable("f", "F", "Force", "Description", null)
@@ -554,11 +550,11 @@ class Impulse extends Formula
         time = new Variable("t", "T", "Time", "Description", null)
         variables = [force, equals, force, mult, time]
         equation = 'i=f * t'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class Momentum extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         momentum = new Variable("p", "\u03C1", "Momentum", "Description", null)
         equals = new Operator("=")
         mass = new Variable("m", "m", "Mass", "Description", null)
@@ -566,11 +562,11 @@ class Momentum extends Formula
         velocity = new Variable("v", "V", "Velocity of the body", "Description", null)
         variables = [momentum, equals, mass, mult,velocity]
         equation = 'p=m * v'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class PotentialEnergy extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         potentialEnergy = new Variable("u", "U", "Potential Energy", "Description", null)
         equals = new Operator("=")
         mass = new Variable("m", "m", "Mass", "Description", null)
@@ -579,11 +575,11 @@ class PotentialEnergy extends Formula
         height = new Variable("h", "h", "Height", "Description", null)
         variables = [potentialEnergy, equals, mass, mult, gravity, mult, height]
         equation = 'u=m * g * h'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class OhmLaw extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         current = new Variable("i", "I", "Electric current", "Description", null)
         equals = new Operator("=")
         potential = new Variable("v", "V", "potential difference", "Description", null)
@@ -591,11 +587,11 @@ class OhmLaw extends Formula
         resistance = new Variable("r", "R" , "Resistance", "Description" , null)
         variables = [current, equals, potential, division, resistance]
         equation = 'i=v / r'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 class ResistivityConductivity extends Formula
 
-    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
         resistance = new Variable("r", "R", "Resistance", "Description", null)
         equals = new Operator("=")
         electricalResistivity = new Variable("p", "\u03C1", "Electrical resistivity", "Description", null)
@@ -605,7 +601,7 @@ class ResistivityConductivity extends Formula
         section = new Variable("a", "A" , "Cross-sectional area", "Description" , null)
         variables = [resistance, equals, electricalResistivity, mult, length, division, section]
         equation = 'r=p * l / a'
-        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+        super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
 
 
 class Variable 
@@ -1067,14 +1063,10 @@ class Graph
 class Init
     divPanel: null
     archimedes: null
-    imgArchimedes: 'images/archimedesFormula.png'
     newton1: null
-    imgNewton1: 'images/newtonFormula.png'
     constantValue: null
     pendulum: null
-    imgPendulum: 'images/pendulumFormula.png'
     pendulumOscilation: null
-    imgPendulumOscilation: 'images/pendulumOscilationFormula.png'
     frictionForce: null
     impulse: null
     momentum: null
@@ -1166,39 +1158,39 @@ class Init
         switch
             when data is @archimedes.id
                 @disabledDrop()
-                formula = new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
+                formula = new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @newton1.id
                 @disabledDrop()
-                @formula = new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+                @formula = new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @pendulum.id
                 @disabledDrop()
-                @formula = new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @frictionForce.id
                 @disabledDrop()
-                @formula = new FrictionForce @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new FrictionForce @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @impulse.id
                 @disabledDrop()
-                @formula = new Impulse @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new Impulse @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @momentum.id
                 @disabledDrop()
-                @formula = new Momentum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new Momentum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @potentialEnergy.id
                 @disabledDrop()
-                @formula = new PotentialEnergy @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new PotentialEnergy @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @ohmLaw.id
                 @disabledDrop()
-                @formula = new OhmLaw @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new OhmLaw @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
             when data is @resistivityConductivity.id
                 @disabledDrop()
-                @formula = new ResistivityConductivity @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @formula = new ResistivityConductivity @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph
                 @divPanel.appendChild @createButton()
 
     disabledDrop: ->
