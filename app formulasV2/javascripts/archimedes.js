@@ -1013,16 +1013,24 @@
        */
       var allData, aux, auxY, bigX, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
       iteration = Math.abs((this.xEnd - this.xStart) / 50);
+      console.log(iteration);
       x = this.xStart;
       this.plotdata = [[]];
       numberVerticalAsymptote = 0;
       verticalAsymptote = false;
       valueVariables[positionValueVariableX] = x;
       y = equation.eval(valueVariables);
-      x += iteration;
       lastY = y;
       maxY = 0;
       minY = 0;
+      this.minY = minY = Math.min(minY, y);
+      this.maxY = maxY = Math.max(maxY, y);
+      aux = {
+        "x": x,
+        "y": y
+      };
+      this.plotdata[numberVerticalAsymptote].push(aux);
+      x += iteration;
       while (x < (this.xEnd + iteration)) {
         if (verticalAsymptote) {
           numberVerticalAsymptote++;
@@ -1162,7 +1170,7 @@
           @plotdata.push aux
           i++
        */
-      if (mode === "line") {
+      if (mode === "line" && iteration !== 0) {
         if (this.oldMode === "line") {
           if (this.numberVerticalAsymptote > numberVerticalAsymptote) {
             i = numberVerticalAsymptote + 1;
@@ -1250,7 +1258,7 @@
             context.restore()
          */
       }
-      if (mode === "dots") {
+      if (mode === "dots" || iteration === 0) {
         i = 0;
         allData = [];
         while (i <= numberVerticalAsymptote) {

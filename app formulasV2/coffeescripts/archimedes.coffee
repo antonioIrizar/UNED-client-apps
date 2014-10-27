@@ -570,6 +570,8 @@ class Pendulum extends Formula
        (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2]
 
 
+
+
 class Variable 
     id: null #string with id to library mathjs, it can't use special chars example ñ,ç...
     name: null #string but pass in htlm , if it need for example sub tag
@@ -868,6 +870,7 @@ g.append("rect")
         console.log @iteration
         ###
         iteration = Math.abs (@xEnd - @xStart) / 50
+        console.log iteration
 
         x = @xStart
         @plotdata = [[]]
@@ -876,11 +879,20 @@ g.append("rect")
         valueVariables[positionValueVariableX] = x
         #coffeScript can't traslate correcly with function eval
         y =  `equation.eval(valueVariables)`
-        x += iteration
+        
         lastY = y
         maxY = 0
         minY = 0
-        
+        @minY = minY = Math.min minY, y
+        @maxY = maxY = Math.max maxY, y
+
+        aux = 
+            "x": x
+            "y": y
+        @plotdata[numberVerticalAsymptote].push aux
+        x += iteration
+
+        #TODO problems with precision error. 
         while x < (@xEnd+iteration)
             #think from this scale of asyntotes. NEED IMPROVE
             if verticalAsymptote
@@ -1029,7 +1041,7 @@ g.append("rect")
             @plotdata.push aux
             i++
         ###
-        if mode == "line"
+        if mode == "line" and iteration isnt 0
            
             if @oldMode is "line"
 
@@ -1059,12 +1071,12 @@ g.append("rect")
                 .x((d) =>
                     #console.log "x: " + d.x
                     #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
-                    @xScale(d.x)+@padding.left+@margin.left )
+                        @xScale(d.x)+@padding.left+@margin.left )
 
                 .y((d) => 
                     #console.log "y: " + d.y
                     #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
-                    @yScale(d.y)+@padding.top+@margin.top ) 
+                        @yScale(d.y)+@padding.top+@margin.top ) 
 
                 i = 0
                 while i <= numberVerticalAsymptote 
@@ -1131,7 +1143,7 @@ g.append("rect")
                 context.stroke()
                 context.restore()
         ###   
-        if mode == "dots"
+        if mode == "dots" or iteration is 0
 
             i = 0
             allData = []
