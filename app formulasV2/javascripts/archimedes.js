@@ -34,8 +34,6 @@
 
     Formula.prototype.graph = null;
 
-    Formula.prototype.graphCloneCanvas = null;
-
     Formula.prototype.contextCanvasClone = null;
 
     Formula.prototype.mode = null;
@@ -64,9 +62,7 @@
       this.graph = graph;
       window.addEventListener("resize", (function(_this) {
         return function() {
-          return _this.graph.resizeCanvas(function(x) {
-            return _this.executeEquation(x);
-          }, 'blue', 3, _this.mode);
+          return _this.graph.resizeCanvas('blue', 3, _this.mode);
         };
       })(this));
       this.variables = [];
@@ -524,14 +520,6 @@
       }
     };
 
-    Formula.prototype.cloneCanvas = function() {
-      this.graphCloneCanvas = document.createElement('canvas');
-      this.contextCanvasClone = this.graphCloneCanvas.getContext('2d');
-      this.graphCloneCanvas.width = this.graph.canvas.width;
-      this.graphCloneCanvas.height = this.graph.canvas.height;
-      return this.contextCanvasClone.drawImage(this.graph.canvas, 0, 0);
-    };
-
     Formula.prototype.drawNumbersFormula = function() {
       var formula, i, id, text, variable, _ref;
       formula = document.getElementById(this.idFormula);
@@ -579,13 +567,6 @@
       return _results;
     };
 
-
-    /*
-    executeEquation: (x) ->
-        @valueVariables[@positionValueVariableX] = x
-        @equation.eval @valueVariables
-     */
-
     return Formula;
 
   })();
@@ -617,10 +598,6 @@
       Archimedes.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
     }
 
-    Archimedes.prototype.archimedesEquation = function(arrayVariables) {
-      return arrayVariables[0] * arrayVariables[1] * arrayVariables[2];
-    };
-
     return Archimedes;
 
   })(Formula);
@@ -639,10 +616,6 @@
       equation = 'f=m*a';
       Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, math.parse(equation).compile(math), graph);
     }
-
-    Newton1.prototype.newtowEquation = function(arrayVariables) {
-      return arrayVariables[0] * arrayVariables[1];
-    };
 
     return Newton1;
 
@@ -666,10 +639,6 @@
       equation = 'f=(p*e)/ro';
       Pendulum.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph);
     }
-
-    Pendulum.prototype.pendulumEquation = function(arrayVariables) {
-      return (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2];
-    };
 
     return Pendulum;
 
@@ -959,7 +928,7 @@
       return place.attr("transform", "rotate(0)").attr("y", cordY).attr("x", cordX).attr("dy", ".71em").style("text-anchor", "end").text(text);
     };
 
-    Graph.prototype.resizeCanvas = function(equation, color, thickness, mode) {
+    Graph.prototype.resizeCanvas = function(color, thickness, mode) {
       var t0, t1, t2, width;
       width = window.innerWidth;
       if (width > 991) {
@@ -1332,9 +1301,7 @@
       });
       window.addEventListener("resize", (function(_this) {
         return function() {
-          return _this.graph.resizeCanvas(function(x) {
-            return _this.executeEquation(x);
-          }, 'blue', 3, _this.mode);
+          return _this.graph.resizeCanvas('blue', 3, _this.mode);
         };
       })(this));
       this.divPanel = document.getElementById(divPanel);
@@ -1473,9 +1440,7 @@
       this.divPanel.appendChild(this.paragraph);
       return window.addEventListener("resize", (function(_this) {
         return function() {
-          return _this.graph.resizeCanvas(function(x) {
-            return _this.executeEquation(x);
-          }, 'blue', 3, _this.mode);
+          return _this.graph.resizeCanvas('blue', 3, _this.mode);
         };
       })(this));
     };

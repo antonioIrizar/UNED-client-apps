@@ -13,7 +13,6 @@ class Formula
     valueVariables: {}
     positionValueVariableX: null
     graph: null
-    graphCloneCanvas: null
     contextCanvasClone: null
     mode: null
     numberInputsFilled: 0
@@ -28,9 +27,7 @@ class Formula
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
-            @graph.resizeCanvas (x) => 
-                @executeEquation x
-            ,'blue', 3, @mode
+            @graph.resizeCanvas 'blue', 3, @mode
 
         @variables = []
         @valueVariables = {}
@@ -57,8 +54,6 @@ class Formula
         @descriptionVariables.setAttribute 'id', "description-formula"
 
         divDescriptionVariables.appendChild @descriptionVariables
-
-        #@cloneCanvas()
 
         img = document.createElement 'img'
         img.src = @srcImage
@@ -389,8 +384,7 @@ class Formula
                 inputAux.removeAttribute 'disabled'
             else
                 inputAux.setAttribute 'disabled', ""
-            @inputsRangeCorrect = inputsRangeCorrect
-       
+            @inputsRangeCorrect = inputsRangeCorrect 
             
         value
 
@@ -437,8 +431,6 @@ class Formula
 
     clickButton: ->
         if (@numberInputsFilled == @variables.length-2 and @inputsCorrect and @inputsRangeOrderCorrect and @inputsRangeCorrect and (@numberInputsRangeFilled == 0 or @numberInputsRangeFilled == 2 ))
-            #@graph.context.clearRect(0, 0, @graph.canvas.width, @graph.canvas.height)
-            #@graph.context.drawImage(@graphCloneCanvas, 0, 0) 
             
             rads = document.getElementsByName 'modeLine'
 
@@ -455,16 +447,6 @@ class Formula
             @graph.drawEquation @equation, @valueVariables, @positionValueVariableX, 'blue', 3, @mode
         else
             alert "The form have errors or it's not filled"
-
-    cloneCanvas: -> 
-
-        @graphCloneCanvas  = document.createElement('canvas')
-        @contextCanvasClone = @graphCloneCanvas.getContext('2d')
-
-        @graphCloneCanvas.width = @graph.canvas.width
-        @graphCloneCanvas.height = @graph.canvas.height
-    
-        @contextCanvasClone.drawImage(@graph.canvas, 0, 0)
 
     drawNumbersFormula: () ->
         formula = document.getElementById @idFormula
@@ -496,13 +478,7 @@ class Formula
                     @graph.maxX = @graph.xEnd = variable.endRange
             else
                 @valueVariables[variable.id] = variable.value
-
-    ###
-    executeEquation: (x) ->
-        @valueVariables[@positionValueVariableX] = x
-        @equation.eval @valueVariables
-    ###
-    
+   
 class Archimedes extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
@@ -526,10 +502,6 @@ class Archimedes extends Formula
         variables = [newtowns, equals, density, mult, gravity, mult, volume]
         equation = 'e=ro*g*v'
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
-    
-    archimedesEquation: (arrayVariables) ->
-        arrayVariables[0] * arrayVariables[1] * arrayVariables[2]
-
 
 class Newton1 extends Formula
 
@@ -543,9 +515,6 @@ class Newton1 extends Formula
         equation = 'f=m*a'
         
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, simbols, math.parse(equation).compile(math), graph)
-    
-    newtowEquation: (arrayVariables) ->
-        arrayVariables[0] * arrayVariables[1]
 
 class Pendulum extends Formula
 
@@ -562,9 +531,6 @@ class Pendulum extends Formula
         variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length]
         equation = 'f=(p*e)/ro'
         super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
-    
-    pendulumEquation: (arrayVariables) ->
-       (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2]
 
 class FrictionForce extends Formula
 
@@ -784,7 +750,7 @@ class Graph
             .style("text-anchor", "end")
             .text(text)
         
-    resizeCanvas:  (equation, color, thickness, mode)->
+    resizeCanvas:  (color, thickness, mode)->
         width = window.innerWidth
         if width > 991
             width = ((width/12) * 5)
@@ -814,7 +780,6 @@ class Graph
             .call @yAxisFunction
         
         if (@x and @y)
-            # @drawEquation equation, color, thickness, mode
             t2=t0
             if mode is "line"
                 t2.selectAll(".line")
@@ -1167,9 +1132,7 @@ class Init
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
-            @graph.resizeCanvas (x) => 
-                @executeEquation x
-            ,'blue', 3, @mode
+            @graph.resizeCanvas 'blue', 3, @mode
             
         @divPanel = document.getElementById divPanel
 
@@ -1289,8 +1252,6 @@ class Init
         @divPanel.appendChild @paragraph
         
         window.addEventListener "resize", =>
-            @graph.resizeCanvas (x) => 
-                @executeEquation x
-            ,'blue', 3, @mode
+            @graph.resizeCanvas 'blue', 3, @mode
        
 window.Init = Init
