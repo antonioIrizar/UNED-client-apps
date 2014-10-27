@@ -1182,7 +1182,7 @@ class Init
         @divPanel.setAttribute 'ondragenter', "return false"
         ###
 
-        $(@divPanel).droppable(drop: (event, ui) =>@drop(event, ui))
+        $(@divPanel).droppable(drop: (event, ui) => @drop(event, ui))
         @paragraph = document.createElement 'p'
         text = document.createTextNode "Please drop your formula here"
         @paragraph.appendChild text

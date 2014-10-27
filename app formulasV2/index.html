@@ -124,6 +124,15 @@
   stroke-dasharray: 3, 4;
 }
 
+.inFront{
+    position: static;
+    z-index: 1001;
+}
+
+.goBack{
+    position: absolute;
+    z-index: -1;
+}
 
 </style>
 
@@ -147,34 +156,27 @@
         <div class="col-md-2">
           <div class="sidebar-nav">
             <div class="navbar navbar-default" role="navigation">
-              <div class="navbar-header">
+              <div class="navbar-header ">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
                   <span class="sr-only">Toggle navigation</span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                 </button>
-                <span class="visible-xs navbar-brand">Tool Bar </span>
+                <span class="visible-xs navbar-brand">Formulas</span>
               </div>
-              <div class="navbar-collapse collapse sidebar-navbar-collapse">
+              <div class="navbar-collapse collapse sidebar-navbar-collapse ">
                 <ul class="nav navbar-nav my-center">
-                  <li class="title-nvar hidden-xs"> <span >Tool Bar</span></li>
-                  <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                      <img  id="formula" src="images/formula.png" width="50">
-                      <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                      <li role="presentation" draggable="true" ><a id="archimedes_formula" draggable="true" href="#">Archimedes formula</a></li>
-                      <li role="presentation" draggable="true"><a id="newton_formula" draggable="true" href="#">Newton 1</a></li>
-                      <li role="presentation" draggable="true"><a id="pendulum_formula" draggable="true" href="#">Pendulum</a></li>
-                      <li role="presentation" draggable="true"><a id="friction_force_formula" draggable="true" href="#">Friction_force</a></li>
-                      <li role="presentation" draggable="true"><a id="impulse_formula" draggable="true" href="#">Impulse</a></li>
-                      <li role="presentation" draggable="true"><a id="momentum_formula" draggable="true" href="#">Momentum</a></li>
-                      <li role="presentation" draggable="true"><a id="potential_energy_formula" draggable="true" href="#">Potential energy</a></li>
-                      <li role="presentation" draggable="true"><a id="ohm_law_formula" draggable="true" href="#">Ohm's Law</a></li>
-                      <li role="presentation" draggable="true"><a id="resistivity_conductivity_formula" draggable="true" href="#">Resistivity and conductivity</a></li>
-                    </ul>
-                  </li>
+                  <li class="title-nvar hidden-xs"> <span >Formulas</span></li>
+                  <li role="presentation"><a class="inFront" id="archimedes_formula" draggable="true" href="#">Archimedes</a></li>
+                  <li role="presentation"><a class="inFront" id="newton_formula" draggable="true" href="#">Newton</a></li>
+                  <li role="presentation"><a class="inFront" id="pendulum_formula" draggable="true" href="#">Pendulum</a></li>
+                  <li role="presentation"><a class="inFront" id="friction_force_formula" draggable="true" href="#">Friction force</a></li>
+                  <li role="presentation"><a class="inFront" id="impulse_formula" draggable="true" href="#">Impulse</a></li>
+                  <li role="presentation"><a class="inFront" id="momentum_formula" draggable="true" href="#">Momentum</a></li>
+                  <li role="presentation"><a class="inFront" id="potential_energy_formula" draggable="true" href="#">Potential energy</a></li>
+                  <li role="presentation"><a class="inFront" id="ohm_law_formula" draggable="true" href="#">Ohm's law</a></li>
+                  <li role="presentation"><a class="inFront" id="resistivity_conductivity_formula" draggable="true" href="#">Resistivity and conductivity</a></li>
                 </ul>
               </div><!--/.nav-collapse -->
             </div>
