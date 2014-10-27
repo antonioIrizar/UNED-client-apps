@@ -568,10 +568,9 @@
           this.graph.x = variable.name;
           if (variable.startRange !== null && variable.endRange !== null) {
             this.graph.minX = this.graph.xStart = variable.startRange;
-            this.graph.maxX = this.graph.xEnd = variable.endRange;
-            _results.push(this.graph.autoScale = false);
+            _results.push(this.graph.maxX = this.graph.xEnd = variable.endRange);
           } else {
-            _results.push(this.graph.autoScale = true);
+            _results.push(void 0);
           }
         } else {
           _results.push(this.valueVariables[variable.id] = variable.value);
@@ -892,34 +891,6 @@
 
     Graph.prototype.numberVerticalAsymptote = 0;
 
-    Graph.prototype.unitsPerTick = 1;
-
-    Graph.prototype.axisColor = "#aaa";
-
-    Graph.prototype.font = "8pt Calibri";
-
-    Graph.prototype.tickSize = 20;
-
-    Graph.prototype.context = null;
-
-    Graph.prototype.rangeX = null;
-
-    Graph.prototype.rangeY = null;
-
-    Graph.prototype.unitX = null;
-
-    Graph.prototype.unitY = null;
-
-    Graph.prototype.centerX = null;
-
-    Graph.prototype.centerY = null;
-
-    Graph.prototype.iteration = null;
-
-    Graph.prototype.scaleX = null;
-
-    Graph.prototype.scaleY = null;
-
     Graph.prototype.x = null;
 
     Graph.prototype.y = null;
@@ -927,8 +898,6 @@
     Graph.prototype.textX = null;
 
     Graph.prototype.textY = null;
-
-    Graph.prototype.autoScale = true;
 
     function Graph() {
       var aux, g, width;
@@ -988,33 +957,6 @@
 
     Graph.prototype.writeVar = function(place, text, cordY, cordX) {
       return place.attr("transform", "rotate(0)").attr("y", cordY).attr("x", cordX).attr("dy", ".71em").style("text-anchor", "end").text(text);
-
-      /*
-      @yAxis.append("text")
-          .attr("transform", "rotate(0)")
-          .attr("y", 6)
-          .attr("x", 15)
-          .attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .text(@y)
-      
-      @xAxis.append("text")
-          .attr("transform", "rotate(0)")
-          .attr("y", 26)
-          .attr("x", @width)
-          .attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .text(@x)
-       */
-
-      /*
-      context = @context
-      context.save()
-      context.font = "20px Georgia"
-      context.fillText(@y, @centerX - 40, 15)
-      context.fillText(@x, @canvas.width - 15, @centerY + 40)
-      context.restore()
-       */
     };
 
     Graph.prototype.resizeCanvas = function(equation, color, thickness, mode) {
@@ -1050,87 +992,11 @@
           })(this)).attr("d", this.lineFunction);
         }
       }
-
-      /*
-      
-       //El recuadro de dentro
-      var defs = svg.append("defs");
-      
-      defs.append("marker")
-          .attr("id", "triangle-start")
-          .attr("viewBox", "0 0 10 10")
-          .attr("refX", 10)
-          .attr("refY", 5)
-          .attr("markerWidth", 6)
-          .attr("markerHeight", 6)
-          .attr("orient", "auto")
-        .append("path")
-          .attr("d", "M 0 0 L 10 5 L 0 10 z");
-      
-      defs.append("marker")
-          .attr("id", "triangle-end")
-          .attr("viewBox", "0 0 10 10")
-          .attr("refX", 10)
-          .attr("refY", 5)
-          .attr("markerWidth", 6)
-          .attr("markerHeight", 6)
-          .attr("orient", "auto")
-        .append("path")
-          .attr("d", "M 0 0 L 10 5 L 0 10 z");
-      
-      svg.append("rect")
-          .attr("class", "outer")
-          .attr("width", widthinterno)
-          .attr("height", heightInterno);
-      
-      
-       lo de dentro
-      g.append("rect")
-          .attr("class", "inner")
-          .attr("width", width)
-          .attr("height", height);
-      
-          
-      @canvas.width = width * 0.85
-      @canvas.height = @canvas.width
-      
-      if @autoScale
-          @maxX = ~~(width/2 /30)
-          @minX = -@maxX
-          @minY = @minX
-          @maxY = @maxX
-          @xStart = @minX
-          @xEnd = @maxX 
-        
-      @rangeX = (Math.abs @maxX + Math.abs @minX)
-      @rangeY = (Math.abs @maxY + Math.abs @minY)
-      
-      @unitX = @canvas.width / @rangeX 
-      @unitY = @canvas.height / @rangeY
-      @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
-      @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
-      @iteration = (@maxX + Math.abs @minX) / 1000
-      @scaleX = @canvas.width / @rangeX
-      @scaleY = @canvas.height / @rangeY
-      @drawXAxis()
-      @drawYAxis()
-      if (@x and @y)
-          @drawEquation equation, color, thickness, mode
-       */
     };
 
     Graph.prototype.drawEquation = function(equation, valueVariables, positionValueVariableX, color, thickness, mode) {
-
-      /*
-      context = @context
-      iteration =  @iteration
-      x = @xStart + iteration
-      verticalAsymptote = false
-      console.log @iteration
-       */
       var allData, aux, auxY, bigX, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
       iteration = Math.abs((this.xEnd - this.xStart) / 50);
-      console.log(iteration);
       x = this.xStart;
       this.plotdata = [[]];
       numberVerticalAsymptote = 0;
@@ -1322,58 +1188,6 @@
           this.oldMode = "line";
         }
         this.numberVerticalAsymptote = numberVerticalAsymptote;
-
-        /*
-        y = equation(x)
-        context.save()
-        context.save()
-        @transformContext()
-        context.beginPath()
-        context.moveTo(@xStart, y)
-        auxX = x
-        aux = y
-        
-        while x <= @xEnd
-            if @minY < y < @maxY
-                 *console.log "aqui"
-                context.lineTo(x, y)
-            else 
-                if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
-                    verticalAsymptote = true
-                    break
-                auxX = x
-                auxY = y
-            x += iteration
-            y = equation(x)
-        
-        context.restore()
-        context.lineJoin = 'round'
-        context.lineWidth = thickness
-        context.strokeStyle = color
-        context.stroke()
-        context.restore()
-        
-        if verticalAsymptote
-        
-            context.save()
-            x = x + iteration
-            y = equation(x)
-            @transformContext()
-            context.beginPath()
-            context.moveTo(x, y)
-            while x <= @xEnd
-                if @minY < y < @maxY-1
-                    context.lineTo(x, y)
-                x += iteration
-                y = equation(x)
-        
-            context.restore()
-            context.lineJoin = 'round'
-            context.lineWidth = thickness
-            context.strokeStyle = color
-            context.stroke()
-            context.restore()
-         */
       }
       if (mode === "dots" || iteration === 0) {
         i = 0;
@@ -1406,91 +1220,9 @@
             };
           })(this)).attr("d", this.lineFunction);
           this.oldMode = "dots";
-
-          /*
-                      @svg.selectAll('circle')
-          .data(@plotdata)
-          .enter()
-          .append('svg:circle')
-          .attr('cx', ((d) =>
-                       
-              a = @xScale(d[0])
-              a+@padding.left+@margin.left
-           
-              ))
-          .attr('cy', (d) =>
-          
-              b = @yScale(d[1])
-              b+@padding.top+@margin.top
-              
-              )
-          .style('stroke', "rgb(6, 120, 155)")
-          .attr('r', 2)
-                      
-          true
-           */
         }
-
-        /*
-        iteration = 0.2
-        endAngle = 2*Math.PI
-        y = equation(x)
-                
-        auxX = x
-        aux = y
-        
-        while x <= @xEnd
-            if @minY < y < @maxY
-                context.save()
-                context.save()
-                @transformContext()
-                context.beginPath()
-                context.arc x, y, 0.09, 0,endAngle
-                context.restore()
-                context.fillStyle = color
-                context.fill()
-                context.restore()
-            else 
-                if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
-                    verticalAsymptote = true
-                    break
-                auxX = x
-                auxY = y
-            
-            x += iteration
-            y = equation(x)
-        
-        if verticalAsymptote
-            x = x + iteration
-            y = equation(x)
-            while x <= @xEnd
-                if @minY < y < @maxY
-                    context.save()
-                    context.save()
-                    @transformContext()
-                    context.beginPath()
-                    context.arc x, y, 0.09, 0,endAngle
-                    context.restore()
-                    context.fillStyle = color
-                    context.fill()
-                    context.restore()  
-                x += iteration
-                y = equation(x)
-        
-                @drawVariables()
-         */
       }
       return this.drawVariables();
-    };
-
-    Graph.prototype.transformContext = function() {
-      var context;
-      context = this.context;
-      this.context.translate(this.centerX, this.centerY);
-      console.log("scale");
-      console.log(this.scaleX);
-      console.log(this.scaleY);
-      return context.scale(this.scaleX, -this.scaleY);
     };
 
     return Graph;

@@ -494,9 +494,6 @@ class Formula
                 if variable.startRange isnt null and variable.endRange isnt null
                     @graph.minX = @graph.xStart = variable.startRange
                     @graph.maxX = @graph.xEnd = variable.endRange
-                    @graph.autoScale = false
-                else
-                    @graph.autoScale = true
             else
                 @valueVariables[variable.id] = variable.value
 
@@ -689,25 +686,10 @@ class Graph
     xStart: -10
     xEnd: 10
     numberVerticalAsymptote: 0
-    unitsPerTick: 1
-    axisColor:"#aaa"
-    font: "8pt Calibri"
-    tickSize: 20
-    context: null
-    rangeX: null
-    rangeY: null
-    unitX: null
-    unitY: null
-    centerX: null
-    centerY: null
-    iteration: null
-    scaleX: null
-    scaleY: null
     x: null
     y: null
     textX: null
     textY: null
-    autoScale : true
 
     constructor: ->
         @plotdata = [[]]
@@ -801,31 +783,7 @@ class Graph
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(text)
-        ###
-        @yAxis.append("text")
-            .attr("transform", "rotate(0)")
-            .attr("y", 6)
-            .attr("x", 15)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(@y)
-
-        @xAxis.append("text")
-            .attr("transform", "rotate(0)")
-            .attr("y", 26)
-            .attr("x", @width)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(@x)
-        ###
-        ###
-        context = @context
-        context.save()
-        context.font = "20px Georgia"
-        context.fillText(@y, @centerX - 40, 15)
-        context.fillText(@x, @canvas.width - 15, @centerY + 40)
-        context.restore()       
-        ###
+        
     resizeCanvas:  (equation, color, thickness, mode)->
         width = window.innerWidth
         if width > 991
@@ -868,82 +826,9 @@ class Graph
                     y = @yScale(d.y) + @padding.top + @margin.top
                     "translate(" + x + "," + y + ")")
                 .attr("d", @lineFunction)
-        ###
 
- //El recuadro de dentro
-var defs = svg.append("defs");
-
-defs.append("marker")
-    .attr("id", "triangle-start")
-    .attr("viewBox", "0 0 10 10")
-    .attr("refX", 10)
-    .attr("refY", 5)
-    .attr("markerWidth", 6)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-  .append("path")
-    .attr("d", "M 0 0 L 10 5 L 0 10 z");
-
-defs.append("marker")
-    .attr("id", "triangle-end")
-    .attr("viewBox", "0 0 10 10")
-    .attr("refX", 10)
-    .attr("refY", 5)
-    .attr("markerWidth", 6)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-  .append("path")
-    .attr("d", "M 0 0 L 10 5 L 0 10 z");
-
-svg.append("rect")
-    .attr("class", "outer")
-    .attr("width", widthinterno)
-    .attr("height", heightInterno);
-
-
- lo de dentro
-g.append("rect")
-    .attr("class", "inner")
-    .attr("width", width)
-    .attr("height", height);
-
-    
-        @canvas.width = width * 0.85
-        @canvas.height = @canvas.width
-
-        if @autoScale
-            @maxX = ~~(width/2 /30)
-            @minX = -@maxX
-            @minY = @minX
-            @maxY = @maxX
-            @xStart = @minX
-            @xEnd = @maxX 
-  
-        @rangeX = (Math.abs @maxX + Math.abs @minX)
-        @rangeY = (Math.abs @maxY + Math.abs @minY)
-
-        @unitX = @canvas.width / @rangeX 
-        @unitY = @canvas.height / @rangeY
-        @centerX = Math.round(Math.abs(@minX / @rangeX) * @canvas.width)
-        @centerY = Math.round(Math.abs(@minY / @rangeY) * @canvas.height)
-        @iteration = (@maxX + Math.abs @minX) / 1000
-        @scaleX = @canvas.width / @rangeX
-        @scaleY = @canvas.height / @rangeY
-        @drawXAxis()
-        @drawYAxis()
-        if (@x and @y)
-            @drawEquation equation, color, thickness, mode
-        ###
     drawEquation: (equation, valueVariables, positionValueVariableX, color, thickness, mode) ->
-        ###
-        context = @context
-        iteration =  @iteration
-        x = @xStart + iteration
-        verticalAsymptote = false
-        console.log @iteration
-        ###
         iteration = Math.abs (@xEnd - @xStart) / 50
-        console.log iteration
 
         x = @xStart
         @plotdata = [[]]
@@ -1164,58 +1049,6 @@ g.append("rect")
                 @oldMode = "line"
             @numberVerticalAsymptote = numberVerticalAsymptote
 
-            #console.log "aqui"
-            ###
-            y = equation(x)
-            context.save()
-            context.save()
-            @transformContext()
-            context.beginPath()
-            context.moveTo(@xStart, y)
-            auxX = x
-            aux = y
-            
-            while x <= @xEnd
-                if @minY < y < @maxY
-                    #console.log "aqui"
-                    context.lineTo(x, y)
-                else 
-                    if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
-                        verticalAsymptote = true
-                        break
-                    auxX = x
-                    auxY = y
-                x += iteration
-                y = equation(x)
-
-            context.restore()
-            context.lineJoin = 'round'
-            context.lineWidth = thickness
-            context.strokeStyle = color
-            context.stroke()
-            context.restore()
-            
-            if verticalAsymptote
-
-                context.save()
-                x = x + iteration
-                y = equation(x)
-                @transformContext()
-                context.beginPath()
-                context.moveTo(x, y)
-                while x <= @xEnd
-                    if @minY < y < @maxY-1
-                        context.lineTo(x, y)
-                    x += iteration
-                    y = equation(x)
-
-                context.restore()
-                context.lineJoin = 'round'
-                context.lineWidth = thickness
-                context.strokeStyle = color
-                context.stroke()
-                context.restore()
-        ###   
         if mode == "dots" or iteration is 0
 
             i = 0
@@ -1263,89 +1096,8 @@ g.append("rect")
                     .attr("d", @lineFunction)
                     
                 @oldMode = "dots"
-                ###
-            @svg.selectAll('circle')
-                .data(@plotdata)
-                .enter()
-                .append('svg:circle')
-                .attr('cx', ((d) =>
-             
-                    a = @xScale(d[0])
-                    a+@padding.left+@margin.left
-                 
-                    ))
-                .attr('cy', (d) =>
-
-                    b = @yScale(d[1])
-                    b+@padding.top+@margin.top
-                    
-                    )
-                .style('stroke', "rgb(6, 120, 155)")
-                .attr('r', 2)
-            
-                true
-            ###
-            ###
-            iteration = 0.2
-            endAngle = 2*Math.PI
-            y = equation(x)
-        
-            auxX = x
-            aux = y
-
-            while x <= @xEnd
-                if @minY < y < @maxY
-                    context.save()
-                    context.save()
-                    @transformContext()
-                    context.beginPath()
-                    context.arc x, y, 0.09, 0,endAngle
-                    context.restore()
-                    context.fillStyle = color
-                    context.fill()
-                    context.restore()
-                else 
-                    if  (auxY < 0 and y > 0 ) or (auxY > 0 and y < 0)
-                        verticalAsymptote = true
-                        break
-                    auxX = x
-                    auxY = y
-                
-                x += iteration
-                y = equation(x)
-
-            if verticalAsymptote
-                x = x + iteration
-                y = equation(x)
-                while x <= @xEnd
-                    if @minY < y < @maxY
-                        context.save()
-                        context.save()
-                        @transformContext()
-                        context.beginPath()
-                        context.arc x, y, 0.09, 0,endAngle
-                        context.restore()
-                        context.fillStyle = color
-                        context.fill()
-                        context.restore()  
-                    x += iteration
-                    y = equation(x)
-
+         
         @drawVariables()
-        ###
-        @drawVariables()
-
-    transformContext: ->
-        context = @context
-
-        #center in graph
-        @context.translate(@centerX, @centerY)
-        #make more big the line or dots
-        console.log "scale"
-        console.log @scaleX
-        console.log @scaleY
-        context.scale(@scaleX, - @scaleY)
-
 
 class Init
     divPanel: null
