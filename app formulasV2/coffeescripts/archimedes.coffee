@@ -569,7 +569,80 @@ class Pendulum extends Formula
     pendulumEquation: (arrayVariables) ->
        (arrayVariables[0] * arrayVariables[1]) / arrayVariables[2]
 
+class FrictionForce extends Formula
 
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        force = new Variable("f", "F", "Frection force", "Description", null)
+        equals = new Operator("=")
+        coefficientFriction = new Variable("mic", "\u00B5", "Coefficient of friction", "Description", null)
+        mult = new Operator "*"
+        normalForce = new Variable("n", "N", "Normal force", "Description", null)
+        variables = [force, equals, coefficientFriction, mult, normalForce]
+        equation = 'f=mic * n'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+
+class Impulse extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        improve = new Variable("i", "i", "Impulse", "Description", null)
+        equals = new Operator("=")
+        force = new Variable("f", "F", "Force", "Description", null)
+        mult = new Operator "*"
+        time = new Variable("t", "T", "Time", "Description", null)
+        variables = [force, equals, force, mult, time]
+        equation = 'i=f * t'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+
+class Momentum extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        momentum = new Variable("p", "\u03C1", "Momentum", "Description", null)
+        equals = new Operator("=")
+        mass = new Variable("m", "m", "Mass", "Description", null)
+        mult = new Operator "*"
+        velocity = new Variable("v", "V", "Velocity of the body", "Description", null)
+        variables = [momentum, equals, mass, mult,velocity]
+        equation = 'p=m * v'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+
+class PotentialEnergy extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        potentialEnergy = new Variable("u", "U", "Potential Energy", "Description", null)
+        equals = new Operator("=")
+        mass = new Variable("m", "m", "Mass", "Description", null)
+        mult = new Operator "*"
+        gravity = new Variable("g", "g" , "Gravity", "Acceleration due to gravity." , null)
+        height = new Variable("h", "h", "Height", "Description", null)
+        variables = [potentialEnergy, equals, mass, mult, gravity, mult, height]
+        equation = 'u=m * g * h'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+
+class OhmLaw extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        current = new Variable("i", "I", "Electric current", "Description", null)
+        equals = new Operator("=")
+        potential = new Variable("v", "V", "potential difference", "Description", null)
+        division = new Operator "/"
+        resistance = new Variable("r", "R" , "Resistance", "Description" , null)
+        variables = [current, equals, potential, division, resistance]
+        equation = 'i=v / r'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
+
+class ResistivityConductivity extends Formula
+
+    constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph, srcImage) ->
+        resistance = new Variable("r", "R", "Resistance", "Description", null)
+        equals = new Operator("=")
+        electricalResistivity = new Variable("p", "\u03C1", "Electrical resistivity", "Description", null)
+        mult = new Operator "*"
+        length = new Variable("l", "l", "length", "Description", null)
+        division = new Operator "/"
+        section = new Variable("a", "A" , "Cross-sectional area", "Description" , null)
+        variables = [resistance, equals, electricalResistivity, mult, length, division, section]
+        equation = 'r=p * l / a'
+        super(divPanel, liFormula, constantValue, descriptionVariables, srcImage, variables, math.parse(equation).compile(math), graph)
 
 
 class Variable 
@@ -1285,12 +1358,18 @@ class Init
     imgPendulum: 'images/pendulumFormula.png'
     pendulumOscilation: null
     imgPendulumOscilation: 'images/pendulumOscilationFormula.png'
+    frictionForce: null
+    impulse: null
+    momentum: null
+    potentialEnergy: null
+    ohmLaw: null
+    resistivityConductivity: null
     descriptionVariables: null
     graph: null
     paragraph: null
     formula: null
 
-    constructor: (divPanel, liArchimedes, liNewton1, lipendulum, @constantValue, @descriptionVariables) ->
+    constructor: (divPanel, liArchimedes, liNewton1, lipendulum, liFrictionForce, liImpulse, liMomentum, liPotentialEnergy, liOhmLaw, liResistivityConductivity, @constantValue, @descriptionVariables) ->
         @graph = new Graph()
         @archimedes = document.getElementById liArchimedes
         $(@archimedes).draggable(helper: "clone")
@@ -1314,6 +1393,24 @@ class Init
         @pendulum.ondragstart = (e) => @drag(e)
         @addListenerToFormula @pendulum, @imgPendulum
         ###
+       
+        @frictionForce = document.getElementById liFrictionForce
+        $(@frictionForce).draggable(helper: "clone")
+
+        @impulse = document.getElementById liImpulse
+        $(@impulse).draggable(helper: "clone")
+
+        @momentum = document.getElementById liMomentum
+        $(@momentum).draggable(helper: "clone")
+
+        @potentialEnergy = document.getElementById liPotentialEnergy
+        $(@potentialEnergy).draggable(helper: "clone")
+
+        @ohmLaw = document.getElementById liOhmLaw
+        $(@ohmLaw).draggable(helper: "clone")
+
+        @resistivityConductivity = document.getElementById liResistivityConductivity
+        $(@resistivityConductivity).draggable(helper: "clone")
 
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
@@ -1351,18 +1448,43 @@ class Init
         #event.preventDefault()
         data = ui.draggable.attr('id')
         #data = ev.dataTransfer.getData("text")
-        if data is @archimedes.id
-            @disabledDrop()
-            formula = new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
-            @divPanel.appendChild @createButton()
-        if data is @newton1.id
-            @disabledDrop()
-            @formula = new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
-            @divPanel.appendChild @createButton()
-        if data is @pendulum.id
-            @disabledDrop()
-            @formula = new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
-            @divPanel.appendChild @createButton()
+        switch
+            when data is @archimedes.id
+                @disabledDrop()
+                formula = new Archimedes @divPanel, @archimedes, @constantValue, @descriptionVariables, @graph, @imgArchimedes
+                @divPanel.appendChild @createButton()
+            when data is @newton1.id
+                @disabledDrop()
+                @formula = new Newton1 @divPanel, @newton1, @constantValue, @descriptionVariables, @graph, @imgNewton1
+                @divPanel.appendChild @createButton()
+            when data is @pendulum.id
+                @disabledDrop()
+                @formula = new Pendulum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
+            when data is @frictionForce.id
+                @disabledDrop()
+                @formula = new FrictionForce @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
+            when data is @impulse.id
+                @disabledDrop()
+                @formula = new Impulse @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
+            when data is @momentum.id
+                @disabledDrop()
+                @formula = new Momentum @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
+            when data is @potentialEnergy.id
+                @disabledDrop()
+                @formula = new PotentialEnergy @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
+            when data is @ohmLaw.id
+                @disabledDrop()
+                @formula = new OhmLaw @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
+            when data is @resistivityConductivity.id
+                @disabledDrop()
+                @formula = new ResistivityConductivity @divPanel, @pendulum, @constantValue, @descriptionVariables, @graph, @imgPendulum
+                @divPanel.appendChild @createButton()
 
     disabledDrop: ->
         $(@divPanel).droppable( "option", "disabled", true)
