@@ -670,12 +670,12 @@
 
     function Impulse(divPanel, liFormula, divFormulaCol, graph) {
       var equals, equation, force, improve, mult, time, variables;
-      improve = new Variable("i", "i", "Impulse", "Description", null);
+      improve = new Variable("i", "I", "Impulse", "Description", null);
       equals = new Operator("=");
       force = new Variable("f", "F", "Force", "Description", null);
       mult = new Operator("*");
       time = new Variable("t", "T", "Time", "Description", null);
-      variables = [force, equals, force, mult, time];
+      variables = [improve, equals, force, mult, time];
       equation = 'i=f * t';
       Impulse.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
     }
