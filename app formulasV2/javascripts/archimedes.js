@@ -644,11 +644,11 @@
 
     function FrictionForce(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var coefficientFriction, equals, equation, force, mult, normalForce, variables;
-      force = new Variable("f", "F", "Frection force", "Description", null);
+      force = new Variable("f", "F", "Frection force", "Magnitude of friction.", null);
       equals = new Operator("=");
-      coefficientFriction = new Variable("mic", "\u00B5", "Coefficient of friction", "Description", null);
+      coefficientFriction = new Variable("mic", "\u00B5", "Coefficient of friction", "Friction coefficient.", null);
       mult = new Operator("*");
-      normalForce = new Variable("n", "N", "Normal force", "Description", null);
+      normalForce = new Variable("n", "N", "Normal force", "Weight of a given body.", null);
       variables = [force, equals, coefficientFriction, mult, normalForce];
       equation = 'f=mic * n';
       FrictionForce.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
