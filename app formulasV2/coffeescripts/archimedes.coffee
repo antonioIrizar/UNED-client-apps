@@ -1254,7 +1254,7 @@ class Init
         divButton.setAttribute 'id', "button-remove"
         button = document.createElement 'button'
         button.setAttribute 'type', "button"
-        button.setAttribute 'class', "btn btn-primary"
+        button.setAttribute 'class', "btn btn-danger"
         button.setAttribute 'button.setAttribute', ""
         button.addEventListener 'click', => @clickButton()
         text = document.createTextNode "Remove Formula"
