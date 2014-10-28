@@ -614,17 +614,6 @@
       var density, equals, equation, gravity, mult, newtowns, variables, volume;
       newtowns = new Variable("e", "E", "Newtowns", "Buoyant force of a given body.", null);
       equals = new Operator("=");
-
-      /*
-      paragraph = document.createElement 'p'
-      text1 = document.createTextNode "\u03C1"
-      subTag = document.createElement 'sub'
-      text2 = document.createTextNode "f"
-      subTag.appendChild text2
-      paragraph.appendChild text1
-      paragraph.appendChild subTag
-      console.log "aqui"
-       */
       density = new Variable("ro", "\u03C1", "Density", "Density of the fluid.", null);
       mult = new Operator("*");
       gravity = new Variable("g", "g", "Gravity", "Acceleration due to gravity.", null);
