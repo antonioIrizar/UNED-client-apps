@@ -505,11 +505,11 @@ class Archimedes extends Formula
 class Newton1 extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
-        force = new Variable "f", "F" , "Force" , "description" , null
+        force = new Variable "f", "F" , "Force" , "Weight expressed in Newtons." , null
         equals = new Operator "="
-        mass = new Variable "m", "m" , "Mass" , "description" , null
+        mass = new Variable "m", "m" , "Mass" , "Mass of the object." , null
         mult = new Operator "*"
-        aceleration = new Variable "a", "a" , "Aceleration" , "description" , null
+        aceleration = new Variable "a", "a" , "Aceleration" , "Acceleration of the object." , null
         simbols = [force, equals, mass, mult, aceleration]
         equation = 'f=m*a'
         
@@ -1135,7 +1135,7 @@ class Init
 
         $(@divPanel).droppable(drop: (event, ui) => @drop(event, ui))
         @paragraph = document.createElement 'p'
-        text = document.createTextNode "Please drop your formula here"
+        text = document.createTextNode "Drag and drop any formula here"
         @paragraph.appendChild text
         @divPanel.appendChild @paragraph
 

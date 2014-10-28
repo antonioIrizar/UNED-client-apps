@@ -602,11 +602,11 @@
 
     function Newton1(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var aceleration, equals, equation, force, mass, mult, simbols;
-      force = new Variable("f", "F", "Force", "description", null);
+      force = new Variable("f", "F", "Force", "Weight expressed in Newtons.", null);
       equals = new Operator("=");
-      mass = new Variable("m", "m", "Mass", "description", null);
+      mass = new Variable("m", "m", "Mass", "Mass of the object.", null);
       mult = new Operator("*");
-      aceleration = new Variable("a", "a", "Aceleration", "description", null);
+      aceleration = new Variable("a", "a", "Aceleration", "Acceleration of the object.", null);
       simbols = [force, equals, mass, mult, aceleration];
       equation = 'f=m*a';
       Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, simbols, math.parse(equation).compile(math), graph);
@@ -1305,7 +1305,7 @@
         })(this)
       });
       this.paragraph = document.createElement('p');
-      text = document.createTextNode("Please drop your formula here");
+      text = document.createTextNode("Drag and drop any formula here");
       this.paragraph.appendChild(text);
       this.divPanel.appendChild(this.paragraph);
     }
