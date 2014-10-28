@@ -472,6 +472,9 @@ class Formula
                 if variable.startRange isnt null and variable.endRange isnt null
                     @graph.minX = @graph.xStart = variable.startRange
                     @graph.maxX = @graph.xEnd = variable.endRange
+                else
+                    @graph.minX = @graph.xStart = -10
+                    @graph.maxX = @graph.xEnd = 10
             else
                 @valueVariables[variable.id] = variable.value
    
@@ -798,7 +801,6 @@ class Graph
         valueVariables[positionValueVariableX] = x
         #coffeScript can't traslate correcly with function eval
         y =  `equation.eval(valueVariables)`
-        console.log y
         lastY = y
 
         if lastY is Number.POSITIVE_INFINITY or lastY is Number.NEGATIVE_INFINITY

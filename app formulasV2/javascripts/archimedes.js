@@ -552,7 +552,8 @@
             this.graph.minX = this.graph.xStart = variable.startRange;
             _results.push(this.graph.maxX = this.graph.xEnd = variable.endRange);
           } else {
-            _results.push(void 0);
+            this.graph.minX = this.graph.xStart = -10;
+            _results.push(this.graph.maxX = this.graph.xEnd = 10);
           }
         } else {
           _results.push(this.valueVariables[variable.id] = variable.value);
@@ -967,7 +968,6 @@
       verticalAsymptote = false;
       valueVariables[positionValueVariableX] = x;
       y = equation.eval(valueVariables);
-      console.log(y);
       lastY = y;
       if (lastY === Number.POSITIVE_INFINITY || lastY === Number.NEGATIVE_INFINITY) {
         if (iteration !== 0) {
