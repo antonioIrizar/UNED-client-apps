@@ -550,22 +550,6 @@ class Newton1 extends Formula
         equation = 'f=m*a'
         super(divPanel, liFormula, divFormulaCol, simbols, math.parse(equation).compile(math), graph)
 
-class Pendulum extends Formula
-
-    constructor: (divPanel, liFormula, divFormulaCol, graph) ->
-        force = new Variable( "f", "F" , "Force" , "description" , null)
-        equals = new Operator("=")
-        parenthesisOpen = new Operator "("
-        weight = new Variable("p", "P" , "Weight pendulum" , "description" , null)
-        mult = new Operator "*"
-        elongation = new Variable("e", "e" , "Elongation" , "description" , null)
-        parenthesisClose = new Operator ")"
-        division = new Operator "/"
-        length = new Variable("ro", "\u03C1" , "Length pendulum" , "description" , null)
-        variables = [force, equals, parenthesisOpen, weight, mult, elongation, parenthesisClose, division, length]
-        equation = 'f=(p*e)/ro'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
-
 class FrictionForce extends Formula
 
     constructor: (divPanel, liFormula, divFormulaCol, graph) ->
@@ -1095,7 +1079,6 @@ class Init
     divPanel: null
     archimedes: null
     newton1: null
-    pendulum: null
     pendulumOscilation: null
     frictionForce: null
     impulse: null
@@ -1108,7 +1091,7 @@ class Init
     paragraph: null
     formula: null
 
-    constructor: (divPanel, liArchimedes, liNewton1, lipendulum, liFrictionForce, liImpulse, liMomentum, liPotentialEnergy, liOhmLaw, liResistivityConductivity, @divFormulaCol) ->
+    constructor: (divPanel, liArchimedes, liNewton1, liFrictionForce, liImpulse, liMomentum, liPotentialEnergy, liOhmLaw, liResistivityConductivity, @divFormulaCol) ->
         @graph = new Graph()
         @archimedes = document.getElementById liArchimedes
         $(@archimedes).draggable(helper: "clone")
@@ -1125,8 +1108,6 @@ class Init
         @newton1.ondragstart = (e) => @drag(e)
         @addListenerToFormula @newton1, @imgNewton1
         ###
-        @pendulum = document.getElementById lipendulum
-        $(@pendulum).draggable(helper: "clone")
         ###deprecated
         @pendulum.setAttribute 'ondragstart' , ""
         @pendulum.ondragstart = (e) => @drag(e)
@@ -1193,10 +1174,6 @@ class Init
             when data is @newton1.id
                 @disabledDrop()
                 @formula = new Newton1 @divPanel, @newton1, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @pendulum.id
-                @disabledDrop()
-                @formula = new Pendulum @divPanel, @pendulum, @divFormulaCol, @graph
                 @divPanel.appendChild @createButton()
             when data is @frictionForce.id
                 @disabledDrop()
