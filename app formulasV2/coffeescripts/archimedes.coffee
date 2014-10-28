@@ -81,14 +81,13 @@ class Formula
         divDescriptionBody.setAttribute 'class', "panel-body"
         @descriptionVariables = document.createElement 'dl'
         @descriptionVariables.setAttribute 'class', "dl-horizontal"
-      
-        divDescriptionBody.appendChild @descriptionVariables
 
         parag = document.createElement 'p'
         text = document.createTextNode paragraph
         parag.appendChild text
 
         divDescriptionBody.appendChild parag
+        divDescriptionBody.appendChild @descriptionVariables
 
         divDescription.appendChild divDescriptionHeading
         divDescription.appendChild divDescriptionBody

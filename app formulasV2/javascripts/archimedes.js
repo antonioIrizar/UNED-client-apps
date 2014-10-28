@@ -104,11 +104,11 @@
       divDescriptionBody.setAttribute('class', "panel-body");
       this.descriptionVariables = document.createElement('dl');
       this.descriptionVariables.setAttribute('class', "dl-horizontal");
-      divDescriptionBody.appendChild(this.descriptionVariables);
       parag = document.createElement('p');
       text = document.createTextNode(paragraph);
       parag.appendChild(text);
       divDescriptionBody.appendChild(parag);
+      divDescriptionBody.appendChild(this.descriptionVariables);
       divDescription.appendChild(divDescriptionHeading);
       divDescription.appendChild(divDescriptionBody);
       divFormulaCold = document.getElementById(divFormulaCol);
