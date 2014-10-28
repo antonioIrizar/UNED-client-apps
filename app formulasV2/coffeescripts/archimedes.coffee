@@ -21,6 +21,7 @@ class Formula
     numberInputsRangeFilled: 0
     inputsRangeCorrect: true
     inputsRangeOrderCorrect: true
+    button: null
 
     constructor: (@divPanel, @liFormula, divFormulaCol, @symbols, @equation, @graph) ->
         #document.body.setAttribute 'onresize', ""
@@ -261,6 +262,7 @@ class Formula
                 inputEnd = document.getElementById 'input-range-1'
                 inputEnd.setAttribute 'disabled', ""
             i++
+        @button.setAttribute 'disabled', ""
 
     eneableInputs: (id) ->
         i = 1
@@ -274,6 +276,7 @@ class Formula
                 inputEnd = document.getElementById 'input-range-1'
                 inputEnd.removeAttribute 'disabled'
             i++
+        @button.removeAttribute 'disabled'
 
     createInputRange:  (id)->
         @numberInputsRangeFilled = 0
@@ -356,10 +359,12 @@ class Formula
         inputEnd.oninput = => 
             @variables[id].endRange = @isNumberInRange inputEnd, divInputEnd, spanControlEnd, labelInputEnd, @variables[id].endRange, 1, id
             @inputsRangeOrder id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange
+            @disabledEneabledButtonInRange()
 
         inputStart.oninput = => 
             @variables[id].startRange = @isNumberInRange inputStart, divInputStart, spanControlStart, labelInputStar, @variables[id].startRange, 0, id
             @inputsRangeOrder id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange
+            @disabledEneabledButtonInRange()
 
         divInputEnd.appendChild inputEnd
         divInputEnd.appendChild spanControlEnd
@@ -416,9 +421,15 @@ class Formula
                 inputAux.removeAttribute 'disabled'
             else
                 inputAux.setAttribute 'disabled', ""
-            @inputsRangeCorrect = inputsRangeCorrect 
+            @inputsRangeCorrect = inputsRangeCorrect
             
         value
+
+    disabledEneabledButtonInRange: ()->
+        if 0 < @numberInputsRangeFilled < 2 or not @inputsRangeCorrect or not @inputsRangeOrderCorrect
+            @button.setAttribute 'disabled', ""
+        else
+            @button.removeAttribute 'disabled'
 
     createRadio: (name, checked) ->
         divRadio = document.createElement 'div'
@@ -439,14 +450,14 @@ class Formula
     createButton:  ->
         divButton = document.createElement 'div'
         divButton.setAttribute 'class', "btn-group"
-        button = document.createElement 'button'
-        button.setAttribute 'type', "button"
-        button.setAttribute 'class', "btn btn-primary"
-        button.setAttribute 'button.setAttribute', ""
-        button.addEventListener 'click', => @clickButton()
+        @button = document.createElement 'button'
+        @button.setAttribute 'type', "button"
+        @button.setAttribute 'class', "btn btn-primary"
+        @button.setAttribute 'button.setAttribute', ""
+        @button.addEventListener 'click', => @clickButton()
         text = document.createTextNode "update values"
-        button.appendChild text
-        divButton.appendChild button
+        @button.appendChild text
+        divButton.appendChild @button
         divButton
 
     createDt: (name) ->
@@ -462,7 +473,7 @@ class Formula
         dd
 
     clickButton: ->
-        if (@numberInputsFilled == @variables.length-2 and @inputsCorrect and @inputsRangeOrderCorrect and @inputsRangeCorrect and (@numberInputsRangeFilled == 0 or @numberInputsRangeFilled == 2 ))
+        if @numberInputsFilled == @variables.length-2
             
             rads = document.getElementsByName 'modeLine'
 
@@ -478,7 +489,7 @@ class Formula
             @graph.y = @variables[0].name
             @graph.drawEquation @equation, @valueVariables, @positionValueVariableX, 'blue', 3, @mode
         else
-            alert "The form have errors or it's not filled"
+            alert "Fill in all values"
 
     drawNumbersFormula: () ->
         formula = document.getElementById @idFormula

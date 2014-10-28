@@ -50,6 +50,8 @@
 
     Formula.prototype.inputsRangeOrderCorrect = true;
 
+    Formula.prototype.button = null;
+
     function Formula(divPanel, liFormula, divFormulaCol, symbols, equation, graph) {
       var divAllFormulas, divConstant, divConstantHeading, divDescription, divDescriptionBody, divDescriptionHeading, divFormulaCold, panelTitle, text;
       this.divPanel = divPanel;
@@ -290,9 +292,8 @@
     };
 
     Formula.prototype.disabledInputs = function(id) {
-      var i, input, inputEnd, inputStart, _results;
+      var i, input, inputEnd, inputStart;
       i = 1;
-      _results = [];
       while (i < this.variables.length) {
         if (i !== Number(id) && i !== this.idInputRange) {
           input = document.getElementById(this.variables[i].fullName);
@@ -304,15 +305,14 @@
           inputEnd = document.getElementById('input-range-1');
           inputEnd.setAttribute('disabled', "");
         }
-        _results.push(i++);
+        i++;
       }
-      return _results;
+      return this.button.setAttribute('disabled', "");
     };
 
     Formula.prototype.eneableInputs = function(id) {
-      var i, input, inputEnd, inputStart, _results;
+      var i, input, inputEnd, inputStart;
       i = 1;
-      _results = [];
       while (i < this.variables.length) {
         if (i !== Number(id) && i !== this.idInputRange) {
           input = document.getElementById(this.variables[i].fullName);
@@ -324,9 +324,9 @@
           inputEnd = document.getElementById('input-range-1');
           inputEnd.removeAttribute('disabled');
         }
-        _results.push(i++);
+        i++;
       }
-      return _results;
+      return this.button.removeAttribute('disabled');
     };
 
     Formula.prototype.createInputRange = function(id) {
@@ -390,13 +390,15 @@
       inputEnd.oninput = (function(_this) {
         return function() {
           _this.variables[id].endRange = _this.isNumberInRange(inputEnd, divInputEnd, spanControlEnd, labelInputEnd, _this.variables[id].endRange, 1, id);
-          return _this.inputsRangeOrder(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange);
+          _this.inputsRangeOrder(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange);
+          return _this.disabledEneabledButtonInRange();
         };
       })(this);
       inputStart.oninput = (function(_this) {
         return function() {
           _this.variables[id].startRange = _this.isNumberInRange(inputStart, divInputStart, spanControlStart, labelInputStar, _this.variables[id].startRange, 0, id);
-          return _this.inputsRangeOrder(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange);
+          _this.inputsRangeOrder(id, divForm, spanControlStart, spanControlEnd, labelErrorOrdRange);
+          return _this.disabledEneabledButtonInRange();
         };
       })(this);
       divInputEnd.appendChild(inputEnd);
@@ -469,6 +471,15 @@
       return value;
     };
 
+    Formula.prototype.disabledEneabledButtonInRange = function() {
+      var _ref;
+      if ((0 < (_ref = this.numberInputsRangeFilled) && _ref < 2) || !this.inputsRangeCorrect || !this.inputsRangeOrderCorrect) {
+        return this.button.setAttribute('disabled', "");
+      } else {
+        return this.button.removeAttribute('disabled');
+      }
+    };
+
     Formula.prototype.createRadio = function(name, checked) {
       var divRadio, input, label, text;
       divRadio = document.createElement('div');
@@ -489,21 +500,21 @@
     };
 
     Formula.prototype.createButton = function() {
-      var button, divButton, text;
+      var divButton, text;
       divButton = document.createElement('div');
       divButton.setAttribute('class', "btn-group");
-      button = document.createElement('button');
-      button.setAttribute('type', "button");
-      button.setAttribute('class', "btn btn-primary");
-      button.setAttribute('button.setAttribute', "");
-      button.addEventListener('click', (function(_this) {
+      this.button = document.createElement('button');
+      this.button.setAttribute('type', "button");
+      this.button.setAttribute('class', "btn btn-primary");
+      this.button.setAttribute('button.setAttribute', "");
+      this.button.addEventListener('click', (function(_this) {
         return function() {
           return _this.clickButton();
         };
       })(this));
       text = document.createTextNode("update values");
-      button.appendChild(text);
-      divButton.appendChild(button);
+      this.button.appendChild(text);
+      divButton.appendChild(this.button);
       return divButton;
     };
 
@@ -525,7 +536,7 @@
 
     Formula.prototype.clickButton = function() {
       var i, rads;
-      if (this.numberInputsFilled === this.variables.length - 2 && this.inputsCorrect && this.inputsRangeOrderCorrect && this.inputsRangeCorrect && (this.numberInputsRangeFilled === 0 || this.numberInputsRangeFilled === 2)) {
+      if (this.numberInputsFilled === this.variables.length - 2) {
         rads = document.getElementsByName('modeLine');
         i = 0;
         while (i < rads.length) {
@@ -540,7 +551,7 @@
         this.graph.y = this.variables[0].name;
         return this.graph.drawEquation(this.equation, this.valueVariables, this.positionValueVariableX, 'blue', 3, this.mode);
       } else {
-        return alert("The form have errors or it's not filled");
+        return alert("Fill in all values");
       }
     };
 
