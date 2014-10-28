@@ -285,7 +285,7 @@ class Formula
 
         labelErrorOrdRange = document.createElement 'label'
         labelErrorOrdRange.setAttribute 'class', "control-label sr-only"
-        text = document.createTextNode "The range is incorrect. It need start the small to the big"
+        text = document.createTextNode "Range must go in order from lowest to highest"
         labelErrorOrdRange.appendChild text
         divForm.appendChild labelErrorOrdRange
 
