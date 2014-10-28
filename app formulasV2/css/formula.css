@@ -1,0 +1,87 @@
+.margin {
+  padding-top: 10px;
+}
+
+.formula-text {
+  font-size: 31pt;
+  font-style: italic;
+}
+
+/* make sidebar nav vertical */ 
+@media (min-width: 992px) {
+  .sidebar-nav .navbar .navbar-collapse {
+    padding: 0;
+    max-height: none;
+  }
+  .sidebar-nav .navbar ul {
+    float: none;
+  }
+  
+  .sidebar-nav .navbar li {
+    float: none;
+    display: block;
+  }
+    .sidebar-nav .navbar li a {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .sidebar-nav .title-nvar  {
+    color: #777;
+    font-size: 35px;
+    text-align: center;
+   }
+}
+
+@media (max-width: 991px) and (min-width: 768px){
+
+  .title-nvar {
+    float: left;
+    height: 50px;
+    padding: 15px 15px;
+    font-size: 18px;
+    line-height: 20px;
+    color: #777;
+   }
+
+  .my-center {
+    display: -webkit-flex; /* Safari */
+    -webkit-align-items: center; /* Safari 7.0+ */
+    display: flex;
+    align-items: center;
+  }
+}
+
+/*css graph */ 
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.outer,
+.inner {
+  shape-rendering: crispEdges;
+}
+
+.outer {
+  fill: none;
+  stroke: #000;
+}
+
+.inner {
+  fill: #ccc;
+  stroke: #000;
+  stroke-dasharray: 3, 4;
+}
+
+/* we can drag correctlye elemets to panel */
+.inFront{
+    position: static;
+    z-index: 1001;
+}
+
+.goBack{
+    position: absolute;
+    z-index: -1;
+}

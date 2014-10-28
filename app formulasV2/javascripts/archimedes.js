@@ -644,7 +644,7 @@
 
     function FrictionForce(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var coefficientFriction, equals, equation, force, mult, normalForce, variables;
-      force = new Variable("f", "F", "Frection force", "Magnitude of friction.", null);
+      force = new Variable("f", "F", "Friction force", "Magnitude of friction.", null);
       equals = new Operator("=");
       coefficientFriction = new Variable("mic", "\u00B5", "Coefficient of friction", "Friction coefficient.", null);
       mult = new Operator("*");
