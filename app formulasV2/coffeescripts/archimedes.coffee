@@ -72,7 +72,7 @@ class Formula
         divDescriptionHeading.setAttribute 'class', "panel-heading"
         panelTitle = document.createElement 'h3'
         panelTitle.setAttribute 'class', "panel-title"
-        text = document.createTextNode "Information variables in formula"
+        text = document.createTextNode "Formula information"
 
         panelTitle.appendChild text
         divDescriptionHeading.appendChild panelTitle
