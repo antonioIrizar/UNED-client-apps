@@ -624,7 +624,7 @@
       volume = new Variable("v", "V", "Volume", "Volume of the displaced fluid.", null);
       variables = [newtowns, equals, density, mult, gravity, mult, volume];
       equation = 'e=ro*g*v';
-      paragraph = "";
+      paragraph = "Archimedes' principle indicates that the upward buoyant force that is exerted on a body immersed in a fluid, whether fully or partially submerged, is equal to the weight of the fluid that the body displaces.";
       Archimedes.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
@@ -697,14 +697,14 @@
 
     function Momentum(divPanel, liFormula, divFormulaCol, graph) {
       var equals, equation, mass, momentum, mult, paragraph, variables, velocity;
-      momentum = new Variable("p", "\u03C1", "Momentum", "Description", null);
+      momentum = new Variable("m", "M", "Momentum", "Moment of force, which is the force acting on a body.", null);
       equals = new Operator("=");
-      mass = new Variable("m", "m", "Mass", "Description", null);
+      mass = new Variable("f", "F", "Force", "Force applied.", null);
       mult = new Operator("*");
-      velocity = new Variable("v", "V", "Velocity of the body", "Description", null);
+      velocity = new Variable("d", "d", "Distance", "Perpendicular distance from a fixed axis.", null);
       variables = [momentum, equals, mass, mult, velocity];
-      equation = 'p=m * v';
-      paragraph = "";
+      equation = 'm=f * d';
+      paragraph = "Moment force for a balanced as well as an unbalanced force can be defined as the force multiplied by the distance of that force from a fixed axis.";
       Momentum.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
@@ -767,7 +767,7 @@
       section = new Variable("a", "A", "Cross-sectional area", "Cross-sectional area of the conductor.", null);
       variables = [resistance, equals, electricalResistivity, mult, length, division, section];
       equation = 'r=p * l / a';
-      paragraph = "";
+      paragraph = "Electrical resistivity is an intrinsic property that quantifies how strongly a given material opposes the flow of electric current.";
       ResistivityConductivity.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
