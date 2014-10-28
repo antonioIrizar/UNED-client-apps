@@ -725,7 +725,7 @@
       height = new Variable("h", "h", "Height", "Height at which the body is.", null);
       variables = [potentialEnergy, equals, mass, mult, gravity, mult, height];
       equation = 'u=m * g * h';
-      paragraph = "";
+      paragraph = "The potential energy is the stored energy in an object due to its position with respect to some reference, which usually is the ground.";
       PotentialEnergy.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
