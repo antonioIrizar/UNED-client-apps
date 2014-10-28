@@ -174,6 +174,7 @@
       divInput.appendChild(spanInput);
       input = document.createElement('input');
       input.setAttribute('class', "form-control");
+      input.setAttribute('maxlength', "6");
       input.setAttribute('type', "text");
       input.setAttribute('id', this.variables[id].fullName);
       input.setAttribute('placeholder', this.variables[id].fullName);
@@ -362,6 +363,7 @@
       divInputStart.appendChild(labelInputStar);
       inputStart = document.createElement('input');
       inputStart.setAttribute('id', "input-range-0");
+      inputStart.setAttribute('maxlength', "6");
       inputStart.setAttribute('type', "text");
       inputStart.setAttribute('class', "form-control");
       spanControlStart = document.createElement('span');
@@ -386,6 +388,7 @@
       divInputEnd.appendChild(labelInputEnd);
       inputEnd = document.createElement('input');
       inputEnd.setAttribute('id', "input-range-1");
+      inputEnd.setAttribute('maxlength', "6");
       inputEnd.setAttribute('type', "text");
       inputEnd.setAttribute('class', "form-control");
       spanControlEnd = document.createElement('span');
