@@ -555,7 +555,7 @@ class Newton1 extends Formula
         aceleration = new Variable "a", "a" , "Acceleration" , "Acceleration of the object." , null
         simbols = [force, equals, mass, mult, aceleration]
         equation = 'f=m*a'
-        paragraph = ""
+        paragraph = "The force applied to an object is equal to the mass of that object multiplied by the accelerattion of the object."
         super(divPanel, liFormula, divFormulaCol, simbols, math.parse(equation).compile(math), graph, paragraph)
 
 class FrictionForce extends Formula
@@ -568,20 +568,20 @@ class FrictionForce extends Formula
         normalForce = new Variable("n", "N", "Normal force", "Weight of a given body.", null)
         variables = [force, equals, coefficientFriction, mult, normalForce]
         equation = 'f=mic * n'
-        paragraph = ""
+        paragraph = "Friction can be defined as the rubbing force of the surface of one body against that of another."
         super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class Impulse extends Formula
 
     constructor: (divPanel, liFormula, divFormulaCol, graph) ->
-        improve = new Variable("i", "I", "Impulse", "Description", null)
+        improve = new Variable("i", "I", "Impulse", "Impulse", null)
         equals = new Operator("=")
-        force = new Variable("f", "F", "Force", "Description", null)
+        force = new Variable("f", "F", "Force", "Force applied.", null)
         mult = new Operator "*"
-        time = new Variable("t", "T", "Time", "Description", null)
+        time = new Variable("t", "T", "Time", "Time interval during which the force is applied.", null)
         variables = [improve, equals, force, mult, time]
         equation = 'i=f * t'
-        paragraph = ""
+        paragraph = "Impulse can be expressed as a large force acting for avery short interval of time."
         super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class Momentum extends Formula
@@ -621,7 +621,7 @@ class OhmLaw extends Formula
         resistance = new Variable("r", "R" , "Resistance", "Resistance, measured in Ohms" , null)
         variables = [current, equals, potential, division, resistance]
         equation = 'i=v / r'
-        paragraph = ""
+        paragraph = "Ohm's law states that the current in a conductor is directly proportional to the voltage and inversely proportional to the resistance of the conductor, provided that the temperature and other physical conditions are constant."
         super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class ResistivityConductivity extends Formula
