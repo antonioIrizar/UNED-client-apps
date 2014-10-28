@@ -98,7 +98,7 @@
           text = text + variable.operator;
         } else {
           this.variables[i] = variable;
-          this.descriptionVariables.appendChild(this.createDt(variable.name, variable.fullName));
+          this.descriptionVariables.appendChild(this.createDt(variable.name));
           this.descriptionVariables.appendChild(this.createDd(variable.description));
           if (i !== 0) {
             form.appendChild(this.createInput(i));
@@ -477,10 +477,10 @@
       return divButton;
     };
 
-    Formula.prototype.createDt = function(name, fullName) {
+    Formula.prototype.createDt = function(name) {
       var dt, text;
       dt = document.createElement('dt');
-      text = document.createTextNode(fullName + " (" + name + ")");
+      text = document.createTextNode(name);
       dt.appendChild(text);
       return dt;
     };
@@ -606,7 +606,7 @@
       equals = new Operator("=");
       mass = new Variable("m", "m", "Mass", "Mass of the object.", null);
       mult = new Operator("*");
-      aceleration = new Variable("a", "a", "Aceleration", "Acceleration of the object.", null);
+      aceleration = new Variable("a", "a", "Acceleration", "Acceleration of the object.", null);
       simbols = [force, equals, mass, mult, aceleration];
       equation = 'f=m*a';
       Newton1.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, simbols, math.parse(equation).compile(math), graph);

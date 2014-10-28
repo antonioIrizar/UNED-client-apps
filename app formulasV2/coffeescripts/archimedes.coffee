@@ -71,7 +71,7 @@ class Formula
             else
                 @variables[i] = variable
                 
-                @descriptionVariables.appendChild @createDt variable.name, variable.fullName
+                @descriptionVariables.appendChild @createDt variable.name
                 @descriptionVariables.appendChild @createDd variable.description
                 if i != 0
                     form.appendChild @createInput i
@@ -413,9 +413,9 @@ class Formula
         divButton.appendChild button
         divButton
 
-    createDt: (name, fullName) ->
+    createDt: (name) ->
         dt = document.createElement 'dt'
-        text = document.createTextNode fullName + " (" + name + ")"
+        text = document.createTextNode name
         dt.appendChild text
         dt
 
@@ -509,7 +509,7 @@ class Newton1 extends Formula
         equals = new Operator "="
         mass = new Variable "m", "m" , "Mass" , "Mass of the object." , null
         mult = new Operator "*"
-        aceleration = new Variable "a", "a" , "Aceleration" , "Acceleration of the object." , null
+        aceleration = new Variable "a", "a" , "Acceleration" , "Acceleration of the object." , null
         simbols = [force, equals, mass, mult, aceleration]
         equation = 'f=m*a'
         
