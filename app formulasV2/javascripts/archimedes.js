@@ -721,11 +721,11 @@
 
     function OhmLaw(divPanel, liFormula, constantValue, descriptionVariables, graph) {
       var current, division, equals, equation, potential, resistance, variables;
-      current = new Variable("i", "I", "Electric current", "Description", null);
+      current = new Variable("i", "I", "Electric current", "Current flowing through the conductor, in Amperes.", null);
       equals = new Operator("=");
-      potential = new Variable("v", "V", "potential difference", "Description", null);
+      potential = new Variable("v", "V", "potential difference", "Voltage measured, in Volts.", null);
       division = new Operator("/");
-      resistance = new Variable("r", "R", "Resistance", "Description", null);
+      resistance = new Variable("r", "R", "Resistance", "Resistance, measured in Ohms", null);
       variables = [current, equals, potential, division, resistance];
       equation = 'i=v / r';
       OhmLaw.__super__.constructor.call(this, divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph);
