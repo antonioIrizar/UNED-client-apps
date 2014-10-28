@@ -958,210 +958,231 @@
     };
 
     Graph.prototype.drawEquation = function(equation, valueVariables, positionValueVariableX, color, thickness, mode) {
-      var allData, aux, auxY, bigX, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
+      var allData, aux, auxY, bigX, error, i, iteration, lastAuxY, lastY, maxY, minY, numberVerticalAsymptote, smallIteration, smallX, t0, t1, tmpY, verticalAsymptote, x, y;
       iteration = Math.abs((this.xEnd - this.xStart) / 50);
+      error = false;
       x = this.xStart;
       this.plotdata = [[]];
       numberVerticalAsymptote = 0;
       verticalAsymptote = false;
       valueVariables[positionValueVariableX] = x;
       y = equation.eval(valueVariables);
+      console.log(y);
       lastY = y;
-      maxY = 0;
-      minY = 0;
-      this.minY = minY = Math.min(minY, y);
-      this.maxY = maxY = Math.max(maxY, y);
-      aux = {
-        "x": x,
-        "y": y
-      };
-      this.plotdata[numberVerticalAsymptote].push(aux);
-      x += iteration;
-      while (x < (this.xEnd + iteration)) {
-        if (verticalAsymptote) {
-          numberVerticalAsymptote++;
-          this.plotdata[numberVerticalAsymptote] = new Array();
-          console.log(this.plotdata);
-          verticalAsymptote = false;
-        }
-        valueVariables[positionValueVariableX] = x;
-        y = equation.eval(valueVariables);
-        if (y === Number.POSITIVE_INFINITY || y === Number.NEGATIVE_INFINITY) {
+      if (lastY === Number.POSITIVE_INFINITY || lastY === Number.NEGATIVE_INFINITY) {
+        if (iteration !== 0) {
           x += iteration;
-          verticalAsymptote = true;
+          valueVariables[positionValueVariableX] = x;
+          y = equation.eval(valueVariables);
+          if (y === Number.POSITIVE_INFINITY || y === Number.NEGATIVE_INFINITY) {
+            error = true;
+          }
         } else {
-          if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
-            auxY = y;
-            lastAuxY = lastY;
-            smallX = x - iteration;
-            bigX = x;
-            smallIteration = Math.abs(bigX - smallX) / 2;
-            while (true) {
-              if (smallIteration === Number.MIN_VALUE) {
-                break;
-              }
-              valueVariables[positionValueVariableX] = smallX + smallIteration;
-              tmpY = equation.eval(valueVariables);
-              if (tmpY === Number.POSITIVE_INFINITY || tmpY === Number.NEGATIVE_INFINITY) {
-                verticalAsymptote = true;
-                break;
-              }
-              if ((lastAuxY < 0 && tmpY > 0) || (lastAuxY > 0 && tmpY < 0)) {
-                auxY = tmpY;
-                bigX = smallX + smallIteration;
-              } else {
-                if ((auxY < 0 && tmpY > 0) || (auxY > 0 && tmpY < 0)) {
-                  lastAuxY = tmpY;
-                  smallX = smallX + smallIteration;
-                } else {
+          error = true;
+        }
+      }
+      if (!error) {
+        maxY = 0;
+        minY = 0;
+        this.minY = minY = Math.min(minY, y);
+        this.maxY = maxY = Math.max(maxY, y);
+        aux = {
+          "x": x,
+          "y": y
+        };
+        this.plotdata[numberVerticalAsymptote].push(aux);
+        x += iteration;
+        while (x < (this.xEnd + iteration)) {
+          if (verticalAsymptote) {
+            numberVerticalAsymptote++;
+            this.plotdata[numberVerticalAsymptote] = new Array();
+            verticalAsymptote = false;
+          }
+          valueVariables[positionValueVariableX] = x;
+          y = equation.eval(valueVariables);
+          if (y === Number.POSITIVE_INFINITY || y === Number.NEGATIVE_INFINITY) {
+            x += iteration;
+            verticalAsymptote = true;
+          } else {
+            if ((lastY < 0 && y > 0) || (lastY > 0 && y < 0)) {
+              auxY = y;
+              lastAuxY = lastY;
+              smallX = x - iteration;
+              bigX = x;
+              smallIteration = Math.abs(bigX - smallX) / 2;
+              while (true) {
+                if (smallIteration === Number.MIN_VALUE) {
                   break;
                 }
+                valueVariables[positionValueVariableX] = smallX + smallIteration;
+                tmpY = equation.eval(valueVariables);
+                if (tmpY === Number.POSITIVE_INFINITY || tmpY === Number.NEGATIVE_INFINITY) {
+                  verticalAsymptote = true;
+                  break;
+                }
+                if ((lastAuxY < 0 && tmpY > 0) || (lastAuxY > 0 && tmpY < 0)) {
+                  auxY = tmpY;
+                  bigX = smallX + smallIteration;
+                } else {
+                  if ((auxY < 0 && tmpY > 0) || (auxY > 0 && tmpY < 0)) {
+                    lastAuxY = tmpY;
+                    smallX = smallX + smallIteration;
+                  } else {
+                    break;
+                  }
+                }
+                smallIteration = Math.abs(bigX - smallX) / 2;
               }
-              smallIteration = Math.abs(bigX - smallX) / 2;
             }
           }
-        }
-        if (verticalAsymptote) {
-          if (((minY / 1000) < this.minY && (minY / 1000) < this.minX) || ((maxY / 1000) > this.maxY && (maxY / 1000) > this.maxX)) {
-            this.plotdata[numberVerticalAsymptote].pop();
+          if (verticalAsymptote) {
+            if (((minY / 1000) < this.minY && (minY / 1000) < this.minX) || ((maxY / 1000) > this.maxY && (maxY / 1000) > this.maxX)) {
+              this.plotdata[numberVerticalAsymptote].pop();
+            } else {
+              this.minY = minY;
+              this.maxY = maxY;
+            }
           } else {
             this.minY = minY;
             this.maxY = maxY;
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+            aux = {
+              "x": x,
+              "y": y
+            };
+            this.plotdata[numberVerticalAsymptote].push(aux);
           }
-        } else {
-          this.minY = minY;
-          this.maxY = maxY;
-          minY = Math.min(minY, y);
-          maxY = Math.max(maxY, y);
-          aux = {
-            "x": x,
-            "y": y
-          };
-          this.plotdata[numberVerticalAsymptote].push(aux);
+          lastY = y;
+          x += iteration;
         }
-        lastY = y;
-        x += iteration;
-      }
 
-      /*
-      i = 0
-      while i< @plotdata.length
-          console.log  @plotdata[i]
-          i++
-       */
+        /*
+        i = 0
+        while i< @plotdata.length
+            console.log  @plotdata[i]
+            i++
+         */
 
-      /* todo this don't work correctly. I think put with a percent formula
-      if Math.abs(minY) >  5
-          @minY = Math.round minY
-      else
-          @minY = minY
-      
-      if Math.abs(maxY) > 5
-          @maxY = Math.round maxY
-      else
-          @maxY = maxY
-       */
-      if (!((this.minX < 0 && 0 < this.maxX))) {
-        if (this.maxX > 0) {
-          this.minX = 0;
-        } else {
-          this.maxX = 0;
+        /* todo this don't work correctly. I think put with a percent formula
+        if Math.abs(minY) >  5
+            @minY = Math.round minY
+        else
+            @minY = minY
+        
+        if Math.abs(maxY) > 5
+            @maxY = Math.round maxY
+        else
+            @maxY = maxY
+        
+        if Math.abs(@maxY) isnt Math.abs(@minY)
+            if Math.min(Math.abs(@maxY),Math.abs(@minY)) * 1.1 >= Math.max(Math.abs(@maxY),Math.abs(@minY))
+                if
+         */
+        if (!((this.minX < 0 && 0 < this.maxX))) {
+          if (this.maxX > 0) {
+            this.minX = 0;
+          } else {
+            this.maxX = 0;
+          }
         }
-      }
-      this.xScale.domain([this.minX, this.maxX]);
-      this.yScale.domain([this.minY, this.maxY]);
-      this.xAxisFunction.tickValues(this.xScale.ticks(this.xAxisFunction.ticks()).filter(function(x) {
-        return x !== 0;
-      }));
-      this.yAxisFunction.tickValues(this.yScale.ticks(this.yAxisFunction.ticks()).filter(function(x) {
-        return x !== 0;
-      }));
-      t0 = this.svg.transition().duration(750);
-      t0.selectAll(".x.axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
-      t1 = t0;
-      t1.selectAll(".y.axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
+        this.xScale.domain([this.minX, this.maxX]);
+        this.yScale.domain([this.minY, this.maxY]);
+        this.xAxisFunction.tickValues(this.xScale.ticks(this.xAxisFunction.ticks()).filter(function(x) {
+          return x !== 0;
+        }));
+        this.yAxisFunction.tickValues(this.yScale.ticks(this.yAxisFunction.ticks()).filter(function(x) {
+          return x !== 0;
+        }));
+        t0 = this.svg.transition().duration(750);
+        t0.selectAll(".x.axis").attr("transform", "translate(0," + this.yScale(0) + ")").call(this.xAxisFunction);
+        t1 = t0;
+        t1.selectAll(".y.axis").attr("transform", "translate(" + this.xScale(0) + ",0)").call(this.yAxisFunction);
 
-      /*
-      i = -2
-      @plotdata = []
-      while i<10
-          a =(Math.random() *10)
-          aux = 
-              "x": i
-              "y": a
-          @plotdata.push aux
-          i++
-       */
-      if (mode === "line" && iteration !== 0) {
-        if (this.oldMode === "line") {
-          if (this.numberVerticalAsymptote > numberVerticalAsymptote) {
-            i = numberVerticalAsymptote + 1;
-            while (i <= this.numberVerticalAsymptote) {
-              d3.selectAll(".line" + i).remove();
+        /*
+        i = -2
+        @plotdata = []
+        while i<10
+            a =(Math.random() *10)
+            aux = 
+                "x": i
+                "y": a
+            @plotdata.push aux
+            i++
+         */
+        if (mode === "line" && iteration !== 0) {
+          if (this.oldMode === "line") {
+            if (this.numberVerticalAsymptote > numberVerticalAsymptote) {
+              i = numberVerticalAsymptote + 1;
+              while (i <= this.numberVerticalAsymptote) {
+                d3.selectAll(".line" + i).remove();
+                i++;
+              }
+            }
+            i = 0;
+            while (i <= numberVerticalAsymptote) {
+              d3.selectAll(".line" + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
               i++;
             }
+          } else {
+            if (this.oldMode !== null) {
+              d3.selectAll(".dot").remove();
+            }
+            this.lineFunction = d3.svg.line().interpolate('basis').x((function(_this) {
+              return function(d) {
+                return _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+              };
+            })(this)).y((function(_this) {
+              return function(d) {
+                return _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+              };
+            })(this));
+            i = 0;
+            while (i <= numberVerticalAsymptote) {
+              this.svg.append("path").datum(this.plotdata[i]).attr('class', "line line" + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
+              i++;
+            }
+            this.oldMode = "line";
           }
+          this.numberVerticalAsymptote = numberVerticalAsymptote;
+        }
+        if (mode === "dots" || iteration === 0) {
           i = 0;
+          allData = [];
           while (i <= numberVerticalAsymptote) {
-            d3.selectAll(".line" + i).datum(this.plotdata[i]).transition().duration(750).attr('d', this.lineFunction);
+            allData = allData.concat(this.plotdata[i]);
             i++;
           }
-        } else {
-          if (this.oldMode !== null) {
-            d3.selectAll(".dot").remove();
+          if (this.oldMode === "dots") {
+            this.lineFunction = d3.svg.symbol();
+            d3.selectAll(".dot").data(allData).transition().duration(750).attr("transform", (function(_this) {
+              return function(d) {
+                x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+                y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+                return "translate(" + x + "," + y + ")";
+              };
+            })(this)).attr("d", this.lineFunction);
+          } else {
+            allData.unshift(null);
+            allData.unshift(null);
+            if (this.oldMode !== null) {
+              d3.selectAll(".line").remove();
+            }
+            this.lineFunction = d3.svg.symbol();
+            this.svg.selectAll("path").data(allData).enter().append("path").attr('class', "dot").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
+              return function(d) {
+                x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
+                y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
+                return "translate(" + x + "," + y + ")";
+              };
+            })(this)).attr("d", this.lineFunction);
+            this.oldMode = "dots";
           }
-          this.lineFunction = d3.svg.line().interpolate('basis').x((function(_this) {
-            return function(d) {
-              return _this.xScale(d.x) + _this.padding.left + _this.margin.left;
-            };
-          })(this)).y((function(_this) {
-            return function(d) {
-              return _this.yScale(d.y) + _this.padding.top + _this.margin.top;
-            };
-          })(this));
-          i = 0;
-          while (i <= numberVerticalAsymptote) {
-            this.svg.append("path").datum(this.plotdata[i]).attr('class', "line line" + i).style('stroke', "rgb(6, 120, 155)").style('stroke-width', "2").style('fill', "none").attr('d', this.lineFunction);
-            i++;
-          }
-          this.oldMode = "line";
         }
-        this.numberVerticalAsymptote = numberVerticalAsymptote;
+        return this.drawVariables();
+      } else {
+        return alert("Impossible calculate the fuction with this numbers");
       }
-      if (mode === "dots" || iteration === 0) {
-        i = 0;
-        allData = [];
-        while (i <= numberVerticalAsymptote) {
-          allData = allData.concat(this.plotdata[i]);
-          i++;
-        }
-        if (this.oldMode === "dots") {
-          this.lineFunction = d3.svg.symbol();
-          d3.selectAll(".dot").data(allData).transition().duration(750).attr("transform", (function(_this) {
-            return function(d) {
-              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
-              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
-              return "translate(" + x + "," + y + ")";
-            };
-          })(this)).attr("d", this.lineFunction);
-        } else {
-          allData.unshift(null);
-          allData.unshift(null);
-          if (this.oldMode !== null) {
-            d3.selectAll(".line").remove();
-          }
-          this.lineFunction = d3.svg.symbol();
-          this.svg.selectAll("path").data(allData).enter().append("path").attr('class', "dot").style('stroke', "rgb(6, 120, 155)").style('stroke-width', "1").style('fill', "none").attr("transform", (function(_this) {
-            return function(d) {
-              x = _this.xScale(d.x) + _this.padding.left + _this.margin.left;
-              y = _this.yScale(d.y) + _this.padding.top + _this.margin.top;
-              return "translate(" + x + "," + y + ")";
-            };
-          })(this)).attr("d", this.lineFunction);
-          this.oldMode = "dots";
-        }
-      }
-      return this.drawVariables();
     };
 
     return Graph;

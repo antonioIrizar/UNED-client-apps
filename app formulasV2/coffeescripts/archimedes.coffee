@@ -790,7 +790,7 @@ class Graph
 
     drawEquation: (equation, valueVariables, positionValueVariableX, color, thickness, mode) ->
         iteration = Math.abs (@xEnd - @xStart) / 50
-
+        error = false
         x = @xStart
         @plotdata = [[]]
         numberVerticalAsymptote = 0
@@ -798,244 +798,261 @@ class Graph
         valueVariables[positionValueVariableX] = x
         #coffeScript can't traslate correcly with function eval
         y =  `equation.eval(valueVariables)`
-        
+        console.log y
         lastY = y
-        maxY = 0
-        minY = 0
-        @minY = minY = Math.min minY, y
-        @maxY = maxY = Math.max maxY, y
 
-        aux = 
-            "x": x
-            "y": y
-        @plotdata[numberVerticalAsymptote].push aux
-        x += iteration
-
-        #TODO problems with precision error. 
-        while x < (@xEnd+iteration)
-            #think from this scale of asyntotes. NEED IMPROVE
-            if verticalAsymptote
-                numberVerticalAsymptote++
-                @plotdata[numberVerticalAsymptote] = new Array()
-                console.log @plotdata
-                verticalAsymptote = false
-            #coffeScript can't traslate correcly with function eval
-            valueVariables[positionValueVariableX] = x
-            y =  `equation.eval(valueVariables)`
-
-            if y is Number.POSITIVE_INFINITY or y is Number.NEGATIVE_INFINITY
+        if lastY is Number.POSITIVE_INFINITY or lastY is Number.NEGATIVE_INFINITY
+            if iteration isnt 0
                 x += iteration
-                verticalAsymptote = true
-            else
-                if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
-                    auxY = y
-                    lastAuxY= lastY
-                    smallX = x - iteration
-                    bigX = x
-                    smallIteration = Math.abs(bigX - smallX) / 2
-                    while true
+                valueVariables[positionValueVariableX] = x
+                y =  `equation.eval(valueVariables)`
+                if y is Number.POSITIVE_INFINITY or y is Number.NEGATIVE_INFINITY
+                    error = true
+            else 
+                error = true
 
-                        if smallIteration is Number.MIN_VALUE
-                            break
+        if not error
+            maxY = 0
+            minY = 0
+            @minY = minY = Math.min minY, y
+            @maxY = maxY = Math.max maxY, y
 
-                        valueVariables[positionValueVariableX] = smallX + smallIteration
-                        
-                        tmpY = `equation.eval(valueVariables)`
-
-                        if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
-                            verticalAsymptote = true
-                            break
-
-                        if (lastAuxY < 0 and tmpY > 0 ) or (lastAuxY > 0 and tmpY < 0)
-                            auxY = tmpY
-                            bigX = smallX + smallIteration
-
-                        else
-                            if (auxY < 0 and tmpY > 0 ) or (auxY > 0 and tmpY < 0)
-
-                                lastAuxY = tmpY
-                                smallX = smallX + smallIteration
-                            else
-                                break
-
-                        smallIteration = Math.abs(bigX - smallX) / 2
-
-            #think from this scale of asyntotes. NEED IMPROVE
-            if verticalAsymptote
-
-                if ((minY/1000) < @minY && (minY/1000)< @minX) or ((maxY/1000) > @maxY && (maxY/1000) > @maxX)
-                        @plotdata[numberVerticalAsymptote].pop()
-                else
-                        @minY = minY
-                        @maxY = maxY
-            else
-                #if x <= @xEnd
-                #console.log x
-                @minY = minY
-                @maxY = maxY
-
-                minY = Math.min minY, y
-                maxY = Math.max maxY, y
-
-                aux = 
-                    "x": x
-                    "y": y
-                @plotdata[numberVerticalAsymptote].push aux
-
-            lastY = y
+            aux = 
+                "x": x
+                "y": y
+            @plotdata[numberVerticalAsymptote].push aux
             x += iteration
 
-        ###
-        i = 0
-        while i< @plotdata.length
-            console.log  @plotdata[i]
-            i++
-        ###
-        ### todo this don't work correctly. I think put with a percent formula
-        if Math.abs(minY) >  5
-            @minY = Math.round minY
-        else
-            @minY = minY
+            #TODO problems with precision error. 
+            while x < (@xEnd+iteration)
+                #think from this scale of asyntotes. NEED IMPROVE
+                if verticalAsymptote
+                    numberVerticalAsymptote++
+                    @plotdata[numberVerticalAsymptote] = new Array()
+                    verticalAsymptote = false
+                #coffeScript can't traslate correcly with function eval
+                valueVariables[positionValueVariableX] = x
+                y =  `equation.eval(valueVariables)`
 
-        if Math.abs(maxY) > 5
-            @maxY = Math.round maxY
-        else
-            @maxY = maxY
-        ###
-        if not (@minX < 0 < @maxX)
-            if @maxX > 0
-                @minX = 0
+                if y is Number.POSITIVE_INFINITY or y is Number.NEGATIVE_INFINITY
+                    x += iteration
+                    verticalAsymptote = true
+                else
+                    if (lastY < 0 and y > 0 ) or (lastY > 0 and y < 0)
+                        auxY = y
+                        lastAuxY= lastY
+                        smallX = x - iteration
+                        bigX = x
+                        smallIteration = Math.abs(bigX - smallX) / 2
+                        while true
+
+                            if smallIteration is Number.MIN_VALUE
+                                break
+
+                            valueVariables[positionValueVariableX] = smallX + smallIteration
+                            
+                            tmpY = `equation.eval(valueVariables)`
+
+                            if tmpY is Number.POSITIVE_INFINITY or tmpY is Number.NEGATIVE_INFINITY
+                                verticalAsymptote = true
+                                break
+
+                            if (lastAuxY < 0 and tmpY > 0 ) or (lastAuxY > 0 and tmpY < 0)
+                                auxY = tmpY
+                                bigX = smallX + smallIteration
+
+                            else
+                                if (auxY < 0 and tmpY > 0 ) or (auxY > 0 and tmpY < 0)
+
+                                    lastAuxY = tmpY
+                                    smallX = smallX + smallIteration
+                                else
+                                    break
+
+                            smallIteration = Math.abs(bigX - smallX) / 2
+
+                #think from this scale of asyntotes. NEED IMPROVE
+                if verticalAsymptote
+
+                    if ((minY/1000) < @minY && (minY/1000)< @minX) or ((maxY/1000) > @maxY && (maxY/1000) > @maxX)
+                            @plotdata[numberVerticalAsymptote].pop()
+                    else
+                            @minY = minY
+                            @maxY = maxY
+                else
+                    #if x <= @xEnd
+                    #console.log x
+                    @minY = minY
+                    @maxY = maxY
+
+                    minY = Math.min minY, y
+                    maxY = Math.max maxY, y
+
+                    aux = 
+                        "x": x
+                        "y": y
+                    @plotdata[numberVerticalAsymptote].push aux
+
+                lastY = y
+                x += iteration
+
+            ###
+            i = 0
+            while i< @plotdata.length
+                console.log  @plotdata[i]
+                i++
+            ###
+            ### todo this don't work correctly. I think put with a percent formula
+            if Math.abs(minY) >  5
+                @minY = Math.round minY
             else
-                @maxX = 0
+                @minY = minY
 
-        #console.log "miny "+ Math.round @minY
-        #console.log "maxy "+ Math.round @maxY
+            if Math.abs(maxY) > 5
+                @maxY = Math.round maxY
+            else
+                @maxY = maxY
+            
+            if Math.abs(@maxY) isnt Math.abs(@minY)
+                if Math.min(Math.abs(@maxY),Math.abs(@minY)) * 1.1 >= Math.max(Math.abs(@maxY),Math.abs(@minY))
+                    if  
+            ###
+            if not (@minX < 0 < @maxX)
+                if @maxX > 0
+                    @minX = 0
+                else
+                    @maxX = 0
 
-        @xScale.domain [@minX,@maxX]
-        @yScale.domain [@minY,@maxY]
+            #console.log "miny "+ Math.round @minY
+            #console.log "maxy "+ Math.round @maxY
 
-        @xAxisFunction.tickValues(@xScale.ticks(@xAxisFunction.ticks()).filter((x) -> x != 0))
-        @yAxisFunction.tickValues(@yScale.ticks(@yAxisFunction.ticks()).filter((x) -> x != 0))
+            @xScale.domain [@minX,@maxX]
+            @yScale.domain [@minY,@maxY]
 
-        t0 = @svg.transition().duration(750)
+            @xAxisFunction.tickValues(@xScale.ticks(@xAxisFunction.ticks()).filter((x) -> x != 0))
+            @yAxisFunction.tickValues(@yScale.ticks(@yAxisFunction.ticks()).filter((x) -> x != 0))
 
-        t0.selectAll(".x.axis").attr("transform", "translate(0," + @yScale(0)+ ")")
-            .call @xAxisFunction
-        
-        t1 =t0
-        t1.selectAll(".y.axis").attr("transform", "translate(" + @xScale(0) + ",0)")
-            .call @yAxisFunction
-       
-        ###
-        i = -2
-        @plotdata = []
-        while i<10
-            a =(Math.random() *10)
-            aux = 
-                "x": i
-                "y": a
-            @plotdata.push aux
-            i++
-        ###
-        if mode == "line" and iteration isnt 0
+            t0 = @svg.transition().duration(750)
+
+            t0.selectAll(".x.axis").attr("transform", "translate(0," + @yScale(0)+ ")")
+                .call @xAxisFunction
+            
+            t1 =t0
+            t1.selectAll(".y.axis").attr("transform", "translate(" + @xScale(0) + ",0)")
+                .call @yAxisFunction
            
-            if @oldMode is "line"
+            ###
+            i = -2
+            @plotdata = []
+            while i<10
+                a =(Math.random() *10)
+                aux = 
+                    "x": i
+                    "y": a
+                @plotdata.push aux
+                i++
+            ###
+            if mode == "line" and iteration isnt 0
+               
+                if @oldMode is "line"
 
-                if @numberVerticalAsymptote > numberVerticalAsymptote
-                    i = numberVerticalAsymptote + 1
-                    while i <= @numberVerticalAsymptote
-                        d3.selectAll(".line"+i)
-                        .remove()
+                    if @numberVerticalAsymptote > numberVerticalAsymptote
+                        i = numberVerticalAsymptote + 1
+                        while i <= @numberVerticalAsymptote
+                            d3.selectAll(".line"+i)
+                            .remove()
+                            i++
+                    i = 0
+                    while i <= numberVerticalAsymptote
+                        d3.selectAll(".line"+i )
+                            .datum(@plotdata[i])
+                            .transition()
+                            .duration(750)
+                            .attr('d', @lineFunction)
                         i++
-                i = 0
-                while i <= numberVerticalAsymptote
-                    d3.selectAll(".line"+i )
+        
+                    
+                else
+                    if @oldMode isnt null
+                        d3.selectAll(".dot")
+                        .remove()
+
+                    @lineFunction = d3.svg.line()
+                    .interpolate('basis')
+                    .x((d) =>
+                        #console.log "x: " + d.x
+                        #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
+                            @xScale(d.x)+@padding.left+@margin.left )
+
+                    .y((d) => 
+                        #console.log "y: " + d.y
+                        #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
+                            @yScale(d.y)+@padding.top+@margin.top ) 
+
+                    i = 0
+                    while i <= numberVerticalAsymptote 
+                        @svg.append("path")
                         .datum(@plotdata[i])
+                        .attr('class', "line line"+i )
+                        .style('stroke', "rgb(6, 120, 155)")
+                        .style('stroke-width', "2")
+                        .style('fill', "none")
+                        .attr('d', @lineFunction)
+                        i++
+                    @oldMode = "line"
+                @numberVerticalAsymptote = numberVerticalAsymptote
+
+            if mode == "dots" or iteration is 0
+
+                i = 0
+                allData = []
+                while i<= numberVerticalAsymptote
+                    allData = allData.concat @plotdata[i]
+                    i++
+                
+                if @oldMode is "dots"
+                   
+                    @lineFunction = d3.svg.symbol()
+
+                    #@lineFunction.type("circle")
+                    d3.selectAll(".dot")
+                        .data(allData)
                         .transition()
                         .duration(750)
-                        .attr('d', @lineFunction)
-                    i++
-    
-                
-            else
-                if @oldMode isnt null
-                    d3.selectAll(".dot")
-                    .remove()
+                        .attr("transform", (d) =>
+                            x = @xScale(d.x) + @padding.left + @margin.left
+                            y = @yScale(d.y) + @padding.top + @margin.top
+                            "translate(" + x + "," + y + ")")
+                        .attr("d", @lineFunction)
+                else
+                    # I don't know, but i need put 2 elements of trash because it remove automatically 2 first elements
+                    allData.unshift null
+                    allData.unshift null
 
-                @lineFunction = d3.svg.line()
-                .interpolate('basis')
-                .x((d) =>
-                    #console.log "x: " + d.x
-                    #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
-                        @xScale(d.x)+@padding.left+@margin.left )
-
-                .y((d) => 
-                    #console.log "y: " + d.y
-                    #if d.x <= @xEnd and (@minY<=d.y<=@maxY)
-                        @yScale(d.y)+@padding.top+@margin.top ) 
-
-                i = 0
-                while i <= numberVerticalAsymptote 
-                    @svg.append("path")
-                    .datum(@plotdata[i])
-                    .attr('class', "line line"+i )
-                    .style('stroke', "rgb(6, 120, 155)")
-                    .style('stroke-width', "2")
-                    .style('fill', "none")
-                    .attr('d', @lineFunction)
-                    i++
-                @oldMode = "line"
-            @numberVerticalAsymptote = numberVerticalAsymptote
-
-        if mode == "dots" or iteration is 0
-
-            i = 0
-            allData = []
-            while i<= numberVerticalAsymptote
-                allData = allData.concat @plotdata[i]
-                i++
-            
-            if @oldMode is "dots"
-               
-                @lineFunction = d3.svg.symbol()
-
-                #@lineFunction.type("circle")
-                d3.selectAll(".dot")
-                    .data(allData)
-                    .transition()
-                    .duration(750)
-                    .attr("transform", (d) =>
-                        x = @xScale(d.x) + @padding.left + @margin.left
-                        y = @yScale(d.y) + @padding.top + @margin.top
-                        "translate(" + x + "," + y + ")")
-                    .attr("d", @lineFunction)
-            else
-                # I don't know, but i need put 2 elements of trash because it remove automatically 2 first elements
-                allData.unshift null
-                allData.unshift null
-
-                if @oldMode isnt null
-                    d3.selectAll(".line")
-                    .remove()
-                
-                @lineFunction = d3.svg.symbol()
-
-                @svg.selectAll("path")
-                    .data(allData)
-                    .enter().append("path")
-                    .attr('class', "dot" )
-                    .style('stroke', "rgb(6, 120, 155)")
-                    .style('stroke-width', "1")
-                    .style('fill', "none")
-                    .attr("transform", (d) =>
-                        x = @xScale(d.x) + @padding.left + @margin.left
-                        y = @yScale(d.y) + @padding.top + @margin.top
-                        "translate(" + x + "," + y + ")")
-                    .attr("d", @lineFunction)
+                    if @oldMode isnt null
+                        d3.selectAll(".line")
+                        .remove()
                     
-                @oldMode = "dots"
-         
-        @drawVariables()
+                    @lineFunction = d3.svg.symbol()
+
+                    @svg.selectAll("path")
+                        .data(allData)
+                        .enter().append("path")
+                        .attr('class', "dot" )
+                        .style('stroke', "rgb(6, 120, 155)")
+                        .style('stroke-width', "1")
+                        .style('fill', "none")
+                        .attr("transform", (d) =>
+                            x = @xScale(d.x) + @padding.left + @margin.left
+                            y = @yScale(d.y) + @padding.top + @margin.top
+                            "translate(" + x + "," + y + ")")
+                        .attr("d", @lineFunction)
+                        
+                    @oldMode = "dots"
+             
+            @drawVariables()
+        else
+            alert "Impossible calculate the fuction with this numbers"
 
 class Init
     divPanel: null
