@@ -23,7 +23,7 @@ class Formula
     inputsRangeOrderCorrect: true
     button: null
 
-    constructor: (@divPanel, @liFormula, divFormulaCol, @symbols, @equation, @graph) ->
+    constructor: (@divPanel, @liFormula, divFormulaCol, @symbols, @equation, @graph, paragraph) ->
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
@@ -83,6 +83,12 @@ class Formula
         @descriptionVariables.setAttribute 'class', "dl-horizontal"
       
         divDescriptionBody.appendChild @descriptionVariables
+
+        parag = document.createElement 'p'
+        text = document.createTextNode paragraph
+        parag.appendChild text
+
+        divDescriptionBody.appendChild parag
 
         divDescription.appendChild divDescriptionHeading
         divDescription.appendChild divDescriptionBody
@@ -536,7 +542,8 @@ class Archimedes extends Formula
         volume = new Variable("v", "V" , "Volume" , "Volume of the displaced fluid." , null)
         variables = [newtowns, equals, density, mult, gravity, mult, volume]
         equation = 'e=ro*g*v'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class Newton1 extends Formula
 
@@ -548,7 +555,8 @@ class Newton1 extends Formula
         aceleration = new Variable "a", "a" , "Acceleration" , "Acceleration of the object." , null
         simbols = [force, equals, mass, mult, aceleration]
         equation = 'f=m*a'
-        super(divPanel, liFormula, divFormulaCol, simbols, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, simbols, math.parse(equation).compile(math), graph, paragraph)
 
 class FrictionForce extends Formula
 
@@ -560,7 +568,8 @@ class FrictionForce extends Formula
         normalForce = new Variable("n", "N", "Normal force", "Weight of a given body.", null)
         variables = [force, equals, coefficientFriction, mult, normalForce]
         equation = 'f=mic * n'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class Impulse extends Formula
 
@@ -572,7 +581,8 @@ class Impulse extends Formula
         time = new Variable("t", "T", "Time", "Description", null)
         variables = [improve, equals, force, mult, time]
         equation = 'i=f * t'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class Momentum extends Formula
 
@@ -584,7 +594,8 @@ class Momentum extends Formula
         velocity = new Variable("v", "V", "Velocity of the body", "Description", null)
         variables = [momentum, equals, mass, mult,velocity]
         equation = 'p=m * v'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class PotentialEnergy extends Formula
 
@@ -597,7 +608,8 @@ class PotentialEnergy extends Formula
         height = new Variable("h", "h", "Height", "Height at which the body is.", null)
         variables = [potentialEnergy, equals, mass, mult, gravity, mult, height]
         equation = 'u=m * g * h'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class OhmLaw extends Formula
 
@@ -609,21 +621,23 @@ class OhmLaw extends Formula
         resistance = new Variable("r", "R" , "Resistance", "Resistance, measured in Ohms" , null)
         variables = [current, equals, potential, division, resistance]
         equation = 'i=v / r'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 class ResistivityConductivity extends Formula
 
     constructor: (divPanel, liFormula, divFormulaCol, graph) ->
-        resistance = new Variable("r", "R", "Resistance", "Description", null)
+        resistance = new Variable("r", "R", "Resistance", "Resistance of a conductor.", null)
         equals = new Operator("=")
-        electricalResistivity = new Variable("p", "\u03C1", "Electrical resistivity", "Description", null)
+        electricalResistivity = new Variable("p", "\u03C1", "Electrical resistivity", "Electrical resistivity of the material.", null)
         mult = new Operator "*"
-        length = new Variable("l", "l", "length", "Description", null)
+        length = new Variable("l", "l", "length", "Length of the conductor.", null)
         division = new Operator "/"
-        section = new Variable("a", "A" , "Cross-sectional area", "Description" , null)
+        section = new Variable("a", "A" , "Cross-sectional area", "Cross-sectional area of the conductor." , null)
         variables = [resistance, equals, electricalResistivity, mult, length, division, section]
         equation = 'r=p * l / a'
-        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph)
+        paragraph = ""
+        super(divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph)
 
 
 class Variable 

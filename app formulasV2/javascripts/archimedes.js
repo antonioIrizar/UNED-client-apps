@@ -52,8 +52,8 @@
 
     Formula.prototype.button = null;
 
-    function Formula(divPanel, liFormula, divFormulaCol, symbols, equation, graph) {
-      var divAllFormulas, divConstant, divConstantHeading, divDescription, divDescriptionBody, divDescriptionHeading, divFormulaCold, panelTitle, text;
+    function Formula(divPanel, liFormula, divFormulaCol, symbols, equation, graph, paragraph) {
+      var divAllFormulas, divConstant, divConstantHeading, divDescription, divDescriptionBody, divDescriptionHeading, divFormulaCold, panelTitle, parag, text;
       this.divPanel = divPanel;
       this.liFormula = liFormula;
       this.symbols = symbols;
@@ -105,6 +105,10 @@
       this.descriptionVariables = document.createElement('dl');
       this.descriptionVariables.setAttribute('class', "dl-horizontal");
       divDescriptionBody.appendChild(this.descriptionVariables);
+      parag = document.createElement('p');
+      text = document.createTextNode(paragraph);
+      parag.appendChild(text);
+      divDescriptionBody.appendChild(parag);
       divDescription.appendChild(divDescriptionHeading);
       divDescription.appendChild(divDescriptionBody);
       divFormulaCold = document.getElementById(divFormulaCol);
@@ -611,7 +615,7 @@
     __extends(Archimedes, _super);
 
     function Archimedes(divPanel, liFormula, divFormulaCol, graph) {
-      var density, equals, equation, gravity, mult, newtowns, variables, volume;
+      var density, equals, equation, gravity, mult, newtowns, paragraph, variables, volume;
       newtowns = new Variable("e", "E", "Newtowns", "Buoyant force of a given body.", null);
       equals = new Operator("=");
       density = new Variable("ro", "\u03C1", "Density", "Density of the fluid.", null);
@@ -620,7 +624,8 @@
       volume = new Variable("v", "V", "Volume", "Volume of the displaced fluid.", null);
       variables = [newtowns, equals, density, mult, gravity, mult, volume];
       equation = 'e=ro*g*v';
-      Archimedes.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      Archimedes.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return Archimedes;
@@ -631,7 +636,7 @@
     __extends(Newton1, _super);
 
     function Newton1(divPanel, liFormula, divFormulaCol, graph) {
-      var aceleration, equals, equation, force, mass, mult, simbols;
+      var aceleration, equals, equation, force, mass, mult, paragraph, simbols;
       force = new Variable("f", "F", "Force", "Weight expressed in Newtons.", null);
       equals = new Operator("=");
       mass = new Variable("m", "m", "Mass", "Mass of the object.", null);
@@ -639,7 +644,8 @@
       aceleration = new Variable("a", "a", "Acceleration", "Acceleration of the object.", null);
       simbols = [force, equals, mass, mult, aceleration];
       equation = 'f=m*a';
-      Newton1.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, simbols, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      Newton1.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, simbols, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return Newton1;
@@ -650,7 +656,7 @@
     __extends(FrictionForce, _super);
 
     function FrictionForce(divPanel, liFormula, divFormulaCol, graph) {
-      var coefficientFriction, equals, equation, force, mult, normalForce, variables;
+      var coefficientFriction, equals, equation, force, mult, normalForce, paragraph, variables;
       force = new Variable("f", "F", "Friction force", "Magnitude of friction.", null);
       equals = new Operator("=");
       coefficientFriction = new Variable("mic", "\u00B5", "Coefficient of friction", "Friction coefficient.", null);
@@ -658,7 +664,8 @@
       normalForce = new Variable("n", "N", "Normal force", "Weight of a given body.", null);
       variables = [force, equals, coefficientFriction, mult, normalForce];
       equation = 'f=mic * n';
-      FrictionForce.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      FrictionForce.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return FrictionForce;
@@ -669,7 +676,7 @@
     __extends(Impulse, _super);
 
     function Impulse(divPanel, liFormula, divFormulaCol, graph) {
-      var equals, equation, force, improve, mult, time, variables;
+      var equals, equation, force, improve, mult, paragraph, time, variables;
       improve = new Variable("i", "I", "Impulse", "Description", null);
       equals = new Operator("=");
       force = new Variable("f", "F", "Force", "Description", null);
@@ -677,7 +684,8 @@
       time = new Variable("t", "T", "Time", "Description", null);
       variables = [improve, equals, force, mult, time];
       equation = 'i=f * t';
-      Impulse.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      Impulse.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return Impulse;
@@ -688,7 +696,7 @@
     __extends(Momentum, _super);
 
     function Momentum(divPanel, liFormula, divFormulaCol, graph) {
-      var equals, equation, mass, momentum, mult, variables, velocity;
+      var equals, equation, mass, momentum, mult, paragraph, variables, velocity;
       momentum = new Variable("p", "\u03C1", "Momentum", "Description", null);
       equals = new Operator("=");
       mass = new Variable("m", "m", "Mass", "Description", null);
@@ -696,7 +704,8 @@
       velocity = new Variable("v", "V", "Velocity of the body", "Description", null);
       variables = [momentum, equals, mass, mult, velocity];
       equation = 'p=m * v';
-      Momentum.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      Momentum.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return Momentum;
@@ -707,7 +716,7 @@
     __extends(PotentialEnergy, _super);
 
     function PotentialEnergy(divPanel, liFormula, divFormulaCol, graph) {
-      var equals, equation, gravity, height, mass, mult, potentialEnergy, variables;
+      var equals, equation, gravity, height, mass, mult, paragraph, potentialEnergy, variables;
       potentialEnergy = new Variable("u", "U", "Potential Energy", "Potential Energy.", null);
       equals = new Operator("=");
       mass = new Variable("m", "m", "Mass", "Mass of the body.", null);
@@ -716,7 +725,8 @@
       height = new Variable("h", "h", "Height", "Height at which the body is.", null);
       variables = [potentialEnergy, equals, mass, mult, gravity, mult, height];
       equation = 'u=m * g * h';
-      PotentialEnergy.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      PotentialEnergy.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return PotentialEnergy;
@@ -727,7 +737,7 @@
     __extends(OhmLaw, _super);
 
     function OhmLaw(divPanel, liFormula, divFormulaCol, graph) {
-      var current, division, equals, equation, potential, resistance, variables;
+      var current, division, equals, equation, paragraph, potential, resistance, variables;
       current = new Variable("i", "I", "Electric current", "Current flowing through the conductor, in Amperes.", null);
       equals = new Operator("=");
       potential = new Variable("v", "V", "potential difference", "Voltage measured, in Volts.", null);
@@ -735,7 +745,8 @@
       resistance = new Variable("r", "R", "Resistance", "Resistance, measured in Ohms", null);
       variables = [current, equals, potential, division, resistance];
       equation = 'i=v / r';
-      OhmLaw.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      OhmLaw.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return OhmLaw;
@@ -746,17 +757,18 @@
     __extends(ResistivityConductivity, _super);
 
     function ResistivityConductivity(divPanel, liFormula, divFormulaCol, graph) {
-      var division, electricalResistivity, equals, equation, length, mult, resistance, section, variables;
-      resistance = new Variable("r", "R", "Resistance", "Description", null);
+      var division, electricalResistivity, equals, equation, length, mult, paragraph, resistance, section, variables;
+      resistance = new Variable("r", "R", "Resistance", "Resistance of a conductor.", null);
       equals = new Operator("=");
-      electricalResistivity = new Variable("p", "\u03C1", "Electrical resistivity", "Description", null);
+      electricalResistivity = new Variable("p", "\u03C1", "Electrical resistivity", "Electrical resistivity of the material.", null);
       mult = new Operator("*");
-      length = new Variable("l", "l", "length", "Description", null);
+      length = new Variable("l", "l", "length", "Length of the conductor.", null);
       division = new Operator("/");
-      section = new Variable("a", "A", "Cross-sectional area", "Description", null);
+      section = new Variable("a", "A", "Cross-sectional area", "Cross-sectional area of the conductor.", null);
       variables = [resistance, equals, electricalResistivity, mult, length, division, section];
       equation = 'r=p * l / a';
-      ResistivityConductivity.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph);
+      paragraph = "";
+      ResistivityConductivity.__super__.constructor.call(this, divPanel, liFormula, divFormulaCol, variables, math.parse(equation).compile(math), graph, paragraph);
     }
 
     return ResistivityConductivity;
