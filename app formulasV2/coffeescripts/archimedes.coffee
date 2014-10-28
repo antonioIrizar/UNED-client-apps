@@ -570,12 +570,12 @@ class Momentum extends Formula
 class PotentialEnergy extends Formula
 
     constructor: (divPanel, liFormula, constantValue, descriptionVariables, graph) ->
-        potentialEnergy = new Variable("u", "U", "Potential Energy", "Description", null)
+        potentialEnergy = new Variable("u", "U", "Potential Energy", "Potential Energy.", null)
         equals = new Operator("=")
-        mass = new Variable("m", "m", "Mass", "Description", null)
+        mass = new Variable("m", "m", "Mass", "Mass of the body.", null)
         mult = new Operator "*"
         gravity = new Variable("g", "g" , "Gravity", "Acceleration due to gravity." , null)
-        height = new Variable("h", "h", "Height", "Description", null)
+        height = new Variable("h", "h", "Height", "Height at which the body is.", null)
         variables = [potentialEnergy, equals, mass, mult, gravity, mult, height]
         equation = 'u=m * g * h'
         super(divPanel, liFormula, constantValue, descriptionVariables, variables, math.parse(equation).compile(math), graph)
