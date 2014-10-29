@@ -222,21 +222,21 @@
         inputsCorrect = true;
         this.inputNothing(divForm, spanControl, labelForm);
       }
-      if (this.inputsCorrect && inputsCorrect) {
-        if (newNumberInputsFilled !== this.numberInputsFilled) {
-          if (newNumberInputsFilled === (this.variables.length - 2)) {
-            this.idInputRange = this.searchIdInputRange();
-            this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
-          } else {
-            if (this.idInputRange !== null && this.valid()) {
-              this.remplaceInputs(this.createInput(this.idInputRange), this.idInputRange);
-              this.variables[this.idInputRange].startRange = null;
-              this.variables[this.idInputRange].endRange = null;
-              this.idInputRange = null;
-            }
-          }
+      if (newNumberInputsFilled === (this.variables.length - 2)) {
+        if (this.idInputRange === null) {
+          this.idInputRange = this.searchIdInputRange();
+          this.remplaceInputs(this.createInputRange(this.idInputRange), this.idInputRange);
         }
       } else {
+        if (this.idInputRange !== null && this.valid()) {
+          this.remplaceInputs(this.createInput(this.idInputRange), this.idInputRange);
+          this.variables[this.idInputRange].startRange = null;
+          this.variables[this.idInputRange].endRange = null;
+          this.idInputRange = null;
+          this.button.removeAttribute('disabled');
+        }
+      }
+      if (!(this.inputsCorrect && inputsCorrect)) {
         if (this.inputsCorrect && !inputsCorrect) {
           this.disabledInputs(id);
         }

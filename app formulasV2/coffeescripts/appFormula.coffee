@@ -197,19 +197,19 @@ class Formula
             @variables[id].value = null
             inputsCorrect = true
             @inputNothing divForm, spanControl, labelForm
-        
-        if @inputsCorrect and inputsCorrect
-            if newNumberInputsFilled != @numberInputsFilled
-                if newNumberInputsFilled == (@variables.length - 2) 
-                    @idInputRange = @searchIdInputRange()
-                    @remplaceInputs @createInputRange(@idInputRange), @idInputRange
-                else
-                    if @idInputRange isnt null and @valid()
-                        @remplaceInputs @createInput(@idInputRange), @idInputRange
-                        @variables[@idInputRange].startRange = null
-                        @variables[@idInputRange].endRange = null
-                        @idInputRange = null
+         
+        if newNumberInputsFilled == (@variables.length - 2)
+            if @idInputRange is null
+                @idInputRange = @searchIdInputRange()
+                @remplaceInputs @createInputRange(@idInputRange), @idInputRange
         else
+            if @idInputRange isnt null and @valid()
+                @remplaceInputs @createInput(@idInputRange), @idInputRange
+                @variables[@idInputRange].startRange = null
+                @variables[@idInputRange].endRange = null
+                @idInputRange = null
+                @button.removeAttribute 'disabled'
+        if not(@inputsCorrect and inputsCorrect)
             if @inputsCorrect and not inputsCorrect
                 @disabledInputs id
             if not @inputsCorrect and inputsCorrect
