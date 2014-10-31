@@ -7,18 +7,12 @@
     <title>Formulas</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/formula.css" rel="stylesheet">  
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link href="css/formula.css" rel="stylesheet"> 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
-    <script src="javascripts/jquery.ui.touch-punch.min.js"></script>
-    <script src="http://d3js.org/d3.v2.js?2.9.5"></script>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/1.0.1/math.min.js"></script>
-    <script type="text/javascript" src="javascripts/appFormula.js"></script>
-     <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML.js"></script>-->
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full"></script> 
-    <script type="text/javascript" src="javascripts/bootstrap.min.js"></script>
-
+    <script src="//weblab.ieec.uned.es/golab/ajirizar/javascripts/head.load.min.js"></script>
+    <script>
+        head.load("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js","//d3js.org/d3.v2.js?2.9.5","//cdnjs.cloudflare.com/ajax/libs/mathjs/1.0.1/math.min.js","//weblab.ieec.uned.es/golab/ajirizar/javascripts/appFormula.js","//cdnjs.cloudflare.com/ajax/libs/mathjax/2.4.0/MathJax.js?config=AM_HTMLorMML-full.js","//weblab.ieec.uned.es/golab/ajirizar/javascripts/bootstrap.min.js");
+    </script>
   </head>
   <body>
     <div class="container-fluid margin">
@@ -52,7 +46,6 @@
           </div>
         </div>
         <div class="col-md-5" id="div_formula_col">
-
           <div class="row panel panel-primary">
             <div class="panel-heading">
                <h3 class="panel-title">Formula</h3>
@@ -60,7 +53,6 @@
             <div  id="formulas" class="panel-body">
             </div>
           </div>
-
         </div>
         <div class="col-md-5" >
           <div  class="panel panel-success">
@@ -73,12 +65,12 @@
         </div>
       </div>
     </div>
-    
     <script>
+      head.ready(function () {
 
-      new Init('formulas', 'archimedes_formula', 'newton_formula', "friction_force_formula", "impulse_formula","momentum_formula","potential_energy_formula", "ohm_law_formula","resistivity_conductivity_formula", 'div_formula_col');
+        new Init('formulas', 'archimedes_formula', 'newton_formula', "friction_force_formula", "impulse_formula","momentum_formula","potential_energy_formula", "ohm_law_formula","resistivity_conductivity_formula", 'div_formula_col');
+      });
 
-    </script>
-      
+    </script>  
   </body>
 </html>
