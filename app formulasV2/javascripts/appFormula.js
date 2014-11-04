@@ -1240,15 +1240,19 @@
 
     Init.prototype.formula = null;
 
+    Init.prototype.haveFormula = false;
+
     function Init(divPanel, liArchimedes, liNewton1, liFrictionForce, liImpulse, liMomentum, liPotentialEnergy, liOhmLaw, liResistivityConductivity, divFormulaCol) {
       var text;
       this.divFormulaCol = divFormulaCol;
       this.drop = __bind(this.drop, this);
       this.graph = new Graph();
       this.archimedes = document.getElementById(liArchimedes);
-      $(this.archimedes).draggable({
-        helper: "clone"
-      });
+      this.archimedes.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.archimedes);
+        };
+      })(this));
 
       /*deprecated
       @archimedes.setAttribute 'ondragstart' , ""
@@ -1256,9 +1260,11 @@
       @addListenerToFormula @archimedes, @imgArchimedes
        */
       this.newton1 = document.getElementById(liNewton1);
-      $(this.newton1).draggable({
-        helper: "clone"
-      });
+      this.newton1.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.newton1);
+        };
+      })(this));
 
       /*deprecated
       @newton1.setAttribute 'ondragstart' , ""
@@ -1272,29 +1278,41 @@
       @addListenerToFormula @pendulum, @imgPendulum
        */
       this.frictionForce = document.getElementById(liFrictionForce);
-      $(this.frictionForce).draggable({
-        helper: "clone"
-      });
+      this.frictionForce.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.frictionForce);
+        };
+      })(this));
       this.impulse = document.getElementById(liImpulse);
-      $(this.impulse).draggable({
-        helper: "clone"
-      });
+      this.impulse.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.impulse);
+        };
+      })(this));
       this.momentum = document.getElementById(liMomentum);
-      $(this.momentum).draggable({
-        helper: "clone"
-      });
+      this.momentum.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.momentum);
+        };
+      })(this));
       this.potentialEnergy = document.getElementById(liPotentialEnergy);
-      $(this.potentialEnergy).draggable({
-        helper: "clone"
-      });
+      this.potentialEnergy.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.potentialEnergy);
+        };
+      })(this));
       this.ohmLaw = document.getElementById(liOhmLaw);
-      $(this.ohmLaw).draggable({
-        helper: "clone"
-      });
+      this.ohmLaw.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.ohmLaw);
+        };
+      })(this));
       this.resistivityConductivity = document.getElementById(liResistivityConductivity);
-      $(this.resistivityConductivity).draggable({
-        helper: "clone"
-      });
+      this.resistivityConductivity.addEventListener('click', (function(_this) {
+        return function() {
+          return _this.drop(_this.resistivityConductivity);
+        };
+      })(this));
       window.addEventListener("resize", (function(_this) {
         return function() {
           return _this.graph.resizeCanvas('blue', 3, _this.mode);
@@ -1310,15 +1328,8 @@
        *Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
       @divPanel.setAttribute 'ondragenter', "return false"
        */
-      $(this.divPanel).droppable({
-        drop: (function(_this) {
-          return function(event, ui) {
-            return _this.drop(event, ui);
-          };
-        })(this)
-      });
       this.paragraph = document.createElement('p');
-      text = document.createTextNode("Drag and drop any formula here");
+      text = document.createTextNode("Please click in any formula");
       this.paragraph.appendChild(text);
       this.divPanel.appendChild(this.paragraph);
     }
@@ -1332,47 +1343,55 @@
         ev.dataTransfer.setData('text', ev.target.id)
      */
 
-    Init.prototype.drop = function(event, ui) {
-      var data, formula;
-      data = ui.draggable.attr('id');
-      switch (false) {
-        case data !== this.archimedes.id:
-          this.disabledDrop();
-          formula = new Archimedes(this.divPanel, this.archimedes, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.newton1.id:
-          this.disabledDrop();
-          this.formula = new Newton1(this.divPanel, this.newton1, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.frictionForce.id:
-          this.disabledDrop();
-          this.formula = new FrictionForce(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.impulse.id:
-          this.disabledDrop();
-          this.formula = new Impulse(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.momentum.id:
-          this.disabledDrop();
-          this.formula = new Momentum(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.potentialEnergy.id:
-          this.disabledDrop();
-          this.formula = new PotentialEnergy(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.ohmLaw.id:
-          this.disabledDrop();
-          this.formula = new OhmLaw(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
-        case data !== this.resistivityConductivity.id:
-          this.disabledDrop();
-          this.formula = new ResistivityConductivity(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
-          return this.divPanel.appendChild(this.createButton());
+    Init.prototype.drop = function(event) {
+      var formula;
+      if (!this.haveFormula) {
+        switch (false) {
+          case event.id !== this.archimedes.id:
+            this.disabledDrop();
+            formula = new Archimedes(this.divPanel, this.archimedes, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.newton1.id:
+            this.disabledDrop();
+            this.formula = new Newton1(this.divPanel, this.newton1, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.frictionForce.id:
+            this.disabledDrop();
+            this.formula = new FrictionForce(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.impulse.id:
+            this.disabledDrop();
+            this.formula = new Impulse(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.momentum.id:
+            this.disabledDrop();
+            this.formula = new Momentum(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.potentialEnergy.id:
+            this.disabledDrop();
+            this.formula = new PotentialEnergy(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.ohmLaw.id:
+            this.disabledDrop();
+            this.formula = new OhmLaw(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+            break;
+          case event.id !== this.resistivityConductivity.id:
+            this.disabledDrop();
+            this.formula = new ResistivityConductivity(this.divPanel, this.pendulum, this.divFormulaCol, this.graph);
+            this.divPanel.appendChild(this.createButton());
+        }
+        return this.haveFormula = true;
       }
     };
 
     Init.prototype.disabledDrop = function() {
-      $(this.divPanel).droppable("option", "disabled", true);
       return this.divPanel.removeChild(this.paragraph);
     };
 
@@ -1425,16 +1444,16 @@
        *Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
       @divPanel.setAttribute 'ondragenter', "return false"
        */
-      $(this.divPanel).droppable("option", "disabled", false);
       this.paragraph = document.createElement('p');
-      text = document.createTextNode("Please drop your formula here");
+      text = document.createTextNode("Please click in any formula");
       this.paragraph.appendChild(text);
       this.divPanel.appendChild(this.paragraph);
-      return window.addEventListener("resize", (function(_this) {
+      window.addEventListener("resize", (function(_this) {
         return function() {
           return _this.graph.resizeCanvas('blue', 3, _this.mode);
         };
       })(this));
+      return this.haveFormula = false;
     };
 
     return Init;

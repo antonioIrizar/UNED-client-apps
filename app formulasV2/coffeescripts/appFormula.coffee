@@ -1106,11 +1106,13 @@ class Init
     graph: null
     paragraph: null
     formula: null
+    haveFormula: false
 
     constructor: (divPanel, liArchimedes, liNewton1, liFrictionForce, liImpulse, liMomentum, liPotentialEnergy, liOhmLaw, liResistivityConductivity, @divFormulaCol) ->
         @graph = new Graph()
         @archimedes = document.getElementById liArchimedes
-        $(@archimedes).draggable(helper: "clone")
+        @archimedes.addEventListener 'click',  => @drop(@archimedes)
+        #$(@archimedes).draggable(helper: "clone")
         
         ###deprecated
         @archimedes.setAttribute 'ondragstart' , ""
@@ -1118,7 +1120,8 @@ class Init
         @addListenerToFormula @archimedes, @imgArchimedes
         ###
         @newton1 = document.getElementById liNewton1
-        $(@newton1).draggable(helper: "clone")
+        @newton1.addEventListener 'click',  => @drop(@newton1)
+        #$(@newton1).draggable(helper: "clone")
         ###deprecated
         @newton1.setAttribute 'ondragstart' , ""
         @newton1.ondragstart = (e) => @drag(e)
@@ -1131,23 +1134,28 @@ class Init
         ###
        
         @frictionForce = document.getElementById liFrictionForce
-        $(@frictionForce).draggable(helper: "clone")
+        #$(@frictionForce).draggable(helper: "clone")
+        @frictionForce.addEventListener 'click',  => @drop(@frictionForce)
 
         @impulse = document.getElementById liImpulse
-        $(@impulse).draggable(helper: "clone")
+        #$(@impulse).draggable(helper: "clone")
+        @impulse.addEventListener 'click',  => @drop(@impulse)
 
         @momentum = document.getElementById liMomentum
-        $(@momentum).draggable(helper: "clone")
+        #$(@momentum).draggable(helper: "clone")
+        @momentum.addEventListener 'click',  => @drop(@momentum)
 
         @potentialEnergy = document.getElementById liPotentialEnergy
-        $(@potentialEnergy).draggable(helper: "clone")
+        #$(@potentialEnergy).draggable(helper: "clone")
+        @potentialEnergy.addEventListener 'click',  => @drop(@potentialEnergy)
 
         @ohmLaw = document.getElementById liOhmLaw
-        $(@ohmLaw).draggable(helper: "clone")
+        #$(@ohmLaw).draggable(helper: "clone")
+        @ohmLaw.addEventListener 'click',  => @drop(@ohmLaw)
 
         @resistivityConductivity = document.getElementById liResistivityConductivity
-        $(@resistivityConductivity).draggable(helper: "clone")
-
+        #$(@resistivityConductivity).draggable(helper: "clone")
+        @resistivityConductivity.addEventListener 'click',  => @drop(@resistivityConductivity)
         #document.body.setAttribute 'onresize', ""
         #use resize, because google chrome have bug with it.
         window.addEventListener "resize", =>
@@ -1164,9 +1172,9 @@ class Init
         @divPanel.setAttribute 'ondragenter', "return false"
         ###
 
-        $(@divPanel).droppable(drop: (event, ui) => @drop(event, ui))
+        #$(@divPanel).droppable(drop: (event, ui) => @drop(event, ui))
         @paragraph = document.createElement 'p'
-        text = document.createTextNode "Drag and drop any formula here"
+        text = document.createTextNode "Please click in any formula"
         @paragraph.appendChild text
         @divPanel.appendChild @paragraph
 
@@ -1178,46 +1186,48 @@ class Init
         ev.dataTransfer.setData('text', ev.target.id)      
     ###
 
-    drop: (event, ui) =>
+    drop: (event) =>
         #event.preventDefault()
-        data = ui.draggable.attr('id')
-        #data = ev.dataTransfer.getData("text")
-        switch
-            when data is @archimedes.id
-                @disabledDrop()
-                formula = new Archimedes @divPanel, @archimedes, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @newton1.id
-                @disabledDrop()
-                @formula = new Newton1 @divPanel, @newton1, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @frictionForce.id
-                @disabledDrop()
-                @formula = new FrictionForce @divPanel, @pendulum, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @impulse.id
-                @disabledDrop()
-                @formula = new Impulse @divPanel, @pendulum, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @momentum.id
-                @disabledDrop()
-                @formula = new Momentum @divPanel, @pendulum, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @potentialEnergy.id
-                @disabledDrop()
-                @formula = new PotentialEnergy @divPanel, @pendulum, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @ohmLaw.id
-                @disabledDrop()
-                @formula = new OhmLaw @divPanel, @pendulum, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
-            when data is @resistivityConductivity.id
-                @disabledDrop()
-                @formula = new ResistivityConductivity @divPanel, @pendulum, @divFormulaCol, @graph
-                @divPanel.appendChild @createButton()
+        #data = ui.draggable.attr('id')
+        #data = event.getData("text")
+        if not @haveFormula
+            switch
+                when event.id is @archimedes.id
+                    @disabledDrop()
+                    formula = new Archimedes @divPanel, @archimedes, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @newton1.id
+                    @disabledDrop()
+                    @formula = new Newton1 @divPanel, @newton1, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @frictionForce.id
+                    @disabledDrop()
+                    @formula = new FrictionForce @divPanel, @pendulum, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @impulse.id
+                    @disabledDrop()
+                    @formula = new Impulse @divPanel, @pendulum, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @momentum.id
+                    @disabledDrop()
+                    @formula = new Momentum @divPanel, @pendulum, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @potentialEnergy.id
+                    @disabledDrop()
+                    @formula = new PotentialEnergy @divPanel, @pendulum, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @ohmLaw.id
+                    @disabledDrop()
+                    @formula = new OhmLaw @divPanel, @pendulum, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+                when event.id is @resistivityConductivity.id
+                    @disabledDrop()
+                    @formula = new ResistivityConductivity @divPanel, @pendulum, @divFormulaCol, @graph
+                    @divPanel.appendChild @createButton()
+            @haveFormula = true
 
     disabledDrop: ->
-        $(@divPanel).droppable( "option", "disabled", true)
+        #$(@divPanel).droppable( "option", "disabled", true)
         @divPanel.removeChild @paragraph
 
     addListenerToFormula: (formula, srcImage) ->
@@ -1260,13 +1270,14 @@ class Init
         #Need put ondragenter a false for internet explorer and div, you can see documentation Microsoft for more information
         @divPanel.setAttribute 'ondragenter', "return false"
         ###
-        $(@divPanel).droppable( "option", "disabled", false)
+        #$(@divPanel).droppable( "option", "disabled", false)
         @paragraph = document.createElement 'p'
-        text = document.createTextNode "Please drop your formula here"
+        text = document.createTextNode "Please click in any formula"
         @paragraph.appendChild text
         @divPanel.appendChild @paragraph
         
         window.addEventListener "resize", =>
             @graph.resizeCanvas 'blue', 3, @mode
+        @haveFormula = false
        
 window.Init = Init

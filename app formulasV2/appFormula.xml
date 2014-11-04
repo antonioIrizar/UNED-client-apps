@@ -16,10 +16,9 @@
     <title>Formulas</title>
     <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="//weblab.ieec.uned.es/golab/ajirizar/css/formula.css" rel="stylesheet"/>  
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
     <script src="//weblab.ieec.uned.es/golab/ajirizar/javascripts/head.load.min.js"></script>
     <script>
-        head.load("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js","//d3js.org/d3.v2.js?2.9.5","//cdnjs.cloudflare.com/ajax/libs/mathjs/1.0.1/math.min.js","//weblab.ieec.uned.es/golab/ajirizar/javascripts/appFormula.js","//cdnjs.cloudflare.com/ajax/libs/mathjax/2.4.0/MathJax.js?config=AM_HTMLorMML-full.js","//weblab.ieec.uned.es/golab/ajirizar/javascripts/bootstrap.min.js");
+        head.load("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", "//d3js.org/d3.v2.js?2.9.5","//cdnjs.cloudflare.com/ajax/libs/mathjs/1.0.1/math.min.js", "//weblab.ieec.uned.es/golab/ajirizar/javascripts/appFormula.js", "//cdnjs.cloudflare.com/ajax/libs/mathjax/2.4.0/MathJax.js?config=AM_HTMLorMML-full.js", "//weblab.ieec.uned.es/golab/ajirizar/javascripts/bootstrap.min.js");
     </script>
   </head>
   <body>
