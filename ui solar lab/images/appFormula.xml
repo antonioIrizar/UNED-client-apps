@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="App Formula" 
+                author_email="ajirizar@ieec.uned.es" 
+                author="Antonio Jesus Irízar López" 
+                description="Formula App version 2"
+                width="900"
+                height="800"
+>
+    <Require feature="osapi" />
+    <Require feature="dynamic-height" />
+  </ModulePrefs>
+  <Content type="html">
+<![CDATA[
+ <head>
+    <title>Formulas</title>
+    <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="//weblab.ieec.uned.es/golab/ajirizar/css/formula.css" rel="stylesheet"/>  
+    <script src="//weblab.ieec.uned.es/golab/ajirizar/javascripts/head.load.min.js"></script>
+    <script>
+        head.load("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", "//d3js.org/d3.v2.js?2.9.5","//cdnjs.cloudflare.com/ajax/libs/mathjs/1.0.1/math.min.js", "//weblab.ieec.uned.es/golab/ajirizar/javascripts/appFormula.js", "//cdnjs.cloudflare.com/ajax/libs/mathjax/2.4.0/MathJax.js?config=AM_HTMLorMML-full.js", "//weblab.ieec.uned.es/golab/ajirizar/javascripts/bootstrap.min.js");
+    </script>
+  </head>
+  <body>
+    <div class="container-fluid margin">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="sidebar-nav">
+            <div class="navbar navbar-default" role="navigation">
+              <div class="navbar-header ">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <span class="visible-xs navbar-brand">Formulas</span>
+              </div>
+              <div class="navbar-collapse collapse sidebar-navbar-collapse ">
+                <ul class="nav navbar-nav my-center">
+                  <li class="title-nvar hidden-xs"> <span >Formulas</span></li>
+                  <li role="presentation"><a class="inFront" id="archimedes_formula" draggable="true" href="#">Archimedes</a></li>
+                  <li role="presentation"><a class="inFront" id="newton_formula" draggable="true" href="#">Newton</a></li>
+                  <li role="presentation"><a class="inFront" id="friction_force_formula" draggable="true" href="#">Friction force</a></li>
+                  <li role="presentation"><a class="inFront" id="impulse_formula" draggable="true" href="#">Impulse</a></li>
+                  <li role="presentation"><a class="inFront" id="momentum_formula" draggable="true" href="#">Momentum</a></li>
+                  <li role="presentation"><a class="inFront" id="potential_energy_formula" draggable="true" href="#">Potential energy</a></li>
+                  <li role="presentation"><a class="inFront" id="ohm_law_formula" draggable="true" href="#">Ohm's law</a></li>
+                  <li role="presentation"><a class="inFront" id="resistivity_conductivity_formula" draggable="true" href="#">Resistance</a></li>
+                </ul>
+              </div><!--/.nav-collapse -->
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5" id="div_formula_col">
+
+          <div class="row panel panel-primary">
+            <div class="panel-heading">
+               <h3 class="panel-title">Formula</h3>
+            </div>
+            <div  id="formulas" class="panel-body">
+            </div>
+          </div>
+
+        </div>
+        <div class="col-md-5" >
+          <div  class="panel panel-success">
+            <div class="panel-heading">
+              <h3 class="panel-title">Graphic</h3>
+            </div>
+            <div id="panelGraph" class="panel-body ">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+    <script>
+         head.ready(function () {
+                        new Init('formulas', 'archimedes_formula', 'newton_formula', "friction_force_formula", "impulse_formula","momentum_formula","potential_energy_formula", "ohm_law_formula","resistivity_conductivity_formula", 'div_formula_col');
+        });
+              
+    </script>
+      
+  </body>
+
+]]>
+</Content>
+</Module>

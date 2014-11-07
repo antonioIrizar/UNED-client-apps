@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Antonio Jesus Iŕizar López">
+    <mete name="description" content="">
+    <title>Solar Lab</title>
+    <style>
+      .vertical-align {
+          display: flex;
+          align-items: center;
+      }
+
+      #myCanvas{
+        position: absolute;
+        left: 0;
+        top: 0;
+        border: 1px solid red;
+      }
+
+      .wrapper{
+        position: relative;
+      }
+      .tooltipe {
+        
+ display: block;
+  position: absolute;
+  border: 1px solid #D9D9D9;
+  font: 400 12px/12px Arial;
+  border-radius: 3px;
+  background: #fff;
+  top: -28px;
+  padding: 5px;
+  left: -4px;
+  text-align: center;
+  width: 40px;
+}
+.tooltipe strong {
+  display: block;
+  padding: 2px;
+}
+.slidera {
+  padding-top: 30px;
+  height: 90px;
+}
+  </style>
+    <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="javascripts/esd.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="javascripts/jquery.nouislider.all.js"></script>
+    <link href="css/jquery.nouislider.min.css" rel="stylesheet">
+    <link href="css/jquery.nouislider.pips.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-4" id="div_formula_col">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Elements you can interact with</h3>
+            </div>
+            <div  id="formulas" class="panel-body">
+              <div class="row vertical-align">
+                <div class="col-xs-3 col-md-3">
+                  <img src="images/bulb.png" class="img-responsive" alt="Responsive image">
+                </div>
+                <div class="col-xs-9 col-md-9">
+                  <form class="form" role="form">
+                    <div class="form-group">
+                      <label class="control-label">Lumens</label>
+                      <div id="lumens" class="slidera">
+                        <div class="slider slider-lumens"></div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="row vertical-align">
+                <div class="col-xs-3 col-md-3" >
+                  <img src="images/solar_panel.png" class="img-responsive" alt="Responsive image">
+                </div>
+                <div class="col-xs-9 col-md-9">
+                  <strong><p class="text-center">Spin of the solar panel on:</p></strong>
+                  <form class="form" role="form">
+                    <div class="form-group">
+                      <label class="control-label">Horizontal axis</label>
+                      <div class="slidera">
+                        <div class="slider slider-horizontal-axis"></div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Vertical axis</label>
+                      <div class="slidera">
+                        <div class="slider slider-vertical-axis"></div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <p> More things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div  class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Experiment real time data</h3>
+            </div>
+            <div class="panel-body ">
+              <div class="wrapper">
+                <img id="esd" src="images/esd.png" class="img-responsive" alt="Responsive image">
+                <canvas id="myCanvas">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5" >
+          <div  class="panel panel-success">
+            <div class="panel-heading">
+              <h3 class="panel-title">Webcam</h3>
+            </div>
+            <div id="panelGraph" class="panel-body ">
+              <img src="images/webcam.JPG" class="img-responsive">
+            </div>
+          </div>
+        </div>
+          <div class="col-md-8 col-md-pull-0" >
+                  <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Data recieve from experiment</h3>
+            </div>
+            <div  id="formulas" class="panel-body">
+              <img src="images/graph.jpg" class="img-responsive">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // On document ready, initialize noUiSlider.
+    
+        $('.slider-lumens').noUiSlider({
+          start: 500,
+          step: 20,
+          connect: "lower",
+          range: {
+            'min': [0],
+            'max': [700]
+          }
+        });
+        $('.slider-horizontal-axis').noUiSlider({
+          start: 0,
+          step: 1,
+          connect: "lower",
+          range: {
+            'min': [-150],
+            'max': [150]
+          }
+        });
+        $('.slider-vertical-axis').noUiSlider({
+          start: 0,
+          step: 1,
+          connect: "lower",
+          range: {
+            'min': [0],
+            'max': [90]
+          }
+        });
+$(".slider-lumens").noUiSlider_pips({
+  mode: 'count',
+  values: 8,
+  density: 3,
+  stepped: true,
+  format: wNumb({
+    postfix: '\u2218'
+  })
+
+});
+$(".slider-vertical-axis").noUiSlider_pips({
+  mode: 'count',
+  values: 10,
+  density: 3,
+  stepped: true,
+  format: wNumb({
+    postfix: 'º'
+  })
+
+});
+
+$(".slider-horizontal-axis").noUiSlider_pips({
+  mode: 'count',
+  values: 11,
+  density: 2,
+  stepped: true,
+  format: wNumb({
+    postfix: 'º'
+  })
+
+});
+
+
+// Tags after '-inline-' are inserted as HTML.
+// noUiSlider writes to the first element it finds.
+$(".slider").Link('lower').to('-inline-<div class="tooltipe"></div>', function ( value ) {
+
+  // The tooltip HTML is 'this', so additional
+  // markup can be inserted here.
+  $(this).html(
+    '<span>' + Math.floor(value) + '</span>'
+  );
+});
+
+new Esd("myCanvas", "esd", "lumens");
+
+
+
+    </script>
+  </body>
+</html>
