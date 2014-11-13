@@ -10,6 +10,8 @@
       .vertical-align {
           display: flex;
           align-items: center;
+          /*need a 1px in right, because the slider not see correctly*/
+          padding-right: 1px;
       }
 
       #myCanvas{
@@ -44,11 +46,27 @@
   padding-top: 30px;
   height: 90px;
 }
+.modal-body {
+  font-weight:normal;
+}
+#red {
+    background: #C0392B;
+}
+
+#green {
+    background: #03FF25;
+}
+
+.popover{
+  width: 150px;
+}
   </style>
     <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
+     <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
     <script src="javascripts/esd.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="javascripts/jquery.nouislider.all.js"></script>
+    <script src="javascripts/bootstrap.min.js"></script>
     <link href="css/jquery.nouislider.min.css" rel="stylesheet">
     <link href="css/jquery.nouislider.pips.min.css" rel="stylesheet">
   </head>
@@ -60,7 +78,7 @@
             <div class="panel-heading">
               <h3 class="panel-title">Elements you can interact with</h3>
             </div>
-            <div  id="formulas" class="panel-body">
+            <div id="elements-interect" class="panel-body">
               <div class="row vertical-align">
                 <div class="col-xs-3 col-md-3">
                   <img src="images/bulb.png" class="img-responsive" alt="Responsive image">
@@ -98,11 +116,98 @@
                   </form>
                 </div>
               </div>
-              <p> More things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things, more things
+              <div class="row vertical-align">
+                <div class="col-xs-3 col-md-3">
+                  <img src="images/battery.png" class="img-responsive" alt="Responsive image">
+                </div>
+                <div class="col-xs-9 col-md-9">
+                  <form class="form" role="form">
+                    <div class="form-group">
+                      <label class="control-label">
+                        How much charge do you want? 
+                        <a class="info-pop-up" data-container="body" data-toggle="popover"  tabindex="0"  data-toggle="popover" data-trigger="focus"  data-content="And here's some amazing content. It's very engaging. Right?">
+                          <span class="glyphicon glyphicon-info-sign"></span>
+                        </a>
+                      </label>
+                      <div id="lumens" class="slidera">
+                        <div id="slider-battery" class="slider slider-battery"></div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="row vertical-align">
+                <div class="col-xs-3 col-md-3">
+                  <img src="images/time.png" class="img-responsive" alt="Responsive image">
+                </div>
+                <div class="col-xs-9 col-md-9">
+                  <form class="form" role="form">
+                    <div class="form-group">
+                      <label class="control-label">
+                        Time charging
+                        <a href="#" data-toggle="modal" data-target="#myModal">
+                          <span class="glyphicon glyphicon-info-sign"></span>
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                              </div>
+                              <div class="modal-body">
+                                <p>
+                                  You can:
+                                  <ol>
+                                    <li> Decide the charge you want in the battery. </li>
+                                    <p>
+                                      The battery will start charging till it reaches the selected value or you click on the stop button.
+                                    </p>
+                                    <li>
+                                      Decide for how long you want to change the battery.
+                                    </li>
+                                    <p>
+                                      The battery will charge for the selected lapse of time or till you click on the stop button.
+                                    </p>
+                                    <li>Decide both, the change and the lapse of time.</li>
+                                    <p>
+                                      The battery will charge till it reaches the first of both: the selected value or the selected lapse of time; or till you clicks on the stop button.
+                                    </p>
+                                    <li>Decide none.</li>
+                                    <p>
+                                      The battery will charge till it reaches its maximum or till you click on the stop button.
+                                    </p>
+                                  </ol>
+                                </p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                      <div id="lumens" class="slidera">
+                        <div class="slider slider-time"></div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="row">
+                <div class="center-block text-center">
+                  <button type="button" class="btn btn-success">Start experiment</button>
+                  <button type="button" class="btn btn-primary">Stop experiment</button>
+                  <button type="button" class="btn btn-danger">Reset</button>
+                </div>
+              </div> 
             </div>
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-8">
+          <div class="row">
+          <div class="col-md-5">
           <div  class="panel panel-info">
             <div class="panel-heading">
               <h3 class="panel-title">Experiment real time data</h3>
@@ -115,18 +220,25 @@
             </div>
           </div>
         </div>
-        <div class="col-md-5" >
+        <div class="col-md-7" >
           <div  class="panel panel-success">
             <div class="panel-heading">
               <h3 class="panel-title">Webcam</h3>
             </div>
             <div id="panelGraph" class="panel-body ">
-              <img src="images/webcam.JPG" class="img-responsive">
+              <!--<img src="images/webcam.JPG" class="img-responsive">
+-->
+             
+  <img src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" class="img-responsive">
+    
+
+<!--
+<iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
             </div>
           </div>
         </div>
-          <div class="col-md-8 col-md-pull-0" >
-                  <div class="panel panel-info">
+        </div>
+            <div class="panel panel-info">
             <div class="panel-heading">
               <h3 class="panel-title">Data recieve from experiment</h3>
             </div>
@@ -134,10 +246,111 @@
               <img src="images/graph.jpg" class="img-responsive">
             </div>
           </div>
-        </div>
+   
       </div>
+
+    </div>
     </div>
     <script>
+    
+
+ function wsopen(event)
+{
+  console.log("aqui");
+  alert("websocket " + event + " is open");
+  ws.send("hello dear");
+ 
+  //ws.send('{"method": "getSensorMetadata"}'); // get sensor info
+  //ws.send('{"method": "getActuatorMetadata"}'); // just pretend we don't know
+  
+  /*
+  var sensorRequest = {
+     method: 'getSensorData',
+    sensorId: 'sinus',
+    accessRole: 'controller'
+    }
+  
+
+  var jsonRequest = JSON.stringify(sensorRequest);
+ ws.send(jsonRequest);
+ */
+}
+
+function sendActuatorChange() {
+
+ var actuatorRequest = {
+     authToken: 'skfjs343kjKJ',
+     method: 'sendActuatorData',
+    accessRole: 'controller',
+    actuatorId: 'motor',
+    valueNames: "",
+    data: document.querySelector('#ActuatorVal').value
+    
+}
+  
+
+  var jsonRequest = JSON.stringify(actuatorRequest);
+  ws.send(jsonRequest);
+
+
+}
+
+
+function wsmessage(event)
+{
+ var data = event.data+"";
+var msg = JSON.parse(data);
+
+if (msg.method == "getSensorMetadata") {
+  document.querySelector('#sensorInfo').value = msg.sensors[0].description; // display description of the 1st sensor
+  document.querySelector('#SensorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
+  }
+else 
+if (msg.method == "getActuatorMetadata") {
+  document.querySelector('#ActuatorInfo').value = msg.actuators[0].description; // display description of the 1st sensor
+  document.querySelector('#ActuatorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
+  }
+else{
+
+  if (msg.responseData) {
+    document.querySelector('#sensorVal').value = msg.responseData.data[0];
+  }
+  else
+    document.querySelector('#sensorVal').value ="err: " +msg.responseMessages.code + " " +msg.responseMessages.message  ;
+    
+    }
+ 
+//  console.log("received: [", data, "]");
+}
+
+
+
+function wsclose(event)
+{
+//   item = document.getElementById("receive");
+//  item.firstChild.nodeValue +=  " websocket is closed";
+alert("websocket " + event + " is closed");
+}
+
+
+function myInit2(evt) { 
+ws = new WebSocket("ws://62.204.201.218:8081");
+
+wsopen.ws = ws;
+ws.onopen = wsopen;
+/*ws.onopen =  function (event) 
+     { alert("websocket " + event + " is open");
+  ws.send("hello dear");
+
+};*/
+console.log("caca");
+//ws.onmessage = wsmessage;
+ws.onclose = wsclose;
+} 
+
+ //myInit2();
+
+
       // On document ready, initialize noUiSlider.
     
         $('.slider-lumens').noUiSlider({
@@ -167,6 +380,25 @@
             'max': [90]
           }
         });
+        $('.slider-battery').noUiSlider({
+          start: [10,20],
+          step: 1,
+      connect: true,
+          range: {
+            'min': [0],
+            'max': [100]
+          }
+        });
+        $('.slider-time').noUiSlider({
+          start: 0,
+          step: 1,
+          connect: "lower",
+          range: {
+            'min': [0],
+            'max': [30]
+          }
+        });
+
 $(".slider-lumens").noUiSlider_pips({
   mode: 'count',
   values: 8,
@@ -199,10 +431,41 @@ $(".slider-horizontal-axis").noUiSlider_pips({
 
 });
 
+$(".slider-battery").noUiSlider_pips({
+  mode: 'count',
+  values: 11,
+  density: 2,
+  stepped: true,
+  format: wNumb({
+    postfix: '%'
+  })
+});
+
+$(".slider-time").noUiSlider_pips({
+  mode: 'count',
+  values: 7,
+  density: 3,
+  stepped: true,
+  format: wNumb({
+    postfix: '\''
+  })
+});
+
 
 // Tags after '-inline-' are inserted as HTML.
 // noUiSlider writes to the first element it finds.
+/*
 $(".slider").Link('lower').to('-inline-<div class="tooltipe"></div>', function ( value ) {
+  console.log("cadasdasd");
+
+  // The tooltip HTML is 'this', so additional
+  // markup can be inserted here.
+  $(this).html(
+    '<span>' + Math.floor(value) + '</span>'
+  );
+});
+*/
+$(".slider-battery").Link('upper').to('-inline-<div class="tooltipe"></div>', function ( value ) {
 
   // The tooltip HTML is 'this', so additional
   // markup can be inserted here.
@@ -211,6 +474,52 @@ $(".slider").Link('lower').to('-inline-<div class="tooltipe"></div>', function (
   );
 });
 
+
+$(".slider-battery").Link('lower').to('-inline-<div class="tooltipe"></div>', function ( value ) {
+
+  // The tooltip HTML is 'this', so additional
+  // markup can be inserted here.
+  $(this).html(
+    
+       '<span id="muahaha" class="info-pop-up" data-trigger="manual" data-toggle="popover" data-placement="top"  tabindex="0"   data-content="You can\'t change this value">' + Math.floor(value) + '</span>'
+  );
+});
+/*
+$(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
+  var a;
+  a = $('.slider-battery');
+  a = a[0].getElementsByClassName('noUi-handle-lower');
+  console.log(a[0]);
+});
+*/
+//console.log( document.getElementsByClassName("slider slider-battery noUi-target noUi-ltr noUi-horizontal noUi-background").id="red");
+
+var cosa1,cosa2;
+$('.slider-battery').on(
+
+  "change", function(event){
+    a = $('.slider-battery');
+    a = a[0].getElementsByClassName('noUi-base');
+    a[0].id="green";
+    $(".slider-battery").val([20]);
+    $(".slider-battery").Link('lower').to(function ( value ) {
+
+  // The tooltip HTML is 'this', so additional
+  // markup can be inserted here.
+  if (value != 20){
+    clearTimeout(cosa1);
+    cosa1=setTimeout(function(){
+    $('#muahaha').popover('show');
+    clearTimeout(cosa2);
+    cosa2=setTimeout(function(){
+      $('#muahaha').popover('hide');
+    },2000);
+  },250);
+  }
+});
+    //$('#muahaha').popover('show');
+   
+});
 new Esd("myCanvas", "esd", "lumens");
 
 

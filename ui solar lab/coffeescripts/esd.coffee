@@ -26,6 +26,9 @@ class Esd
         ctx = @canvas.getContext "2d"
         console.log @width
         console.log Math.floor(@width*0.044248)
+        console.log screen.availHeight
+        console.log screen.height
+        console.log window.innerHeight
         ctx.font = Math.floor(@width*0.044248)+"px monospace"
         ctx.fillText "Amps", (@width/8), (5*(@height/25)) 
         ctx.fillText "Volts", (@width/8), (7*(@height/25))
