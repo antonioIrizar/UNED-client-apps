@@ -49,12 +49,18 @@
 .modal-body {
   font-weight:normal;
 }
-#red {
-    background: #C0392B;
+#battery-warning {
+    background: #FF4D4D;
 }
 
 #green {
     background: #03FF25;
+}
+#white {
+    background: #F0F0F0;
+}
+#battery-ok{
+  background: #3FB8AF;
 }
 
 .popover{
@@ -74,7 +80,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-4" id="div_formula_col">
-          <div class="panel panel-primary">
+          <div id="panel-elements" class="panel panel-primary">
             <div class="panel-heading">
               <h3 class="panel-title">Elements you can interact with</h3>
             </div>
@@ -130,7 +136,7 @@
                         </a>
                       </label>
                       <div id="lumens" class="slidera">
-                        <div id="slider-battery" class="slider slider-battery"></div>
+                        <div class="slider slider-battery"></div>
                       </div>
                     </div>
                   </form>
@@ -196,6 +202,7 @@
                 </div>
               </div>
               <div class="row">
+                <div id="adapt-to-height"></div>
                 <div class="center-block text-center">
                   <button type="button" class="btn btn-success">Start experiment</button>
                   <button type="button" class="btn btn-primary">Stop experiment</button>
@@ -243,7 +250,7 @@
               <h3 class="panel-title">Data recieve from experiment</h3>
             </div>
             <div  id="formulas" class="panel-body">
-              <img src="images/graph.jpg" class="img-responsive">
+              <img src="images/graph.jpg" height="100">
             </div>
           </div>
    
@@ -323,8 +330,6 @@ else{
 //  console.log("received: [", data, "]");
 }
 
-
-
 function wsclose(event)
 {
 //   item = document.getElementById("receive");
@@ -383,7 +388,7 @@ ws.onclose = wsclose;
         $('.slider-battery').noUiSlider({
           start: [10,20],
           step: 1,
-      connect: true,
+          connect: true,
           range: {
             'min': [0],
             'max': [100]
@@ -494,13 +499,13 @@ $(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
 */
 //console.log( document.getElementsByClassName("slider slider-battery noUi-target noUi-ltr noUi-horizontal noUi-background").id="red");
 
-var cosa1,cosa2;
+var cosa1,cosa2,valueBatery;
 $('.slider-battery').on(
 
   "change", function(event){
     a = $('.slider-battery');
     a = a[0].getElementsByClassName('noUi-base');
-    a[0].id="green";
+    console.log($(".slider-battery").val());
     $(".slider-battery").val([20]);
     $(".slider-battery").Link('lower').to(function ( value ) {
 
@@ -520,6 +525,27 @@ $('.slider-battery').on(
     //$('#muahaha').popover('show');
    
 });
+
+
+
+function initSliderBattery (){
+  a = $('.slider-battery');
+  a = a[0].getElementsByClassName("noUi-connect");
+  console.log(a);
+  a[0].setAttribute("class","noUi-origin noUi-background");
+  setInterval(function () {
+    var value = $(".slider-battery").val();
+    b = $('.slider-battery');
+    a = b[0].getElementsByClassName('noUi-base');
+    valueBatery = Math.floor((Math.random() * value[1])+1);
+    b.val([valueBatery]);
+    if (valueBatery < 10)
+      a[0].setAttribute("id", "battery-warning");
+    else
+      a[0].setAttribute("id", "battery-ok");
+  }, 3000);
+}
+initSliderBattery();
 new Esd("myCanvas", "esd", "lumens");
 
 
