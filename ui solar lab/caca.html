@@ -124,7 +124,7 @@
               </div>
               <div class="row vertical-align">
                 <div class="col-xs-3 col-md-3">
-                  <img src="images/battery.png" class="img-responsive" alt="Responsive image">
+                  <img src="images/battery1.png" class="img-responsive" alt="Responsive image">
                 </div>
                 <div class="col-xs-9 col-md-9">
                   <form class="form" role="form">
@@ -486,7 +486,7 @@ $(".slider-battery").Link('lower').to('-inline-<div class="tooltipe"></div>', fu
   // markup can be inserted here.
   $(this).html(
     
-       '<span id="muahaha" class="info-pop-up" data-trigger="manual" data-toggle="popover" data-placement="top"  tabindex="0"   data-content="You can\'t change this value">' + Math.floor(value) + '</span>'
+       '<span id="muahaha" class="info-pop-up" data-trigger="manual" data-placement="top" tabindex="0" data-toggle="popover" data-content="You can\'t change this value">' + Math.floor(value) + '</span>'
   );
 });
 /*
@@ -501,26 +501,28 @@ $(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
 
 var cosa1,cosa2,valueBatery;
 $('.slider-battery').on(
-
   "change", function(event){
     a = $('.slider-battery');
     a = a[0].getElementsByClassName('noUi-base');
-    console.log($(".slider-battery").val());
-    $(".slider-battery").val([20]);
+    $(".slider-battery").val([valueBatery]);
     $(".slider-battery").Link('lower').to(function ( value ) {
-
   // The tooltip HTML is 'this', so additional
   // markup can be inserted here.
-  if (value != 20){
-    clearTimeout(cosa1);
-    cosa1=setTimeout(function(){
-    $('#muahaha').popover('show');
-    clearTimeout(cosa2);
-    cosa2=setTimeout(function(){
-      $('#muahaha').popover('hide');
-    },2000);
-  },250);
-  }
+      if (value != valueBatery ){
+        clearTimeout(cosa1);
+        cosa1 = setTimeout(function(){
+          $('#muahaha').popover('show');
+          if (cosa2 == null)
+            clearTimeout(cosa2);
+          cosa2 = setTimeout(function(){
+            $('#muahaha').popover('hide');
+            cosa2 = null;
+          },13000);
+        },250);
+      }
+      else
+        if (cosa2 != null)
+          $('#muahaha').popover('show');
 });
     //$('#muahaha').popover('show');
    
@@ -531,18 +533,21 @@ $('.slider-battery').on(
 function initSliderBattery (){
   a = $('.slider-battery');
   a = a[0].getElementsByClassName("noUi-connect");
-  console.log(a);
   a[0].setAttribute("class","noUi-origin noUi-background");
   setInterval(function () {
     var value = $(".slider-battery").val();
     b = $('.slider-battery');
     a = b[0].getElementsByClassName('noUi-base');
-    valueBatery = Math.floor((Math.random() * value[1])+1);
-    b.val([valueBatery]);
-    if (valueBatery < 10)
-      a[0].setAttribute("id", "battery-warning");
-    else
-      a[0].setAttribute("id", "battery-ok");
+    auxValueBatery = Math.floor((Math.random() * value[1])+1);
+    //valueBatery = 10;
+    if (auxValueBatery != valueBatery){
+      valueBatery = auxValueBatery;
+      b.val([valueBatery]);
+      if (valueBatery < 10)
+        a[0].setAttribute("id", "battery-warning");
+      else
+        a[0].setAttribute("id", "battery-ok");
+    }
   }, 3000);
 }
 initSliderBattery();
