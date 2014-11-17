@@ -27,23 +27,28 @@
           };
         })(this);
       }
+      window.addEventListener("resize", (function(_this) {
+        return function() {
+          return _this.drawImageInCanvas();
+        };
+      })(this));
     }
 
     Esd.prototype.drawImageInCanvas = function() {
       var a, ctx;
-      this.width = this.canvas.width = this.img.width;
-      this.height = this.canvas.height = this.img.height;
+      this.width = this.canvas.width = this.img.width - 1;
+      this.height = this.canvas.height = this.img.height - 2;
       ctx = this.canvas.getContext("2d");
       a = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
       a = a - 20;
       console.log(screen.availHeight);
       document.getElementById("adapt-to-height").setAttribute("style", "height:" + a + "px");
-      ctx.font = Math.floor(this.width * 0.044248) + "px monospace";
-      ctx.fillText("Amps", this.width / 8, 5 * (this.height / 25));
-      ctx.fillText("Volts", this.width / 8, 7 * (this.height / 25));
-      ctx.fillText("Joules", this.width / 8, 9 * (this.height / 25));
-      ctx.fillText("Charging", 2.5 * (this.width / 8), 3.5 * (this.height / 25));
-      return ctx.fillText("Discharging", 4.5 * (this.width / 8), 3.5 * (this.height / 25));
+      ctx.font = Math.floor(this.width * 0.05) + "px monospace";
+      ctx.fillText("Amps", this.width / 11, 8 * (this.height / 20));
+      ctx.fillText("Volts", this.width / 11, 11 * (this.height / 20));
+      ctx.fillText("Joules", this.width / 11, 14 * (this.height / 20));
+      ctx.fillText("Charging", 3.5 * (this.width / 11), 5 * (this.height / 20));
+      return ctx.fillText("Discharging", 6.5 * (this.width / 11), 5 * (this.height / 20));
     };
 
     return Esd;

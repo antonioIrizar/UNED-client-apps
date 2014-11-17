@@ -23,6 +23,7 @@
 
       .wrapper{
         position: relative;
+        padding-bottom: 10px;
       }
       .tooltipe {
         
@@ -68,8 +69,10 @@
 }
   </style>
     <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
-     <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
     <script src="javascripts/esd.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="javascripts/plot.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="javascripts/jquery.nouislider.all.js"></script>
     <script src="javascripts/bootstrap.min.js"></script>
@@ -214,49 +217,66 @@
         </div>
         <div class="col-md-8">
           <div class="row">
-          <div class="col-md-5">
-          <div  class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Experiment real time data</h3>
+            <div class="col-md-5">
+              <div  class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Experiment real time data</h3>
+                </div>
+                <div class="panel-body ">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="wrapper">
+                        <img id="esd" src="images/esd.png" class="img-responsive" alt="Responsive image">
+                        <canvas id="myCanvas">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-4 col-md-4">
+                      <img id="turn" src="images/turn.png" class="img-responsive">
+                    </div>
+                    <div class="col-xs-8 col-md-8">
+                      <label class="control-label">
+                        Move the weigth
+                        <a href="#" data-toggle="modal" data-target="#myModal">
+                          <span class="glyphicon glyphicon-info-sign"></span>
+                      </a>
+                    </label>
+                      <div class="slidera">
+                        <div class="slider slider-weigth"></div>
+                      </div>
+                      <div class="center-block text-center">
+                        <button type="button" class="btn btn-success">Start</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="panel-body ">
-              <div class="wrapper">
-                <img id="esd" src="images/esd.png" class="img-responsive" alt="Responsive image">
-                <canvas id="myCanvas">
+          <div class="col-md-7" >
+            <div  class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title">Webcam</h3>
+              </div>
+              <div id="panelGraph" class="panel-body ">
+              <!--<img src="images/webcam.JPG" class="img-responsive">-->        
+                <img src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" class="img-responsive">
+<!--
+<iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-7" >
-          <div  class="panel panel-success">
-            <div class="panel-heading">
-              <h3 class="panel-title">Webcam</h3>
-            </div>
-            <div id="panelGraph" class="panel-body ">
-              <!--<img src="images/webcam.JPG" class="img-responsive">
--->
-             
-  <img src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" class="img-responsive">
-    
-
-<!--
-<iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
-            </div>
-          </div>
-        </div>
-        </div>
-            <div class="panel panel-info">
+          <div class="panel panel-info">
             <div class="panel-heading">
               <h3 class="panel-title">Data recieve from experiment</h3>
             </div>
-            <div  id="formulas" class="panel-body">
-              <img src="images/graph.jpg" height="100">
+            <div class="panel-body ">
+              <div id="chart_div" style="width: 900px; height: 500px;"></div>
             </div>
           </div>
-   
+        </div>
       </div>
-
-    </div>
     </div>
     <script>
     
@@ -386,11 +406,11 @@ ws.onclose = wsclose;
           }
         });
         $('.slider-battery').noUiSlider({
-          start: [10,20],
+          start: 10,
           step: 1,
-          connect: true,
+          connect: "lower",
           range: {
-            'min': [0],
+            'min': [10],
             'max': [100]
           }
         });
@@ -401,6 +421,15 @@ ws.onclose = wsclose;
           range: {
             'min': [0],
             'max': [30]
+          }
+           });
+          $('.slider-weigth').noUiSlider({
+          start: 0,
+          step: 1,
+          connect: "lower",
+          range: {
+            'min': [0],
+            'max': [50]
           }
         });
 
@@ -438,7 +467,7 @@ $(".slider-horizontal-axis").noUiSlider_pips({
 
 $(".slider-battery").noUiSlider_pips({
   mode: 'count',
-  values: 11,
+  values: 10,
   density: 2,
   stepped: true,
   format: wNumb({
@@ -456,20 +485,27 @@ $(".slider-time").noUiSlider_pips({
   })
 });
 
+$(".slider-weigth").noUiSlider_pips({
+  mode: 'count',
+  values: 6,
+  density: 3,
+  stepped: true,
+  format: wNumb({
+    postfix: 'cm'
+  })
+});
 
 // Tags after '-inline-' are inserted as HTML.
 // noUiSlider writes to the first element it finds.
-/*
-$(".slider").Link('lower').to('-inline-<div class="tooltipe"></div>', function ( value ) {
-  console.log("cadasdasd");
 
+$(".slider").Link('lower').to('-inline-<div class="tooltipe"></div>', function ( value ) {
   // The tooltip HTML is 'this', so additional
   // markup can be inserted here.
   $(this).html(
     '<span>' + Math.floor(value) + '</span>'
   );
 });
-*/
+/*
 $(".slider-battery").Link('upper').to('-inline-<div class="tooltipe"></div>', function ( value ) {
 
   // The tooltip HTML is 'this', so additional
@@ -489,6 +525,7 @@ $(".slider-battery").Link('lower').to('-inline-<div class="tooltipe"></div>', fu
        '<span id="muahaha" class="info-pop-up" data-trigger="manual" data-placement="top" tabindex="0" data-toggle="popover" data-content="You can\'t change this value">' + Math.floor(value) + '</span>'
   );
 });
+*/
 /*
 $(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
   var a;
@@ -498,7 +535,7 @@ $(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
 });
 */
 //console.log( document.getElementsByClassName("slider slider-battery noUi-target noUi-ltr noUi-horizontal noUi-background").id="red");
-
+/*
 var cosa1,cosa2,valueBatery;
 $('.slider-battery').on(
   "change", function(event){
@@ -527,7 +564,7 @@ $('.slider-battery').on(
     //$('#muahaha').popover('show');
    
 });
-
+*
 
 
 function initSliderBattery (){
@@ -551,7 +588,9 @@ function initSliderBattery (){
   }, 3000);
 }
 initSliderBattery();
+*/
 new Esd("myCanvas", "esd", "lumens");
+new Plot();
 
 
 
