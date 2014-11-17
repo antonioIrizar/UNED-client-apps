@@ -23,8 +23,8 @@ class Esd
             @drawImageInCanvas()
         
     drawImageInCanvas: ->
-        @width = @canvas.width = @img.width-1
-        @height = @canvas.height = @img.height-2
+        @width = @canvas.width = @img.width
+        @height = @canvas.height = @img.height
   
         ctx = @canvas.getContext "2d"
         a = window.innerHeight - document.getElementById("panel-elements").offsetHeight 

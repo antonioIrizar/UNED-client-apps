@@ -36,8 +36,8 @@
 
     Esd.prototype.drawImageInCanvas = function() {
       var a, ctx;
-      this.width = this.canvas.width = this.img.width - 1;
-      this.height = this.canvas.height = this.img.height - 2;
+      this.width = this.canvas.width = this.img.width;
+      this.height = this.canvas.height = this.img.height;
       ctx = this.canvas.getContext("2d");
       a = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
       a = a - 20;
