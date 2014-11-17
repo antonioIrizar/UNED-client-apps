@@ -4,6 +4,7 @@ class Esd
     img: null
     width: null
     height: null
+    resizeActive:null
 
     constructor: (idCanvas, img, lumens) ->
        
@@ -17,10 +18,18 @@ class Esd
         if @img.complete  #check if image was already loaded by the browser
             @drawImageInCanvas()
         else 
-            @img.onload  = => @drawImageInCanvas()
+            @img.onload  = => 
+                @drawImageInCanvas()
+                new Plot();
 
-        window.addEventListener "resize", =>
-            @drawImageInCanvas()
+        window.addEventListener "resize", => 
+            if @resizeActive 
+                clearTimeout(@resizeActive)
+            @resizeActive = setTimeout( =>
+                console.log "dentro"
+                @drawImageInCanvas()
+            , 500)
+
         
     drawImageInCanvas: ->
         @width = @canvas.width = @img.width
@@ -29,7 +38,6 @@ class Esd
         ctx = @canvas.getContext "2d"
         a = window.innerHeight - document.getElementById("panel-elements").offsetHeight 
         a = a-20
-        console.log screen.availHeight
         document.getElementById("adapt-to-height").setAttribute "style","height:"+ a + "px"
         
         ctx.font = Math.floor(@width*0.05)+"px monospace"
@@ -38,5 +46,5 @@ class Esd
         ctx.fillText "Joules", (@width/11), (14*(@height/20))
         ctx.fillText "Charging", 3.5*(@width/11), (5*(@height/20))
         ctx.fillText "Discharging", 6.5*(@width/11), (5*(@height/20))
-
+        
 window.Esd = Esd

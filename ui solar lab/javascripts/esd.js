@@ -11,6 +11,8 @@
 
     Esd.prototype.height = null;
 
+    Esd.prototype.resizeActive = null;
+
     function Esd(idCanvas, img, lumens) {
       var a;
       this.canvas = document.getElementById(idCanvas);
@@ -23,13 +25,20 @@
       } else {
         this.img.onload = (function(_this) {
           return function() {
-            return _this.drawImageInCanvas();
+            _this.drawImageInCanvas();
+            return new Plot();
           };
         })(this);
       }
       window.addEventListener("resize", (function(_this) {
         return function() {
-          return _this.drawImageInCanvas();
+          if (_this.resizeActive) {
+            clearTimeout(_this.resizeActive);
+          }
+          return _this.resizeActive = setTimeout(function() {
+            console.log("dentro");
+            return _this.drawImageInCanvas();
+          }, 500);
         };
       })(this));
     }
@@ -41,7 +50,6 @@
       ctx = this.canvas.getContext("2d");
       a = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
       a = a - 20;
-      console.log(screen.availHeight);
       document.getElementById("adapt-to-height").setAttribute("style", "height:" + a + "px");
       ctx.font = Math.floor(this.width * 0.05) + "px monospace";
       ctx.fillText("Amps", this.width / 11, 8 * (this.height / 20));

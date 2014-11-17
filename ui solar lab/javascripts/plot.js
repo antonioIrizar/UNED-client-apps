@@ -3,21 +3,54 @@
   var Plot;
 
   Plot = (function() {
+    Plot.prototype.resizeActive = null;
+
+    Plot.prototype.data = null;
+
+    Plot.prototype.options = null;
+
+    Plot.prototype.chart = null;
+
     function Plot() {
-      google.load("visualization", "1", {
-        packages: ["corechart"]
-      });
-      google.setOnLoadCallback(this.drawChart);
+      this.resize();
+      google.setOnLoadCallback(this.drawChart());
+      window.addEventListener("resize", (function(_this) {
+        return function() {
+          if (_this.resizeActive) {
+            clearTimeout(_this.resizeActive);
+          }
+          return _this.resizeActive = setTimeout(function() {
+            console.log("plot");
+            _this.resize();
+            return _this.chart.draw(_this.data, _this.options);
+          }, 500);
+        };
+      })(this));
     }
 
+    Plot.prototype.resize = function() {
+      var a;
+      a = document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90;
+      a = a - 20;
+      return document.getElementById("chart_div").setAttribute("style", "height:" + a + "px");
+    };
+
+    Plot.prototype.doStats = function() {
+      return {
+        init: function() {
+          console.log('init');
+          return this.drawChart();
+        }
+      };
+    };
+
     Plot.prototype.drawChart = function() {
-      var chart, data, options;
-      data = google.visualization.arrayToDataTable([['Year', 'Sales', 'Expenses'], ['2004', 1000, 400], ['2005', 1170, 460], ['2006', 660, 1120], ['2007', 1030, 540]]);
-      options = {
+      this.data = google.visualization.arrayToDataTable([['Year', 'Sales', 'Expenses'], ['2004', 1000, 400], ['2005', 1170, 460], ['2006', 660, 1120], ['2007', 1030, 540]]);
+      this.options = {
         title: 'Company Performance'
       };
-      chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      return chart.draw(data, options);
+      this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      return this.chart.draw(this.data, this.options);
     };
 
     return Plot;

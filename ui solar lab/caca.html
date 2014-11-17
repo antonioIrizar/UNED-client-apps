@@ -69,14 +69,18 @@
   </style>
     <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
-    <script src="javascripts/esd.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script src="javascripts/plot.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="javascripts/jquery.nouislider.all.js"></script>
     <script src="javascripts/bootstrap.min.js"></script>
     <link href="css/jquery.nouislider.min.css" rel="stylesheet">
     <link href="css/jquery.nouislider.pips.min.css" rel="stylesheet">
+    <script type="text/javascript">
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+    </script>
+    <script src="javascripts/plot.js"></script>
+    <script src="javascripts/esd.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -217,7 +221,7 @@
         <div class="col-lg-8">
           <div class="row">
             <div class="col-lg-5">
-              <div  class="panel panel-info">
+              <div id="experiment-real-time-data" class="panel panel-info">
                 <div class="panel-heading">
                   <h3 class="panel-title">Experiment real time data</h3>
                 </div>
@@ -258,8 +262,8 @@
                 <h3 class="panel-title">Webcam</h3>
               </div>
               <div id="panelGraph" class="panel-body ">
-              <!--<img src="images/webcam.JPG" class="img-responsive">-->        
-                <img src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" class="img-responsive">
+              <img src="images/webcam.JPG" class="img-responsive">       
+                <!--<img src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" class="img-responsive">-->
 <!--
 <iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
               </div>
@@ -271,7 +275,7 @@
               <h3 class="panel-title">Data recieve from experiment</h3>
             </div>
             <div class="panel-body ">
-              <div id="chart_div" style="width: 900px; height: 500px;"></div>
+              <div id="chart_div"></div>
             </div>
           </div>
         </div>
@@ -589,9 +593,6 @@ function initSliderBattery (){
 initSliderBattery();
 */
 new Esd("myCanvas", "esd", "lumens");
-new Plot();
-
-
 
     </script>
   </body>
