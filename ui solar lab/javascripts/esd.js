@@ -39,7 +39,6 @@
             clearTimeout(_this.resizeActive);
           }
           return _this.resizeActive = setTimeout(function() {
-            console.log("dentro");
             return _this.drawImageInCanvas();
           }, 500);
         };

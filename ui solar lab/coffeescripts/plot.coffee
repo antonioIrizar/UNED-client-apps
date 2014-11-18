@@ -11,7 +11,6 @@ class Plot
             if @resizeActive 
                 clearTimeout(@resizeActive)
             @resizeActive = setTimeout( =>
-                console.log "plot"
                 @resize()
                 @chart.draw(@data, @options)
             ,500)
@@ -21,11 +20,6 @@ class Plot
         a =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
         a = a - 20
         document.getElementById("chart_div").setAttribute "style","height:"+ a + "px"
-
-    doStats: ->
-        init: ->
-            console.log('init')
-            @drawChart()
 
     drawChart: ->
         @data = google.visualization.arrayToDataTable([

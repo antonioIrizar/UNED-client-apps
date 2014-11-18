@@ -31,7 +31,6 @@ class Esd
             if @resizeActive 
                 clearTimeout(@resizeActive)
             @resizeActive = setTimeout( =>
-                console.log "dentro"
                 @drawImageInCanvas()
             , 500)
 

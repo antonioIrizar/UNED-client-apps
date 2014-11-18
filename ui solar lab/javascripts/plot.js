@@ -20,7 +20,6 @@
             clearTimeout(_this.resizeActive);
           }
           return _this.resizeActive = setTimeout(function() {
-            console.log("plot");
             _this.resize();
             return _this.chart.draw(_this.data, _this.options);
           }, 500);
@@ -33,15 +32,6 @@
       a = document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90;
       a = a - 20;
       return document.getElementById("chart_div").setAttribute("style", "height:" + a + "px");
-    };
-
-    Plot.prototype.doStats = function() {
-      return {
-        init: function() {
-          console.log('init');
-          return this.drawChart();
-        }
-      };
     };
 
     Plot.prototype.drawChart = function() {
