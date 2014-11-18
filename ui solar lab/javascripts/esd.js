@@ -32,6 +32,7 @@
        */
       this.drawImageInCanvas();
       new Plot();
+      sliders();
       window.addEventListener("resize", (function(_this) {
         return function() {
           if (_this.resizeActive) {

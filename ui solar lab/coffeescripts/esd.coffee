@@ -25,6 +25,7 @@ class Esd
         ###
         @drawImageInCanvas()
         new Plot()
+        sliders()
               
         window.addEventListener "resize", => 
             if @resizeActive 
