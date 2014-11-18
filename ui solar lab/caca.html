@@ -100,7 +100,7 @@
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Lumens</label>
-                      <div id="lumens" class="slidera">
+                      <div class="slidera">
                         <div class="slider slider-lumens"></div>
                       </div>
                     </div>
@@ -142,7 +142,7 @@
                           <span class="glyphicon glyphicon-info-sign"></span>
                         </a>
                       </label>
-                      <div id="lumens" class="slidera">
+                      <div class="slidera">
                         <div class="slider slider-battery"></div>
                       </div>
                     </div>
@@ -201,7 +201,7 @@
                           </div>
                         </div>
                       </label>
-                      <div id="lumens" class="slidera">
+                      <div class="slidera">
                         <div class="slider slider-time"></div>
                       </div>
                     </div>
@@ -378,11 +378,8 @@ ws.onclose = wsclose;
 } 
 
  //myInit2();
-
-
-      // On document ready, initialize noUiSlider.
-    
-
+  
+/* deprecate */
 /*
 $(".slider-battery").Link('upper').to('-inline-<div class="tooltipe"></div>', function ( value ) {
 
@@ -403,17 +400,17 @@ $(".slider-battery").Link('lower').to('-inline-<div class="tooltipe"></div>', fu
        '<span id="muahaha" class="info-pop-up" data-trigger="manual" data-placement="top" tabindex="0" data-toggle="popover" data-content="You can\'t change this value">' + Math.floor(value) + '</span>'
   );
 });
-*/
-/*
+
+
 $(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
   var a;
   a = $('.slider-battery');
   a = a[0].getElementsByClassName('noUi-handle-lower');
   console.log(a[0]);
 });
-*/
+
 //console.log( document.getElementsByClassName("slider slider-battery noUi-target noUi-ltr noUi-horizontal noUi-background").id="red");
-/*
+
 var cosa1,cosa2,valueBatery;
 $('.slider-battery').on(
   "change", function(event){
@@ -442,8 +439,6 @@ $('.slider-battery').on(
     //$('#muahaha').popover('show');
    
 });
-*
-
 
 function initSliderBattery (){
   a = $('.slider-battery');
@@ -467,11 +462,11 @@ function initSliderBattery (){
 }
 initSliderBattery();
 */
-function arranque(){
-  new Esd("myCanvas", "esd", "lumens");
-}
-  
 
+    function arranque(){
+      new Esd("myCanvas", "esd", "lumens");
+    }
+  
     </script>
   </body>
 </html>

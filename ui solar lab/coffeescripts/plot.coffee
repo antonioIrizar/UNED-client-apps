@@ -14,7 +14,6 @@ class Plot
                 @resize()
                 @chart.draw(@data, @options)
             ,500)
-
     
     resize: ->
         a =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
