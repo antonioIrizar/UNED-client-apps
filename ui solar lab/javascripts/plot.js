@@ -14,24 +14,32 @@
     function Plot() {
       this.resize();
       google.setOnLoadCallback(this.drawChart());
-      window.addEventListener("resize", (function(_this) {
-        return function() {
-          if (_this.resizeActive) {
-            clearTimeout(_this.resizeActive);
-          }
-          return _this.resizeActive = setTimeout(function() {
-            _this.resize();
-            return _this.chart.draw(_this.data, _this.options);
-          }, 500);
-        };
-      })(this));
+
+      /*
+      window.addEventListener "resize", =>
+          if @resizeActive 
+              clearTimeout(@resizeActive)
+          @resizeActive = setTimeout( =>
+              @resize()
+              @chart.draw(@data, @options)
+          ,500)
+       */
     }
 
     Plot.prototype.resize = function() {
-      var a;
-      a = document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90;
-      a = a - 20;
-      return document.getElementById("chart_div").setAttribute("style", "height:" + a + "px");
+      var height;
+      if (window.innerWidth >= 1200) {
+        height = document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90;
+        height = height - 20;
+      } else {
+        height = document.getElementById("chart_div").offsetWidth * 0.6;
+      }
+      return document.getElementById("chart_div").setAttribute("style", "height:" + height + "px");
+    };
+
+    Plot.prototype.resizeEvent = function() {
+      this.resize();
+      return this.chart.draw(this.data, this.options);
     };
 
     Plot.prototype.drawChart = function() {

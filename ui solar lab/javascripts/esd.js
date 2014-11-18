@@ -13,6 +13,8 @@
 
     Esd.prototype.resizeActive = null;
 
+    Esd.prototype.plot = null;
+
     function Esd(idCanvas, img, lumens) {
       var a;
       this.canvas = document.getElementById(idCanvas);
@@ -31,7 +33,7 @@
               new Plot()
        */
       this.drawImageInCanvas();
-      new Plot();
+      this.plot = new Plot();
       sliders();
       window.addEventListener("resize", (function(_this) {
         return function() {
@@ -39,8 +41,9 @@
             clearTimeout(_this.resizeActive);
           }
           return _this.resizeActive = setTimeout(function() {
-            return _this.drawImageInCanvas();
-          }, 500);
+            _this.drawImageInCanvas();
+            return _this.plot.resizeEvent();
+          }, 250);
         };
       })(this));
     }

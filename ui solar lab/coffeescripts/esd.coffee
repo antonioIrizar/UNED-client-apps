@@ -5,6 +5,7 @@ class Esd
     width: null
     height: null
     resizeActive:null
+    plot: null
 
     constructor: (idCanvas, img, lumens) ->
        
@@ -24,7 +25,7 @@ class Esd
                 new Plot()
         ###
         @drawImageInCanvas()
-        new Plot()
+        @plot = new Plot()
         sliders()
               
         window.addEventListener "resize", => 
@@ -32,9 +33,9 @@ class Esd
                 clearTimeout(@resizeActive)
             @resizeActive = setTimeout( =>
                 @drawImageInCanvas()
-            , 500)
+                @plot.resizeEvent()
+            , 250)
 
-        
     drawImageInCanvas: ->
         @width = @canvas.width = @img.width
         @height = @canvas.height = @img.height

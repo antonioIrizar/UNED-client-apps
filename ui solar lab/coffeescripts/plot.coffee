@@ -7,6 +7,7 @@ class Plot
     constructor: ->
         @resize()
         google.setOnLoadCallback @drawChart()
+        ###
         window.addEventListener "resize", =>
             if @resizeActive 
                 clearTimeout(@resizeActive)
@@ -14,11 +15,18 @@ class Plot
                 @resize()
                 @chart.draw(@data, @options)
             ,500)
-    
+        ###
     resize: ->
-        a =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
-        a = a - 20
-        document.getElementById("chart_div").setAttribute "style","height:"+ a + "px"
+        if window.innerWidth >= 1200
+            height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
+            height = height - 20
+        else
+            height = document.getElementById("chart_div").offsetWidth *0.6
+        document.getElementById("chart_div").setAttribute "style","height:"+ height + "px"
+
+    resizeEvent: ->
+        @resize()
+        @chart.draw(@data, @options)
 
     drawChart: ->
         @data = google.visualization.arrayToDataTable([
