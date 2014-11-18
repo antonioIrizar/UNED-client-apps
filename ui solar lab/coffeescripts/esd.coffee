@@ -14,14 +14,18 @@ class Esd
         @canvas.height = @img.height
         a = document.getElementById lumens
         #a.noUiSlider({start:[0], step: 20, range:{'min': [0], 'max': [700]}}) 
-        
+        ###
         if @img.complete  #check if image was already loaded by the browser
             @drawImageInCanvas()
         else 
             @img.onload  = => 
+                console.log "caa"
                 @drawImageInCanvas()
-                new Plot();
-
+                new Plot()
+        ###
+        @drawImageInCanvas()
+        new Plot()
+              
         window.addEventListener "resize", => 
             if @resizeActive 
                 clearTimeout(@resizeActive)

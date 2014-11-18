@@ -82,7 +82,7 @@
     <script src="javascripts/plot.js"></script>
     <script src="javascripts/esd.js"></script>
   </head>
-  <body>
+  <body onload="arranque()">
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-4" id="div_formula_col">
@@ -592,7 +592,10 @@ function initSliderBattery (){
 }
 initSliderBattery();
 */
-new Esd("myCanvas", "esd", "lumens");
+function arranque(){
+  new Esd("myCanvas", "esd", "lumens");
+}
+  
 
     </script>
   </body>

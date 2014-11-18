@@ -20,16 +20,18 @@
       this.canvas.width = this.img.width;
       this.canvas.height = this.img.height;
       a = document.getElementById(lumens);
-      if (this.img.complete) {
-        this.drawImageInCanvas();
-      } else {
-        this.img.onload = (function(_this) {
-          return function() {
-            _this.drawImageInCanvas();
-            return new Plot();
-          };
-        })(this);
-      }
+
+      /*
+      if @img.complete  #check if image was already loaded by the browser
+          @drawImageInCanvas()
+      else 
+          @img.onload  = => 
+              console.log "caa"
+              @drawImageInCanvas()
+              new Plot()
+       */
+      this.drawImageInCanvas();
+      new Plot();
       window.addEventListener("resize", (function(_this) {
         return function() {
           if (_this.resizeActive) {
