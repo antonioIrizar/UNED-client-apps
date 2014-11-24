@@ -84,12 +84,29 @@
     }
 
   </style>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="javascripts/jquery.nouislider.all.js"></script>
   <script src="javascripts/bootstrap.min.js"></script>
+ 
+<script type="text/javascript">
+   var myApp;
+myApp = myApp || (function () {
+    var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h1>Loading...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
+    return {
+        showPleaseWait: function() {
+            pleaseWaitDiv.modal();
+        },
+        hidePleaseWait: function () {
+            pleaseWaitDiv.modal('hide');
+        },
+
+    };
+    })();
+    myApp.showPleaseWait();
+</script>
+ <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="javascripts/jquery.nouislider.all.js"></script>
   <link href="css/jquery.nouislider.min.css" rel="stylesheet">
   <link href="css/jquery.nouislider.pips.min.css" rel="stylesheet">
   <script type="text/javascript">
@@ -185,7 +202,7 @@
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                                <h4 class="modal-title" id="myModalLabel">TODO</h4>
                               </div>
                               <div class="modal-body">
                                 <p>
@@ -330,7 +347,8 @@
       </div>
     </div>
     <script>
-    
+
+ 
  function wsopen(event)
 {
   console.log("aqui");
@@ -593,9 +611,17 @@ function stopExperiment(){
   sendActuatorChange('StopGen', "");
 };
 
+
+
+
     function arranque(){
+      
       new Esd("myCanvas", "esd", "lumens");
-      myInit2();
+      //myInit2();
+      setTimeout(function(){
+        myApp.hidePleaseWait()
+      },1000);
+
     };
   
     </script>
