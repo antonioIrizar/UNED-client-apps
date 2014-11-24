@@ -38,7 +38,7 @@ class Plot
         ])
 
         @options = {
-          title: 'Company Performance'
+            chartArea:{height: "80%"}
         }
 
         @chart = new google.visualization.LineChart(document.getElementById('chart_div'));

@@ -45,7 +45,9 @@
     Plot.prototype.drawChart = function() {
       this.data = google.visualization.arrayToDataTable([['Year', 'Sales', 'Expenses'], ['2004', 1000, 400], ['2005', 1170, 460], ['2006', 660, 1120], ['2007', 1030, 540]]);
       this.options = {
-        title: 'Company Performance'
+        chartArea: {
+          height: "80%"
+        }
       };
       this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       return this.chart.draw(this.data, this.options);

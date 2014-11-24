@@ -78,6 +78,11 @@
       width: 150px;
     }
 
+    #save{
+      font-size: 150%;
+      float:right;
+    }
+
   </style>
   <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
@@ -143,7 +148,8 @@
               </div>
               <div class="row vertical-align">
                 <div class="col-xs-3 col-lg-3">
-                  <img src="images/battery1.png" class="img-responsive" alt="Responsive image">
+                  <p class="text-center">  10%</p>
+                  <img id="img-battery" src="images/battery1.png" class="img-responsive" alt="Responsive image">
                 </div>
                 <div class="col-xs-9 col-lg-9">
                   <form class="form" role="form">
@@ -223,8 +229,8 @@
               <div class="row">
                 <div id="adapt-to-height"></div>
                 <div class="center-block text-center">
-                  <button type="button" class="btn btn-success">Start experiment</button>
-                  <button type="button" class="btn btn-primary">Stop experiment</button>
+                  <button type="button" class="btn btn-success" onclick="startExperiment()">Start experiment</button>
+                  <button type="button" class="btn btn-primary" onclick="stopExperiment()">Stop experiment</button>
                   <button type="button" class="btn btn-danger">Reset</button>
                 </div>
               </div> 
@@ -286,9 +292,37 @@
         </div>
           <div class="panel panel-info">
             <div class="panel-heading">
-              <h3 class="panel-title">Data recieve from experiment</h3>
+              <h3 class="panel-title">
+                Data recieve from experiment 
+                <a href="#" data-toggle="modal" data-target="#myModal2">
+                  <span id="save" class="glyphicon glyphicon-floppy-disk"></span>
+                </a>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Save data</h4>
+                      </div>
+                      <div class="modal-body">
+                        <form role="form">
+                          <div class="form-group">
+                            <label for="inputNameOfFile">Name of file</label>
+                            <input type="text" class="form-control" id="name_of_file" placeholder="Name of file">
+                          </div>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" onclick="saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </h3>
             </div>
-            <div class="panel-body ">
+            <div class="panel-body">
               <div id="chart_div"></div>
             </div>
           </div>
@@ -325,8 +359,8 @@
     accessRole: 'controller'
     }
    */
-
-
+   //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
+/*
   var jsonRequest = JSON.stringify({  
       "method":"sendActuatorData",
       "accessRole":"controller",
@@ -337,20 +371,21 @@
          ,
          "data": "30"
    });
-  console.log(jsonRequest);
- ws.send(jsonRequest);
+*/
+  //console.log(jsonRequest);
+ //ws.send(jsonRequest);
 
 }
 
-function sendActuatorChange() {
+function sendActuatorChange(actuatorId, data) {
 
  var actuatorRequest = {
     authToken: 'skfjs343kjKJ',
      method: 'sendActuatorData',
     accessRole: 'controller',
-    actuatorId: 'motor',
+    actuatorId: actuatorId,
     valueNames: "",
-    data: document.querySelector('#ActuatorVal').value
+    data: data
     
 }
   
@@ -365,7 +400,11 @@ function sendActuatorChange() {
 function wsmessage(event)
 {
  var data = event.data+"";
+console.log(data);
+console.log("despues del parser");
 var msg = JSON.parse(data);
+console.log(msg);
+/*
 
 if (msg.method == "getSensorMetadata") {
   document.querySelector('#sensorInfo').value = msg.sensors[0].description; // display description of the 1st sensor
@@ -387,6 +426,7 @@ else{
     }
  
 //  console.log("received: [", data, "]");
+*/
 }
 
 function wsclose(event)
@@ -408,7 +448,7 @@ ws.onopen = wsopen;
 
 };*/
 console.log("caca");
-//ws.onmessage = wsmessage;
+ws.onmessage = wsmessage;
 ws.onclose = wsclose;
 } 
 
@@ -498,10 +538,65 @@ function initSliderBattery (){
 initSliderBattery();
 */
 
+function saveTextAsFile()
+{
+var textToWrite = document.getElementById("inputTextToSave").value;
+var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+var fileNameToSaveAs = document.getElementById("name_of_file") + ".txt";
+var browserName=navigator.appName;
+if (browserName == "Microsoft Internet Explorer")
+{
+window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs );
+}
+else
+{
+var downloadLink = document.createElement("a");
+downloadLink.download = fileNameToSaveAs;
+downloadLink.innerHTML = "Download File";
+if (window.webkitURL != null)
+{
+// Chrome allows the link to be clicked
+// without actually adding it to the DOM.
+downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+}
+else
+{
+// Firefox requires the link to be added to the DOM
+// before it can be clicked.
+downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+downloadLink.onclick = destroyClickedElement;
+downloadLink.style.display = "none";
+document.body.appendChild(downloadLink);
+}
+
+downloadLink.click();
+}
+}
+function destroyClickedElement(event)
+{
+  document.body.removeChild(event.target);
+}
+function battery(){
+
+};
+
+function startExperiment(){
+  sendActuatorChange('Sun', $(".slider-lumens").val());
+  sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+  sendActuatorChange('Paneltilt', $(".slider-vertical-axis").val());
+  //sendActuatorChange('ESDJ', $(".slider-battery").val());
+  //sendActuatorChange('Elapsed', $(".slider-time").val());
+  sendActuatorChange('StartGen', "");
+};
+
+function stopExperiment(){
+  sendActuatorChange('StopGen', "");
+};
+
     function arranque(){
       new Esd("myCanvas", "esd", "lumens");
-      //myInit2();
-    }
+      myInit2();
+    };
   
     </script>
   </body>
