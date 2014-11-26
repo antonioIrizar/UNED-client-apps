@@ -599,16 +599,19 @@ function battery(){
 };
 
 function startExperiment(){
-  sendActuatorChange('Sun', $(".slider-lumens").val());
-  sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
-  sendActuatorChange('Paneltilt', $(".slider-vertical-axis").val());
+  //sendActuatorChange('Sun', $(".slider-lumens").val());
+  //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+  //try this line with minus
+  //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
   //sendActuatorChange('ESDJ', $(".slider-battery").val());
   //sendActuatorChange('Elapsed', $(".slider-time").val());
   sendActuatorChange('StartGen', "");
 };
 
 function stopExperiment(){
-  sendActuatorChange('StopGen', "");
+  //sendActuatorChange('StopGen', "");
+  var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
+  ws.send(jsonRequest);
 };
 
 
@@ -621,6 +624,7 @@ function stopExperiment(){
       setTimeout(function(){
         myApp.hidePleaseWait()
       },1000);
+      console.log($(".slider-lumens").val());
 
     };
   
