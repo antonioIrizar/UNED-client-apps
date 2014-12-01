@@ -1,7 +1,7 @@
 window.sliders = sliders = ->
 
   $('.slider-lumens').noUiSlider({
-    start: 500,
+    start: 0,
     step: 20,
     connect: "lower",
     range: {
