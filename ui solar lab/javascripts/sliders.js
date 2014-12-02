@@ -49,7 +49,7 @@
       }
     });
     $('.slider-weigth').noUiSlider({
-      start: 0,
+      start: 10,
       step: 1,
       connect: "lower",
       range: {
@@ -111,6 +111,7 @@
         postfix: 'cm'
       })
     });
+    $(".slider-weigth").attr('disabled', 'disabled');
     return $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
       return $(this).html("<span>" + Math.floor(value) + "</span>");
     });
