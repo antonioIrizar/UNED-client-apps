@@ -12,7 +12,6 @@ class Init
             if @resizeActive 
                 clearTimeout(@resizeActive)
             @resizeActive = setTimeout( =>
-                @esd.drawImageInCanvas()
                 @plot.resizeEvent()
             , 250)
 

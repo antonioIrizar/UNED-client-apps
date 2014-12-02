@@ -14,10 +14,10 @@ class Plot
 
     constructor: (idCanvas, img) ->
         @data = [[]]
+        @esd = new Esd idCanvas, img
         @resize()
         google.setOnLoadCallback @drawChart()
         @init()
-        @esd = new Esd idCanvas, img
             
         ###
         window.addEventListener "resize", =>
@@ -37,6 +37,7 @@ class Plot
         document.getElementById("chart_div").setAttribute "style","height:"+ height + "px"
 
     resizeEvent: ->
+        @esd.drawImageInCanvas()
         @resize()
         if @init 
             if @time > 18

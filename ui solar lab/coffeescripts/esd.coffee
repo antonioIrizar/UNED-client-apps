@@ -5,6 +5,9 @@ class Esd
     width: null
     height: null
     plot: null
+    inputCurrent: "0.000"
+    inputVoltage: "0.000" 
+    workToDo: "0.000"
 
     constructor: (idCanvas, img) ->
        
@@ -39,13 +42,16 @@ class Esd
         ctx.fillText "Joules", (@width/11), (14*(@height/20))
         ctx.fillText "Charging", 3.5*(@width/11), (5*(@height/20))
         ctx.fillText "Discharging", 6.5*(@width/11), (5*(@height/20))
+        ctx.fillText @inputCurrent, 4*(@width/11), (8*(@height/20)) 
+        ctx.fillText @inputVoltage, 4*(@width/11), (11*(@height/20))
+        ctx.fillText @workToDo, 4*(@width/11), (14*(@height/20))
 
-    drawText: (inputCurrent, inputVoltage, workToDo) ->
+    drawText: (@inputCurrent, @inputVoltage, @workToDo) ->
         ctx = @canvas.getContext "2d"
         ctx.clearRect 3.4*(@width/11), (7*(@height/20)), @width, @height
-        ctx.fillText inputCurrent, 3.5*(@width/11), (8*(@height/20)) 
-        ctx.fillText inputVoltage, 3.5*(@width/11), (11*(@height/20))
-        ctx.fillText workToDo, 3.5*(@width/11), (14*(@height/20))
+        ctx.fillText @inputCurrent, 4*(@width/11), (8*(@height/20)) 
+        ctx.fillText @inputVoltage, 4*(@width/11), (11*(@height/20))
+        ctx.fillText @workToDo, 4*(@width/11), (14*(@height/20))
 
         
 window.Esd = Esd

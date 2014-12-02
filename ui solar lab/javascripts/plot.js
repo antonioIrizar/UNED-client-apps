@@ -29,10 +29,10 @@
     function Plot(idCanvas, img) {
       this.init = __bind(this.init, this);
       this.data = [[]];
+      this.esd = new Esd(idCanvas, img);
       this.resize();
       google.setOnLoadCallback(this.drawChart());
       this.init();
-      this.esd = new Esd(idCanvas, img);
 
       /*
       window.addEventListener "resize", =>
@@ -58,6 +58,7 @@
 
     Plot.prototype.resizeEvent = function() {
       var a, b, d;
+      this.esd.drawImageInCanvas();
       this.resize();
       if (this.init) {
         if (this.time > 18) {

@@ -17,7 +17,6 @@
             clearTimeout(_this.resizeActive);
           }
           return _this.resizeActive = setTimeout(function() {
-            _this.esd.drawImageInCanvas();
             return _this.plot.resizeEvent();
           }, 250);
         };
