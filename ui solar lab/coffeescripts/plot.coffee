@@ -10,11 +10,14 @@ class Plot
     init: false
     data:[[]]
     realTime: null
-    constructor: ->
+    esd: null
+
+    constructor: (idCanvas, img) ->
         @data = [[]]
         @resize()
         google.setOnLoadCallback @drawChart()
         @init()
+        @esd = new Esd idCanvas, img
             
         ###
         window.addEventListener "resize", =>
@@ -97,10 +100,12 @@ class Plot
                 }
             }
             @chart.draw(@dataPlot, @options1)
+            @esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)
             if @time > 18
                 @dataPlot.removeRow 0
             @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)), parseFloat((10*Math.random()).toFixed(2))]
             @time++
+
         
     init: =>
         @alarma = setTimeout(=>

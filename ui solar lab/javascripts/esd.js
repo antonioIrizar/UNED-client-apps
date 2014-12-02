@@ -11,17 +11,13 @@
 
     Esd.prototype.height = null;
 
-    Esd.prototype.resizeActive = null;
-
     Esd.prototype.plot = null;
 
-    function Esd(idCanvas, img, lumens) {
-      var a;
+    function Esd(idCanvas, img) {
       this.canvas = document.getElementById(idCanvas);
       this.img = document.getElementById(img);
       this.canvas.width = this.img.width;
       this.canvas.height = this.img.height;
-      a = document.getElementById(lumens);
 
       /*
       if @img.complete  #check if image was already loaded by the browser
@@ -33,19 +29,6 @@
               new Plot()
        */
       this.drawImageInCanvas();
-      this.plot = new Plot();
-      sliders();
-      window.addEventListener("resize", (function(_this) {
-        return function() {
-          if (_this.resizeActive) {
-            clearTimeout(_this.resizeActive);
-          }
-          return _this.resizeActive = setTimeout(function() {
-            _this.drawImageInCanvas();
-            return _this.plot.resizeEvent();
-          }, 250);
-        };
-      })(this));
     }
 
     Esd.prototype.drawImageInCanvas = function() {
@@ -62,6 +45,15 @@
       ctx.fillText("Joules", this.width / 11, 14 * (this.height / 20));
       ctx.fillText("Charging", 3.5 * (this.width / 11), 5 * (this.height / 20));
       return ctx.fillText("Discharging", 6.5 * (this.width / 11), 5 * (this.height / 20));
+    };
+
+    Esd.prototype.drawText = function(inputCurrent, inputVoltage, workToDo) {
+      var ctx;
+      ctx = this.canvas.getContext("2d");
+      ctx.clearRect(3.4 * (this.width / 11), 7 * (this.height / 20), this.width, this.height);
+      ctx.fillText(inputCurrent, 3.5 * (this.width / 11), 8 * (this.height / 20));
+      ctx.fillText(inputVoltage, 3.5 * (this.width / 11), 11 * (this.height / 20));
+      return ctx.fillText(workToDo, 3.5 * (this.width / 11), 14 * (this.height / 20));
     };
 
     return Esd;

@@ -24,12 +24,15 @@
 
     Plot.prototype.realTime = null;
 
-    function Plot() {
+    Plot.prototype.esd = null;
+
+    function Plot(idCanvas, img) {
       this.init = __bind(this.init, this);
       this.data = [[]];
       this.resize();
       google.setOnLoadCallback(this.drawChart());
       this.init();
+      this.esd = new Esd(idCanvas, img);
 
       /*
       window.addEventListener "resize", =>
@@ -128,6 +131,7 @@
             }
           };
           _this.chart.draw(_this.dataPlot, _this.options1);
+          _this.esd.drawText(Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3));
           if (_this.time > 18) {
             _this.dataPlot.removeRow(0);
           }

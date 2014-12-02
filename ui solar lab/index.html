@@ -12,13 +12,12 @@
     <meta http-equiv="pragma" content="no-cache" />
     <title>Solar Lab</title>
     <style>
-   
-     }
+
       .vertical-align {
-          display: flex;
-          align-items: center;
-          /*need a 1px in right, because the slider not see correctly*/
-          padding-right: 1px;
+        display: flex;
+        align-items: center;
+        /*need a 1px in right, because the slider not see correctly*/
+        padding-right: 1px;
       }
 
       #myCanvas{
@@ -85,6 +84,9 @@
       float:right;
     }
 
+    #button-accept{
+      float:right;
+    }
   </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
@@ -122,6 +124,7 @@ myApp = myApp || (function () {
   <script src="javascripts/plot.js"></script>
   <script src="javascripts/sliders.js"></script>
   <script src="javascripts/esd.js"></script>
+  <script src="javascripts/init.js"></script>
   </head>
   <body onload="arranque()">
     <div class="container-fluid">
@@ -132,19 +135,15 @@ myApp = myApp || (function () {
               <h3 class="panel-title">Elements you can interact with</h3>
             </div>
             <div id="elements-interect" class="panel-body">
-              <div class="row">
+              <div class="row vertical-align">
                 <div class="col-xs-3 col-lg-3">
-                  <div class="row" style="height:98px">
-                    <img src="images/bulb.png" class="img-responsive center-block" style="max-height:98px" alt="Responsive image">
-                  </div>
-                  <div class="row">
-                    <button type="button" class="btn btn-primary btn-xs center-block">Accept</button>
-                  </div>
+                  <img src="images/bulb.png" class="img-responsive" alt="Responsive image">
                 </div>
                 <div class="col-xs-9 col-lg-9">
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Lumens</label>
+                      <button id="button-accept" type="button" class="btn btn-primary btn-xs">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-lumens"></div>
                       </div>
@@ -152,29 +151,23 @@ myApp = myApp || (function () {
                   </form>
                 </div>
               </div>
-              <div class="row">
+              <div class="row vertical-align">
                 <div class="col-xs-3 col-lg-3" >
-                  <div class="row" style="height:128px">
-                    <img src="images/solar_panel.png" class="img-responsive center-block" style="max-height:125px" alt="Responsive image">
-                  </div>
-                  <div class="row" style="height:130px">
-                    <button type="button" class="btn btn-primary btn-xs center-block">Accept</button>
-                  </div>
-                  <div class="row">
-                    <button type="button" class="btn btn-primary btn-xs center-block">Accept</button>
-                  </div>
+                  <img src="images/solar_panel.png" class="img-responsive" alt="Responsive image">
                 </div>
                 <div class="col-xs-9 col-lg-9">
                   <strong><p class="text-center">Spin of the solar panel on:</p></strong>
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Horizontal axis</label>
+                      <button id="button-accept" type="button" class="btn btn-primary btn-xs">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-horizontal-axis"></div>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label">Vertical axis</label>
+                      <button id="button-accept" type="button" class="btn btn-primary btn-xs">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-vertical-axis"></div>
                       </div>
@@ -184,7 +177,7 @@ myApp = myApp || (function () {
               </div>
               <div class="row vertical-align">
                 <div class="col-xs-3 col-lg-3">
-                  <p class="text-center">  10%</p>
+                  <p class="text-center">10%</p>
                   <img id="img-battery" src="images/battery1.png" class="img-responsive" alt="Responsive image">
                 </div>
                 <div class="col-xs-9 col-lg-9">
@@ -689,7 +682,7 @@ function stopExperiment(){
 
     function arranque(){
       
-      new Esd("myCanvas", "esd", "lumens");
+      new Init("myCanvas", "esd");
       //myInit2();
       setTimeout(function(){
         myApp.hidePleaseWait()
