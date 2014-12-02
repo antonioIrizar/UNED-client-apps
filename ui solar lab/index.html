@@ -15,13 +15,10 @@
     <style>
 
       .vertical-align {
-        display: -webkit-flex; /* Safari */
-        -webkit-flex-direction: row-reverse; /* Safari 6.1+ */
+        
         display: flex;
         /* only work in ie 11... */
         align-items: center;
-        display: -webkit-flex; /* Safari */
-        -webkit-align-items: center; /* Safari 7.0+ */
         /*need a 1px in right, because the slider not see correctly*/
         padding-right: 1px;
       }
@@ -361,7 +358,6 @@ myApp = myApp || (function () {
                   </div>
                 </div>
                 <!-- Modal -->
-
               </h3>
             </div>
             <div class="panel-body">
@@ -388,8 +384,23 @@ myApp = myApp || (function () {
         </div>
       </div>
     </div>
+    <div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title text-danger" id="myModalLabel">Error</h4>
+          </div>
+          <div  class="modal-body">
+            <p class="text-danger">lumens must be higher than 0.</p>
+          
+        </div>
+      </div>
+    </div>
     <script>
- 
+ var lumens = 0,
+     verticaAxis = 0,
+     horizontalAxis = 0;
  function wsopen(event)
 {
   console.log("aqui");
@@ -640,13 +651,21 @@ function battery(){
 };
 
 function startExperiment(){
-  //sendActuatorChange('Sun', $(".slider-lumens").val());
-  sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
-  //try this line with minus
-  sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
-  //sendActuatorChange('ESDJ', $(".slider-battery").val());
-  //sendActuatorChange('Elapsed', $(".slider-time").val());
-  //sendActuatorChange('StartGen', "");
+  if (lumens == 0 && $(".slider-lumens").val() == 0){
+    $('#myModalError').modal('show');
+  }
+  else{
+    //sendActuatorChange('Sun', $(".slider-lumens").val());
+    sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+    //try this line with minus
+    sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
+    //sendActuatorChange('ESDJ', $(".slider-battery").val());
+    //sendActuatorChange('Elapsed', $(".slider-time").val());
+    //sendActuatorChange('StartGen', "");
+  }
+};
+function errorLumens(){
+  $('#myModalError').modal('show');
 };
 
 function stopExperiment(){
@@ -684,6 +703,7 @@ function stopExperiment(){
     console.log(document.getElementById("cacaVaca").offsetWidth);
   
 });
+
 
 
     function arranque(){
