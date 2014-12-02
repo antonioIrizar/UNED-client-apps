@@ -15,8 +15,13 @@
     <style>
 
       .vertical-align {
+        display: -webkit-flex; /* Safari */
+        -webkit-flex-direction: row-reverse; /* Safari 6.1+ */
         display: flex;
+        /* only work in ie 11... */
         align-items: center;
+        display: -webkit-flex; /* Safari */
+        -webkit-align-items: center; /* Safari 7.0+ */
         /*need a 1px in right, because the slider not see correctly*/
         padding-right: 1px;
       }
