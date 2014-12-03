@@ -146,7 +146,7 @@ myApp = myApp || (function () {
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Lumens</label>
-                      <button id="button-accept" type="button" class="btn btn-info btn-xs">Accept</button>
+                      <button id="button-accept" onclick="sendLumens()" type="button" class="btn btn-info btn-xs">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-lumens"></div>
                       </div>
@@ -163,14 +163,14 @@ myApp = myApp || (function () {
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Horizontal axis</label>
-                      <button id="button-accept" type="button" class="btn btn-info btn-xs">Accept</button>
+                      <button id="button-accept" onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-horizontal-axis"></div>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label">Vertical axis</label>
-                      <button id="button-accept" type="button" class="btn btn-info btn-xs">Accept</button>
+                      <button id="button-accept" onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-vertical-axis"></div>
                       </div>
@@ -291,7 +291,7 @@ myApp = myApp || (function () {
                     </div>
                     <div class="col-xs-8 col-lg-8">
                       <label class="control-label">
-                        Move the weigth (comming soon)
+                        Move the weigth(comming soon)
                         <a href="#" data-toggle="modal" data-target="#myModal">
                           <span class="glyphicon glyphicon-info-sign"></span>
                       </a>
@@ -384,6 +384,7 @@ myApp = myApp || (function () {
         </div>
       </div>
     </div>
+
     <div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -392,15 +393,38 @@ myApp = myApp || (function () {
             <h4 class="modal-title text-danger" id="myModalLabel">Error</h4>
           </div>
           <div  class="modal-body">
-            <p class="text-danger">lumens must be higher than 0.</p>
-          
+            <p class="text-danger">Lumens must be higher than 0.</p>
         </div>
       </div>
     </div>
+  </div>
+
+    <div class="modal fade" id="myModalConfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title text-success" id="myModalLabel">Confirm changes</h4>
+          </div>
+          <div  class="modal-body">
+            <p>You have not accepted the changes. Please select the new or the old values and click on "Accept".</p>
+            <form id="form-confirm-changes" role="form">
+              <div id="div-confirm-changes">
+              </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" onclick="" data-dismiss="modal" class="btn btn-info">Accept</button>
+          <button type="button" onclick="cleanForm()" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <script>
- var lumens = 0,
-     verticaAxis = 0,
-     horizontalAxis = 0;
+ var lumens = null,
+     verticalAxis = 0,
+     horizontalAxis = null;
  function wsopen(event)
 {
   console.log("aqui");
@@ -650,15 +674,45 @@ function battery(){
 
 };
 
+function cleanForm(){
+  form = document.getElementById('form-confirm-changes');
+  form.removeChild(document.getElementById('div-confirm-changes'));
+  divForm = document.createElement('div');
+  divForm.setAttribute('id', 'div-confirm-changes');
+  form.appendChild(divForm);
+}
+
 function startExperiment(){
-  if (lumens == 0 && $(".slider-lumens").val() == 0){
+  if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0){
     $('#myModalError').modal('show');
   }
   else{
+    var modal = false;
+
+    if (lumens != null && lumens != $(".slider-lumens").val()){
+      newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString());
+      modal = true;
+    }
+
+    if (horizontalAxis != null && horizontalAxis!= $(".slider-horizontal-axis").val()){
+      newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , horizontalAxis.toString());
+      modal = true;
+    }
+
+    if (verticalAxis != null && verticalAxis != $(".slider-vertical-axis").val()){
+      newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , verticalAxis.toString());
+      modal = true;
+    }
+
+    if (modal){
+      $('#myModalConfirm').modal('show');
+    }
+      
+    
     //sendActuatorChange('Sun', $(".slider-lumens").val());
-    sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+    //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
     //try this line with minus
-    sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
+    //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
     //sendActuatorChange('ESDJ', $(".slider-battery").val());
     //sendActuatorChange('Elapsed', $(".slider-time").val());
     //sendActuatorChange('StartGen', "");
@@ -667,7 +721,53 @@ function startExperiment(){
 function errorLumens(){
   $('#myModalError').modal('show');
 };
+function sendLumens(){
+  lumens = $(".slider-lumens").val();
+  //sendActuatorChange('Sun', lumens);
+};
+function sendHorizontalAxis(){
+  horizontalAxis = $(".slider-horizontal-axis").val();
+  ///sendActuatorChange('Panelrot', horizontalAxis);
+};
+function sendVerticalAxis(){
+  verticalAxis = $(".slider-vertical-axis").val();
+  //sendActuatorChange('Paneltilt',"-" + verticalAxis);
+};
 
+
+function newForm(id, labelText, newValue, oldValue){
+  divPrincipal = document.getElementById('div-confirm-changes');
+  divForm = document.createElement('form');
+  divForm.setAttribute('id', id);
+  divForm.setAttribute('class', 'form-group');
+  labelForm = document.createElement('label');
+  labelForm.setAttribute('for', 'inputRadio');
+  text = document.createTextNode(labelText);
+  labelForm.appendChild(text);
+  divForm.appendChild(labelForm);
+  console.log(newValue);
+  divForm.appendChild(newRadio(newValue, true, " (New)"));
+  divForm.appendChild(newRadio(oldValue, false, " (Old)"));
+  divPrincipal.appendChild(divForm);
+};
+
+function newRadio(value, checked, newOrOld){
+  divRadio = document.createElement('div');
+  divRadio.setAttribute('class', 'radio');
+  labelRadio = document.createElement('label');
+  input = document.createElement('input');
+  input.setAttribute('type', 'radio');
+  input.setAttribute('name', 'optionConfirmChanges');
+  input.setAttribute('value', value);
+  if (checked){
+    input.setAttribute('checked', true);
+  }
+  labelRadio.appendChild(input);
+  text = document.createTextNode(value + newOrOld);
+  labelRadio.appendChild(text);
+  divRadio.appendChild(labelRadio);
+  return divRadio;
+};
 function stopExperiment(){
   //sendActuatorChange('StopGen', "");
   var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
