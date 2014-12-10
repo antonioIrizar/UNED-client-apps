@@ -119,7 +119,7 @@ window.sliders = sliders = ->
       postfix: 'cm'
     })
   })
-
+  $(".slider-weigth").attr('disabled', 'disabled')
   # Tags after '-inline-' are inserted as HTML.
   # noUiSlider writes to the first element it finds.
   # The tooltip HTML is 'this', so additional
