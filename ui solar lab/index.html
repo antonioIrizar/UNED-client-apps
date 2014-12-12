@@ -100,7 +100,21 @@
  <script src="javascripts/handsontable.full.min.js"></script>
  <link rel="stylesheet" media="screen" href="css/jquery.handsontable.bootstrap.css">
  
-<script type="text/javascript">
+ <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="javascripts/jquery.nouislider.all.js"></script>
+  <link href="css/jquery.nouislider.min.css" rel="stylesheet">
+  <link href="css/jquery.nouislider.pips.min.css" rel="stylesheet">
+  <script type="text/javascript">
+    // Load the Visualization API and the piechart package.
+    google.load('visualization', '1.0', {'packages':['corechart']});
+  </script>
+  <script src="javascripts/plot.js"></script>
+  <script src="javascripts/sliders.js"></script>
+  <script src="javascripts/esd.js"></script>
+  <script src="javascripts/init.js"></script>
+  </head>
+  <body onload="arranque()">
+    <script type="text/javascript">
    var myApp;
 myApp = myApp || (function () {
     var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h1>Loading...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
@@ -116,20 +130,6 @@ myApp = myApp || (function () {
     })();
     myApp.showPleaseWait();
 </script>
- <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script src="javascripts/jquery.nouislider.all.js"></script>
-  <link href="css/jquery.nouislider.min.css" rel="stylesheet">
-  <link href="css/jquery.nouislider.pips.min.css" rel="stylesheet">
-  <script type="text/javascript">
-    // Load the Visualization API and the piechart package.
-    google.load('visualization', '1.0', {'packages':['corechart']});
-  </script>
-  <script src="javascripts/plot.js"></script>
-  <script src="javascripts/sliders.js"></script>
-  <script src="javascripts/esd.js"></script>
-  <script src="javascripts/init.js"></script>
-  </head>
-  <body onload="arranque()">
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-4" id="div_formula_col">
