@@ -83,7 +83,7 @@
       float:right;
     }
 
-    #button-accept{
+    .button-accept{
       float:right;
     }
   </style>
@@ -146,7 +146,7 @@ myApp = myApp || (function () {
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Lumens</label>
-                      <button id="button-accept" onclick="sendLumens()" type="button" class="btn btn-info btn-xs">Accept</button>
+                      <button onclick="sendLumens()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-lumens"></div>
                       </div>
@@ -163,14 +163,14 @@ myApp = myApp || (function () {
                   <form class="form" role="form">
                     <div class="form-group">
                       <label class="control-label">Horizontal axis</label>
-                      <button id="button-accept" onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs">Accept</button>
+                      <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-horizontal-axis"></div>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label">Vertical axis</label>
-                      <button id="button-accept" onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs">Accept</button>
+                      <button onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
                       <div class="slidera">
                         <div class="slider slider-vertical-axis"></div>
                       </div>
