@@ -143,7 +143,7 @@ myApp = myApp || (function () {
                   <img src="images/bulb.png" class="img-responsive" alt="bulb">
                 </div>
                 <div class="col-xs-9 col-lg-9">
-                  <form class="form" role="form">
+                  <form class="form" role="form" autocomplete="off">
                     <div class="form-group">
                       <strong>Lumens</strong>
                       <button onclick="sendLumens()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
@@ -155,12 +155,12 @@ myApp = myApp || (function () {
                 </div>
               </div>
               <div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3" >
+                <div class="col-xs-3 col-lg-3">
                   <img src="images/solar_panel.png" class="img-responsive" alt="solar panel">
                 </div>
                 <div class="col-xs-9 col-lg-9">
                   <p class="text-center"><strong>Spin of the solar panel on:</strong></p>
-                  <form class="form" role="form">
+                  <form class="form" role="form" autocomplete="off">
                     <div class="form-group">
                       <strong>Horizontal axis</strong>
                       <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
@@ -269,9 +269,11 @@ myApp = myApp || (function () {
               <div class="row">
                 <div id="adapt-to-height"></div>
                 <div class="center-block text-center">
-                  <button type="button" id="startExperiment" class="btn btn-success" onclick="startExperiment()">Start</button>
-                  <button type="button" class="btn btn-primary" onclick="stopExperiment()">Stop</button>
-                  <button type="button" class="btn btn-danger" onclick="resetExperiment()">Reset</button>
+                  <form class="form" role="form" autocomplete="off">
+                    <button type="button" id="startExperiment" class="btn btn-success" onclick="startExperiments()">Start</button>
+                    <button type="button" class="btn btn-primary" onclick="stopExperiment()">Stop</button>
+                    <button type="reset" class="btn btn-danger" onclick="resetExperiment()">Reset</button>
+                  </form>
                 </div>
               </div> 
             </div>
@@ -756,7 +758,7 @@ function cleanForm(){
   form.appendChild(divForm);
 };
 
-function startExperiment(){
+function startExperiments(){
   if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0){
     $('#myModalError').modal('show');
   }
@@ -892,8 +894,6 @@ function stopExperiment(){
     console.log(document.getElementById("cacaVaca").offsetWidth);
   
 });
-
-
 
     function arranque(){
       
