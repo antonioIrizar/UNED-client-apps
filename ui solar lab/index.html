@@ -442,6 +442,7 @@ myApp = myApp || (function () {
     $(".slider-horizontal-axis").attr('disabled', 'disabled');
     $(".slider-vertical-axis").attr('disabled', 'disabled');
     $("#startExperiment").attr('disabled', 'disabled');
+    $(".button-accept").attr('disabled', 'disabled');
   };
 
   function enable(){
@@ -451,6 +452,7 @@ myApp = myApp || (function () {
     $(".slider-horizontal-axis").removeAttr('disabled');
     $(".slider-vertical-axis").removeAttr('disabled');
     $("#startExperiment").removeAttr('disabled');
+    $(".button-accept").removeAttr('disabled');
   };
 
 $('#countdown').timeTo({ 
