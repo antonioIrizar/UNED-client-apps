@@ -145,10 +145,10 @@ myApp = myApp || (function () {
                 <div class="col-xs-9 col-lg-9">
                   <form class="form" role="form">
                     <div class="form-group">
-                      <label class="control-label">Lumens</label>
+                      <strong>Lumens</strong>
                       <button onclick="sendLumens()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
                       <div class="slidera">
-                        <div class="slider slider-lumens"></div>
+                        <div id="slider-lumens" class="slider slider-lumens"></div>
                       </div>
                     </div>
                   </form>
@@ -162,17 +162,17 @@ myApp = myApp || (function () {
                   <p class="text-center"><strong>Spin of the solar panel on:</strong></p>
                   <form class="form" role="form">
                     <div class="form-group">
-                      <label class="control-label">Horizontal axis</label>
+                      <strong>Horizontal axis</strong>
                       <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
                       <div class="slidera">
-                        <div class="slider slider-horizontal-axis"></div>
+                        <div id="slider-horizontal-axis" class="slider slider-horizontal-axis"></div>
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label">Vertical axis</label>
+                      <strong>Vertical axis</strong>
                       <button onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
                       <div class="slidera">
-                        <div class="slider slider-vertical-axis"></div>
+                        <div id="slider-vertical-axis" class="slider slider-vertical-axis"></div>
                       </div>
                     </div>
                   </form>
@@ -186,14 +186,14 @@ myApp = myApp || (function () {
                 <div class="col-xs-9 col-lg-9">
                   <form class="form" role="form">
                     <div class="form-group">
-                      <label class="control-label">
+                      <strong>
                         How much charge do you want? 
-                        <a class="info-pop-up" data-container="body" data-toggle="popover"  tabindex="0" data-trigger="focus"  data-content="And here's some amazing content. It's very engaging. Right?">
-                          <span class="glyphicon glyphicon-info-sign"></span>
-                        </a>
-                      </label>
+                      </strong>
+                      <a class="info-pop-up" data-container="body" data-toggle="popover"  tabindex="0" data-trigger="focus"  data-content="And here's some amazing content. It's very engaging. Right?">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                      </a>
                       <div class="slidera">
-                        <div class="slider slider-battery"></div>
+                        <div id="slider-battery" class="slider slider-battery"></div>
                       </div>
                     </div>
                   </form>
@@ -208,12 +208,12 @@ myApp = myApp || (function () {
                 <div class="col-xs-9 col-lg-9">
                   <form class="form" role="form">
                     <div class="form-group">
-                      <label class="control-label">
+                      <strong>
                         Time charging
-                        <a href="#" data-toggle="modal" data-target="#myModal">
-                          <span class="glyphicon glyphicon-info-sign"></span>
-                        </a>
-                        </label>
+                      </strong>
+                      <a href="#" data-toggle="modal" data-target="#myModal">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                      </a>
                         <!-- Modal -->
                         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                           <div class="modal-dialog">
@@ -260,7 +260,7 @@ myApp = myApp || (function () {
                           </div>
                         </div>
                       <div class="slidera">
-                        <div class="slider slider-time"></div>
+                        <div id="slider-time" class="slider slider-time"></div>
                       </div>
                     </div>
                   </form>
@@ -298,12 +298,12 @@ myApp = myApp || (function () {
                       <img id="turn" src="images/turn.png" class="img-responsive" alt="move weigth">
                     </div>
                     <div class="col-xs-8 col-lg-8">
-                      <label class="control-label">
+                      <strong>
                         Move the weigth(comming soon)
-                        <a href="#" data-toggle="modal" data-target="#myModal">
-                          <span class="glyphicon glyphicon-info-sign"></span>
+                      </strong>
+                      <a href="#" data-toggle="modal" data-target="#myModal">
+                        <span class="glyphicon glyphicon-info-sign"></span>
                       </a>
-                    </label>
                       <div class="slidera">
                         <div class="slider slider-weigth"></div>
                       </div>
@@ -713,13 +713,17 @@ function battery(){
 
 };
 
+function confirmAccept(){
+
+};
+
 function cleanForm(){
   form = document.getElementById('form-confirm-changes');
   form.removeChild(document.getElementById('div-confirm-changes'));
   divForm = document.createElement('div');
   divForm.setAttribute('id', 'div-confirm-changes');
   form.appendChild(divForm);
-}
+};
 
 function startExperiment(){
   if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0){
@@ -781,7 +785,7 @@ function newForm(id, labelText, newValue, oldValue){
   divForm.setAttribute('id', id);
   divForm.setAttribute('class', 'form-group');
   labelForm = document.createElement('label');
-  labelForm.setAttribute('for', 'inputRadio');
+  
   text = document.createTextNode(labelText);
   labelForm.appendChild(text);
   divForm.appendChild(labelForm);
