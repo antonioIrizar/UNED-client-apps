@@ -423,7 +423,7 @@ myApp = myApp || (function () {
             </form>
         </div>
         <div class="modal-footer">
-          <button type="submit" onclick="" data-dismiss="modal" class="btn btn-info">Accept</button>
+          <button type="submit" onclick="confirmAccept()" data-dismiss="modal" class="btn btn-info">Accept</button>
           <button type="button" onclick="cleanForm()" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -714,7 +714,38 @@ function battery(){
 };
 
 function confirmAccept(){
+  var auxLumens, auxHorizontalAxis, auxVerticalAxis;
+  auxLumens = getValueRadius("lumens");
+  auxVerticalAxis = getValueRadius("verticalAxis");
+  auxHorizontalAxis = getValueRadius("horizontalAxis");
 
+  if (auxLumens!=null) {
+    lumens = auxLumens;
+  };
+
+  if (auxVerticalAxis!=null) {
+    verticalAxis = auxVerticalAxis;
+  };
+
+  if (auxHorizontalAxis!=null) {
+    horizontalAxis = auxHorizontalAxis;
+  };
+  cleanForm();
+  disable();
+
+
+};
+
+function getValueRadius(name){
+  rads = document.getElementsByName(name);
+
+  var i = 0;
+  while (i < rads.length){
+      if (rads[i].checked) {
+          return rads[i].value;
+        }
+      i++;
+  }
 };
 
 function cleanForm(){
@@ -733,17 +764,17 @@ function startExperiment(){
     var modal = false;
 
     if (lumens != null && lumens != $(".slider-lumens").val()){
-      newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString());
+      newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString(), "lumens");
       modal = true;
     }
 
     if (horizontalAxis != null && horizontalAxis!= $(".slider-horizontal-axis").val()){
-      newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , horizontalAxis.toString());
+      newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , horizontalAxis.toString(), "horizontalAxis");
       modal = true;
     }
 
     if (verticalAxis != null && verticalAxis != $(".slider-vertical-axis").val()){
-      newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , verticalAxis.toString());
+      newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , verticalAxis.toString(), "verticalAxis");
       modal = true;
     }
 
@@ -779,29 +810,27 @@ function sendVerticalAxis(){
 };
 
 
-function newForm(id, labelText, newValue, oldValue){
+function newForm(id, labelText, newValue, oldValue, name){
   divPrincipal = document.getElementById('div-confirm-changes');
   divForm = document.createElement('form');
   divForm.setAttribute('id', id);
   divForm.setAttribute('class', 'form-group');
   labelForm = document.createElement('label');
-  
   text = document.createTextNode(labelText);
   labelForm.appendChild(text);
   divForm.appendChild(labelForm);
-  console.log(newValue);
-  divForm.appendChild(newRadio(newValue, true, " (New)"));
-  divForm.appendChild(newRadio(oldValue, false, " (Old)"));
+  divForm.appendChild(newRadio(newValue, true, " (New)", name));
+  divForm.appendChild(newRadio(oldValue, false, " (Old)", name));
   divPrincipal.appendChild(divForm);
 };
 
-function newRadio(value, checked, newOrOld){
+function newRadio(value, checked, newOrOld, name){
   divRadio = document.createElement('div');
   divRadio.setAttribute('class', 'radio');
   labelRadio = document.createElement('label');
   input = document.createElement('input');
   input.setAttribute('type', 'radio');
-  input.setAttribute('name', 'optionConfirmChanges');
+  input.setAttribute('name', name);
   input.setAttribute('value', value);
   if (checked){
     input.setAttribute('checked', true);
