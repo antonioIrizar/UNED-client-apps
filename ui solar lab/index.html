@@ -79,7 +79,7 @@
     }
 
     #save{
-      font-size: 150%;
+      font-size: 160%;
       float:right;
     }
 
@@ -332,41 +332,42 @@ myApp = myApp || (function () {
         </div>
           <div class="panel panel-info">
             <div class="panel-heading">
+              <div id="save">
+                <a href="#" data-toggle="modal" data-target="#myModalCSV">
+                  <span class="glyphicon glyphicon-eye-open"></span>
+                </a>
+                <a href="#" data-toggle="modal" data-target="#myModal2">
+                  <span class="glyphicon glyphicon-floppy-disk"></span>
+                </a>
+              </div>
               <h3 class="panel-title">
                 Data received 
-                <div id="save">
-                  <a href="#" data-toggle="modal" data-target="#myModalCSV">
-                    <span class="glyphicon glyphicon-eye-open"></span>
-                  </a>
-                  <a href="#" data-toggle="modal" data-target="#myModal2">
-                    <span class="glyphicon glyphicon-floppy-disk"></span>
-                  </a>
-                </div>
-                <!-- Modal -->
-                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Save data</h4>
-                      </div>
-                      <div class="modal-body">
-                        <form role="form">
-                          <div class="form-group">
-                            <label for="inputNameOfFile">Name of file</label>
-                            <input type="text" class="form-control" id="name_of_file" placeholder="Name of file">
-                          </div>
-                        </form>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="submit" onclick="saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      </div>
+              </h3>
+               
+              <!-- Modal -->
+              <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                      <h4 class="modal-title" id="myModalLabel">Save data</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form role="form">
+                        <div class="form-group">
+                          <label for="inputNameOfFile">Name of file</label>
+                          <input type="text" class="form-control" id="name_of_file" placeholder="Name of file">
+                        </div>
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" onclick="saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                   </div>
                 </div>
-                <!-- Modal -->
-              </h3>
+              </div>
+              <!-- Modal -->
             </div>
             <div class="panel-body">
               <div id="chart_div"></div>
