@@ -271,7 +271,7 @@ myApp = myApp || (function () {
                 <div class="center-block text-center">
                   <button type="button" id="startExperiment" class="btn btn-success" onclick="startExperiment()">Start</button>
                   <button type="button" class="btn btn-primary" onclick="stopExperiment()">Stop</button>
-                  <button type="button" class="btn btn-danger">Reset</button>
+                  <button type="button" class="btn btn-danger" onclick="resetExperiment()">Reset</button>
                 </div>
               </div> 
             </div>
@@ -432,7 +432,7 @@ myApp = myApp || (function () {
 
     <script>
  var lumens = null,
-     verticalAxis = 0,
+     verticalAxis = null,
      horizontalAxis = null;
 
   function disable(){
@@ -793,6 +793,21 @@ function startExperiment(){
     disable();
   }
 };
+
+function resetExperiment(){
+  enable();
+  lumens = null;
+  $(".slider-lumens").val(0);
+ 
+  horizontalAxis = null
+  $(".slider-horizontal-axis").val(0);
+ 
+  verticalAxis = null;
+  $(".slider-vertical-axis").val(0);
+
+  $(".slider-battery").val(10);
+  $(".slider-time").val(0);
+}
 function errorLumens(){
   $('#myModalError').modal('show');
 };
