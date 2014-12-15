@@ -356,7 +356,7 @@ myApp = myApp || (function () {
                       <form role="form">
                         <div class="form-group">
                           <label for="inputNameOfFile">Name of file</label>
-                          <input type="text" class="form-control" id="name_of_file" placeholder="Name of file">
+                          <input type="text" class="form-control" id="inputNameOfFile" placeholder="Name of file">
                         </div>
                       </form>
                     </div>
@@ -673,7 +673,7 @@ function saveTextAsFile()
 {
 var textToWrite = "We don't have real data at this time :(. It's comming soon :)";
 var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-var fileNameToSaveAs = document.getElementById("name_of_file").value + ".txt";
+var fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt";
 var browserName=navigator.appName;
 if (browserName == "Microsoft Internet Explorer")
 {
