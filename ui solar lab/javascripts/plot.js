@@ -74,7 +74,10 @@
         if (a > 0) {
           this.options1 = {
             chartArea: {
-              height: "80%"
+              left: 40,
+              top: 20,
+              height: "80%",
+              width: "85%"
             },
             legend: {
               position: 'none'
@@ -87,7 +90,10 @@
         } else {
           this.options1 = {
             chartArea: {
-              height: "80%"
+              left: 40,
+              top: 20,
+              height: "80%",
+              width: "85%"
             },
             legend: {
               position: 'none'
@@ -108,7 +114,10 @@
       this.time++;
       this.options = {
         chartArea: {
-          height: "80%"
+          left: 40,
+          top: 20,
+          height: "80%",
+          width: "85%"
         },
         legend: {
           position: 'none'
@@ -121,7 +130,10 @@
           _this.dataPlot.addRow(_this.data[_this.time - 1]);
           _this.options1 = {
             chartArea: {
-              height: "80%"
+              left: 40,
+              top: 20,
+              height: "80%",
+              width: "85%"
             },
             legend: {
               position: 'none'
@@ -149,7 +161,10 @@
           _this.init = true;
           _this.options1 = {
             chartArea: {
-              height: "80%"
+              left: 40,
+              top: 20,
+              height: "80%",
+              width: "85%"
             },
             legend: {
               position: 'none'

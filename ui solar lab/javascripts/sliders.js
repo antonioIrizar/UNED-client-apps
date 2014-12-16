@@ -49,7 +49,7 @@
       }
     });
     $('.slider-weigth').noUiSlider({
-      start: 10,
+      start: 0,
       step: 1,
       connect: "lower",
       range: {

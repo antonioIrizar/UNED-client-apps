@@ -53,7 +53,7 @@ class Plot
 
             if a >0
                 @options1 = {
-                    chartArea:{height: "80%"},
+                    chartArea:{left:40,top:20,height: "80%", width:"85%"},
                     legend: {position: 'none'},
                     animation:{
                         duration: a ,
@@ -62,7 +62,7 @@ class Plot
                 }
             else
                 @options1 = {
-                    chartArea:{height: "80%"},
+                    chartArea:{left:40,top:20,height: "80%", width:"85%"},
                     legend: {position: 'none'},
                     animation:{
                         duration: 1,
@@ -80,7 +80,7 @@ class Plot
         @data[@time] = ['0', 0.00, 0.00]
         @time++
         @options = {
-            chartArea:{height: "80%"},
+            chartArea:{left:40,top:20,height: "80%", width:"85%"},
             legend: {position: 'none'}       
         }
 
@@ -93,7 +93,7 @@ class Plot
             @dataPlot.addRow @data[@time-1]
            
             @options1 = {
-                chartArea:{height: "80%"},
+                chartArea:{left:40,top:20,height: "80%", width:"85%"},
                 legend: {position: 'none'},
                 animation:{
                     duration: 5000,
@@ -112,7 +112,7 @@ class Plot
         @alarma = setTimeout(=>
             @init = true
             @options1 = {
-                chartArea:{height: "80%"},
+                chartArea:{left:40,top:20,height: "80%", width:"85%"},
                 legend: {position: 'none'},
                 
                 animation:{
