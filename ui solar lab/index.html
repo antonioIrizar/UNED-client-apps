@@ -433,9 +433,9 @@ myApp = myApp || (function () {
   </div>
 
     <script>
- var lumens = null,
-     verticalAxis = null,
-     horizontalAxis = null;
+    var lumens = null,
+      verticalAxis = null,
+      horizontalAxis = null;
 
   function disable(){
     $(".slider-battery").attr('disabled', 'disabled');
@@ -466,6 +466,7 @@ $('#countdown').timeTo({
 {
   console.log("aqui");
   alert("websocket " + event + " is open");
+  sendActuatorChange('WhichLab', "1");
  
   //ws.send('{"method": "getSensorMetadata"}'); // get sensor info
   //ws.send('{"method": "getActuatorMetadata"}'); // just pretend we don't know
@@ -516,17 +517,18 @@ function sendActuatorChange(actuatorId, data) {
     accessRole: 'controller',
     actuatorId: actuatorId,
     valueNames: "",
-    data: data
-    
-}
-  
+    data: data  
+  }
 
   var jsonRequest = JSON.stringify(actuatorRequest);
   ws.send(jsonRequest);
 
-
 }
 
+function getSensorData(sensorId){
+  var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":sensorId});
+  ws.send(jsonRequest);
+}
 
 function wsmessage(event)
 {
@@ -569,7 +571,7 @@ alert("websocket " + event + " is closed");
 
 
 function myInit2(evt) { 
-ws = new WebSocket("ws://62.204.201.218:8081");
+ws = new WebSocket("ws://62.204.201.214:8081");
 
 wsopen.ws = ws;
 ws.onopen = wsopen;
@@ -582,11 +584,6 @@ console.log("caca");
 ws.onmessage = wsmessage;
 ws.onclose = wsclose;
 } 
-
-
-
-
-
 
   
 /* deprecate */
@@ -734,8 +731,6 @@ function confirmAccept(){
   };
   cleanForm();
   disable();
-
-
 };
 
 function getValueRadius(name){
@@ -783,16 +778,19 @@ function startExperiments(){
     if (modal){
       $('#myModalConfirm').modal('show');
     }
-      
-    
-    //sendActuatorChange('Sun', $(".slider-lumens").val());
-    //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
-    //try this line with minus
-    //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
-    //sendActuatorChange('ESDJ', $(".slider-battery").val());
-    //sendActuatorChange('Elapsed', $(".slider-time").val());
-    //sendActuatorChange('StartGen', "");
-    disable();
+    else{
+      sendActuatorChange('SolarGen', "1");
+      sendLumens();
+      sendHorizontalAxis();
+      sendVerticalAxis();
+      //sendActuatorChange('Sun', $(".slider-lumens").val());
+      //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+      //try this line with minus
+      //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
+      //sendActuatorChange('ESDJ', $(".slider-battery").val());
+      //sendActuatorChange('Elapsed', $(".slider-time").val());
+      disable();
+    }
   }
 };
 
@@ -809,23 +807,45 @@ function resetExperiment(){
 
   $(".slider-battery").val(10);
   $(".slider-time").val(0);
+  sendActuatorChange('Reset', "");
 }
 function errorLumens(){
   $('#myModalError').modal('show');
 };
 function sendLumens(){
+  var auxLumens = lumens;
   lumens = $(".slider-lumens").val();
-  //sendActuatorChange('Sun', lumens);
+  var move =  realValueToSend(auxLumens, lumens);
+  if (move != 0){
+    sendActuatorChange('Sun', move);
+      getSensorData('PanelRot');
+  }
 };
 function sendHorizontalAxis(){
+  var auxHorizontalAxis = horizontalAxis;
   horizontalAxis = $(".slider-horizontal-axis").val();
-  ///sendActuatorChange('Panelrot', horizontalAxis);
+  var move = realValueToSend(auxHorizontalAxis, horizontalAxis);
+  if (move != 0){
+    sendActuatorChange('Panelrot', move);
+  }
 };
 function sendVerticalAxis(){
+  var auxVerticalAxis = verticalAxis;
   verticalAxis = $(".slider-vertical-axis").val();
-  //sendActuatorChange('Paneltilt',"-" + verticalAxis);
+  var move = - realValueToSend(auxVerticalAxis, verticalAxis);
+  if (move != 0){
+    sendActuatorChange('Paneltilt', move.toString());
+    setTimeout(function(){ getSensorData('PanelTilt');}, 1000);
+    
+  }
 };
 
+function realValueToSend(oldNumber, newNumber){
+  if (oldNumber==null){
+    return newNumber;
+  }
+  return newNumber - oldNumber;
+};
 
 function newForm(id, labelText, newValue, oldValue, name){
   divPrincipal = document.getElementById('div-confirm-changes');
@@ -859,7 +879,7 @@ function newRadio(value, checked, newOrOld, name){
   return divRadio;
 };
 function stopExperiment(){
-  //sendActuatorChange('StopGen', "");
+  sendActuatorChange('SolarGen', "0");
   //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
   //ws.send(jsonRequest);
   enable();
@@ -898,9 +918,10 @@ function stopExperiment(){
     function arranque(){
       
       new Init("myCanvas", "esd");
-      //myInit2();
+      myInit2();
       setTimeout(function(){
         myApp.hidePleaseWait()
+
       },1000);
       console.log($(".slider-lumens").val());
 
