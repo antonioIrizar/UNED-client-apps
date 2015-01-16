@@ -47,7 +47,7 @@ class Formula
         @divPanel.appendChild divAllFormulas
 
         divConstant = document.createElement 'div'
-        divConstant.setAttribute 'class', "row panel panel-info"
+        divConstant.setAttribute 'class', "panel panel-info"
         divConstant.setAttribute 'id', "divConstant"
         divConstantHeading = document.createElement 'div'
         divConstantHeading.setAttribute 'class', "panel-heading"
@@ -66,7 +66,7 @@ class Formula
         divConstant.appendChild @constantValue
 
         divDescription = document.createElement 'div'
-        divDescription.setAttribute 'class', "row panel panel-warning"
+        divDescription.setAttribute 'class', "panel panel-warning"
         divDescription.setAttribute 'id', "divDescription"
         divDescriptionHeading = document.createElement 'div'
         divDescriptionHeading.setAttribute 'class', "panel-heading"
