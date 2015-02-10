@@ -271,8 +271,8 @@ myApp = myApp || (function () {
                 <div class="center-block text-center">
                   <form class="form" role="form" autocomplete="off">
                     <button type="button" id="startExperiment" class="btn btn-success" onclick="startExperiments()">Start</button>
-                    <button type="button" class="btn btn-primary" onclick="stopExperiment()">Stop</button>
-                    <button type="reset" class="btn btn-danger" onclick="resetExperiment()">Reset</button>
+                    <button type="button" id="stop" class="btn btn-primary" onclick="stopExperiment()">Stop</button>
+                    <button type="reset" id="reset" class="btn btn-danger" onclick="resetExperiment()">Reset</button>
                   </form>
                 </div>
               </div> 
@@ -466,7 +466,7 @@ $('#countdown').timeTo({
 {
   console.log("aqui");
   alert("websocket " + event + " is open");
-  sendActuatorChange('WhichLab', "1");
+  sendActuatorChange('SolarLab', "1");
  
   //ws.send('{"method": "getSensorMetadata"}'); // get sensor info
   //ws.send('{"method": "getActuatorMetadata"}'); // just pretend we don't know
@@ -512,8 +512,8 @@ $('#countdown').timeTo({
 function sendActuatorChange(actuatorId, data) {
 
  var actuatorRequest = {
-    authToken: 'skfjs343kjKJ',
     method: 'sendActuatorData',
+    authToken: 'skfjs343kjKJ',
     accessRole: 'controller',
     actuatorId: actuatorId,
     valueNames: "",
@@ -537,8 +537,25 @@ console.log(data);
 console.log("despues del parser");
 var msg = JSON.parse(data);
 console.log(msg);
-/*
 
+if(msg.method == "sendActuatorData"){
+  if (msg.responseMessages.code == 409){
+    console.log("codigo 409");
+    disable();
+    $("#stop").attr('disabled', 'disabled');
+    $("#reset").attr('disabled', 'disabled');
+  }
+
+}
+
+/*
+"{
+ "method": "sendActuatorData",
+ "responseMessages" :{
+    "code": 409,
+    "message": "AccesRole controller already assigned."
+}
+}"
 if (msg.method == "getSensorMetadata") {
   document.querySelector('#sensorInfo').value = msg.sensors[0].description; // display description of the 1st sensor
   document.querySelector('#SensorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
@@ -571,7 +588,8 @@ alert("websocket " + event + " is closed");
 
 
 function myInit2(evt) { 
-ws = new WebSocket("ws://62.204.201.214:8081");
+//ws = new WebSocket("ws://62.204.201.214:8081");
+ws = new WebSocket("ws://62.204.201.218:8081");
 
 wsopen.ws = ws;
 ws.onopen = wsopen;
@@ -779,7 +797,7 @@ function startExperiments(){
       $('#myModalConfirm').modal('show');
     }
     else{
-      sendActuatorChange('SolarGen', "1");
+      sendActuatorChange('ESD', "1");
       sendLumens();
       sendHorizontalAxis();
       sendVerticalAxis();
@@ -807,7 +825,8 @@ function resetExperiment(){
 
   $(".slider-battery").val(10);
   $(".slider-time").val(0);
-  sendActuatorChange('Reset', "");
+  //Reset experiment
+  sendActuatorChange('SolarLab', "0");
 }
 function errorLumens(){
   $('#myModalError').modal('show');
@@ -818,7 +837,6 @@ function sendLumens(){
   var move =  realValueToSend(auxLumens, lumens);
   if (move != 0){
     sendActuatorChange('Sun', move);
-      getSensorData('PanelRot');
   }
 };
 function sendHorizontalAxis(){
@@ -835,8 +853,6 @@ function sendVerticalAxis(){
   var move = - realValueToSend(auxVerticalAxis, verticalAxis);
   if (move != 0){
     sendActuatorChange('Paneltilt', move.toString());
-    setTimeout(function(){ getSensorData('PanelTilt');}, 1000);
-    
   }
 };
 
@@ -879,7 +895,7 @@ function newRadio(value, checked, newOrOld, name){
   return divRadio;
 };
 function stopExperiment(){
-  sendActuatorChange('SolarGen', "0");
+  sendActuatorChange('ESD', "0");
   //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
   //ws.send(jsonRequest);
   enable();
