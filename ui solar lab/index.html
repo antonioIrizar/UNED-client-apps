@@ -458,7 +458,7 @@ myApp = myApp || (function () {
   };
 
 $('#countdown').timeTo({ 
-  seconds: 100,
+  seconds: 3,
   countdown:true,
     fontSize: 14,
   });
@@ -526,7 +526,7 @@ function sendActuatorChange(actuatorId, data) {
 }
 
 function getSensorData(sensorId){
-  var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":sensorId});
+  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": 'controller', "updateFrecuency":"1", "sensorId":sensorId});
   ws.send(jsonRequest);
 }
 
@@ -539,7 +539,8 @@ var msg = JSON.parse(data);
 console.log(msg);
 
 if(msg.method == "sendActuatorData"){
-  if (msg.responseMessages.code == 409){
+  if (msg.responseMessages.code =! null && msg.responseMessages.code == 409){
+    alert("You can't controller the laboratory. Other user is used it")
     console.log("codigo 409");
     disable();
     $("#stop").attr('disabled', 'disabled');
@@ -797,10 +798,9 @@ function startExperiments(){
       $('#myModalConfirm').modal('show');
     }
     else{
-      sendActuatorChange('ESD', "1");
-      sendLumens();
-      sendHorizontalAxis();
-      sendVerticalAxis();
+      //sendLumens();
+      //sendHorizontalAxis();
+      //sendVerticalAxis();
       //sendActuatorChange('Sun', $(".slider-lumens").val());
       //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
       //try this line with minus
@@ -808,6 +808,9 @@ function startExperiments(){
       //sendActuatorChange('ESDJ', $(".slider-battery").val());
       //sendActuatorChange('Elapsed', $(".slider-time").val());
       disable();
+      sendActuatorChange('ESD', "1");
+      getSensorData("ESDval");
+      
     }
   }
 };
@@ -834,9 +837,9 @@ function errorLumens(){
 function sendLumens(){
   var auxLumens = lumens;
   lumens = $(".slider-lumens").val();
-  var move =  realValueToSend(auxLumens, lumens);
-  if (move != 0){
-    sendActuatorChange('Sun', move);
+  //var move =  realValueToSend(auxLumens, lumens);
+  if (lumens  != 0){
+    sendActuatorChange('Sun', lumens.toString());
   }
 };
 function sendHorizontalAxis(){
@@ -844,13 +847,13 @@ function sendHorizontalAxis(){
   horizontalAxis = $(".slider-horizontal-axis").val();
   var move = realValueToSend(auxHorizontalAxis, horizontalAxis);
   if (move != 0){
-    sendActuatorChange('Panelrot', move);
+    sendActuatorChange('Panelrot', move.toString());
   }
 };
 function sendVerticalAxis(){
   var auxVerticalAxis = verticalAxis;
-  verticalAxis = $(".slider-vertical-axis").val();
-  var move = - realValueToSend(auxVerticalAxis, verticalAxis);
+  verticalAxis = -$(".slider-vertical-axis").val();
+  var move = realValueToSend(auxVerticalAxis, verticalAxis);
   if (move != 0){
     sendActuatorChange('Paneltilt', move.toString());
   }
