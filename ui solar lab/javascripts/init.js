@@ -7,10 +7,13 @@
 
     Init.prototype.resizeActive = null;
 
+    Init.prototype.Esd = null;
+
     function Init(idCanvas, img) {
       console.log("lalalalala");
-      this.plot = new Plot(idCanvas, img);
+      this.plot = new Plot;
       sliders();
+      this.esd = new Esd(idCanvas, img);
       window.addEventListener("resize", (function(_this) {
         return function() {
           if (_this.resizeActive) {
@@ -22,6 +25,18 @@
         };
       })(this));
     }
+
+    Init.prototype.changeNumbers = function(inputCurrent, inputVoltage, workToDo) {
+      this.esd.drawText(inputCurrent.toFixed(3), inputVoltage.toFixed(3), workToDo.toFixed(3));
+      this.plot.inputCurrent = inputCurrent;
+      this.plot.inputVoltage = inputVoltage;
+      this.plot.workToDo = workToDo;
+      if (this.plot.initChart === false) {
+        console.log("iniciando");
+        this.plot.initChart = true;
+        return this.plot.init();
+      }
+    };
 
     return Init;
 

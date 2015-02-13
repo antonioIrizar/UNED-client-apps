@@ -7,17 +7,21 @@ class Plot
     time: 0
     alarma: null
     options1: null
-    init: false
+    initChart: false
     data:[[]]
     realTime: null
-    esd: null
+    #esd: null
+    inputCurrent: null
+    inputVoltage: null 
+    workToDo: null
 
-    constructor: (idCanvas, img) ->
+    constructor:  ->
         @data = [[]]
-        @esd = new Esd idCanvas, img
+        #@esd = new Esd idCanvas, img
+        @chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         @resize()
         google.setOnLoadCallback @drawChart()
-        @init()
+        #@init()
             
         ###
         window.addEventListener "resize", =>
@@ -37,9 +41,9 @@ class Plot
         document.getElementById("chart_div").setAttribute "style","height:"+ height + "px"
 
     resizeEvent: ->
-        @esd.drawImageInCanvas()
+        #@esd.drawImageInCanvas()
         @resize()
-        if @init 
+        if @initChart 
             if @time > 18
                 @dataPlot.removeRow 17
             else
@@ -74,43 +78,55 @@ class Plot
 
     drawChart: ->
         @dataPlot = google.visualization.arrayToDataTable([
-          ['Time', 'Amps', 'Joules'],
-          ['0', 0.00, 0.00]
-        ])
-        @data[@time] = ['0', 0.00, 0.00]
+              ['Time', 'Amps', 'Volts', 'Joules'],
+              ['0', 0.000, 0.000, 0.000]
+            ])
+        @data[@time] = ['0', 0.000, 0.000, 0.000]
         @time++
         @options = {
             chartArea:{left:40,top:20,height: "80%", width:"85%"},
             legend: {position: 'none'}       
         }
-
-        @chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-
         @chart.draw(@dataPlot, @options)
 
-        google.visualization.events.addListener @chart, 'animationfinish', => 
 
-            @dataPlot.addRow @data[@time-1]
-           
+        #@chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        google.visualization.events.addListener @chart, 'animationfinish', => 
+            console.log "dentro del lisenet"
+
+            if @time > 18
+                @dataPlot.removeRow 0
+            @data[@time] = [''+(@time), parseFloat(@inputCurrent.toFixed(3)), parseFloat(@inputVoltage.toFixed(3)), parseFloat(@workToDo.toFixed(3))]
+            @dataPlot.addRow @data[@time]
+            @time++
             @options1 = {
                 chartArea:{left:40,top:20,height: "80%", width:"85%"},
                 legend: {position: 'none'},
                 animation:{
-                    duration: 5000,
+                    duration: 1900,
                     easing: 'linear',
                 }
             }
             @chart.draw(@dataPlot, @options1)
-            @esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)
-            if @time > 18
-                @dataPlot.removeRow 0
-            @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)), parseFloat((10*Math.random()).toFixed(2))]
-            @time++
+            #@esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)     
 
-        
-    init: =>
+    init: ->
+        @data[@time] = [''+(@time), parseFloat(@inputCurrent.toFixed(3)), parseFloat(@inputVoltage.toFixed(3)), parseFloat(@workToDo.toFixed(3))]
+        @dataPlot.addRow @data[@time]
+        @time++
+        @options1 = {
+                chartArea:{left:40,top:20,height: "80%", width:"85%"},
+                legend: {position: 'none'},
+                animation:{
+                    duration: 900,
+                    easing: 'linear',
+                }
+            }
+        @chart.draw(@dataPlot, @options1)
+        ###
         @alarma = setTimeout(=>
             @init = true
+        
             @options1 = {
                 chartArea:{left:40,top:20,height: "80%", width:"85%"},
                 legend: {position: 'none'},
@@ -119,7 +135,9 @@ class Plot
                     duration: 5000,
                     easing: 'linear',
                 }
+            
             }
+            
             @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
             console.log @data[@time]
             @dataPlot.addRow @data[@time]
@@ -129,6 +147,7 @@ class Plot
             @chart.draw(@dataPlot, @options1)
             @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
             @time++
+            
         , 3000)
-    
+        ###
 window.Plot = Plot

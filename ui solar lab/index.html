@@ -435,7 +435,8 @@ myApp = myApp || (function () {
     <script>
     var lumens = null,
       verticalAxis = null,
-      horizontalAxis = null;
+      horizontalAxis = null,
+      varInit = null;
 
   function disable(){
     $(".slider-battery").attr('disabled', 'disabled');
@@ -526,7 +527,7 @@ function sendActuatorChange(actuatorId, data) {
 }
 
 function getSensorData(sensorId){
-  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": 'controller', "updateFrecuency":"1", "sensorId":sensorId});
+  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": 'controller', "updateFrequency":"1", "sensorId":sensorId});
   ws.send(jsonRequest);
 }
 
@@ -539,17 +540,35 @@ var msg = JSON.parse(data);
 console.log(msg);
 
 if(msg.method == "sendActuatorData"){
-  if (msg.responseMessages.code =! null && msg.responseMessages.code == 409){
+  if (msg.responseMessages != null && msg.responseMessages.code == 409){
     alert("You can't controller the laboratory. Other user is used it")
     console.log("codigo 409");
     disable();
     $("#stop").attr('disabled', 'disabled');
     $("#reset").attr('disabled', 'disabled');
   }
-
 }
 
+if (msg.method == "getSensorData" && msg.sensorId == "ESDval"){
+  if (msg.responseData.valueNames.length == 4){
+    console.log(msg.responseData.data[0]);
+    varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[3])
+  }
+}
+
+if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"){
+  if (msg.payload.responseData.data == 1){
+    getSensorData("ESDval");
+  }
+}
+
+
 /*
+"{"method":"sendActuatorData","accessRole":"controller","payload":{"actuatorId":"ESD","responseData":{"valueNames":["State"],"data":[1],"lastMeasured":["13022015T095315"]}}}"
+
+
+"{"method":"getSensorData","sensorId":"ESDval","accessRole":"","responseData":{"valueNames":["input voltage","input current","input wattage","worktodo"],"data":[1.7309999465942383,0,0,4],"lastMeasured":["12022015T151255","12022015T151255","12022015T151255","12022015T151255"]}}"
+
 "{
  "method": "sendActuatorData",
  "responseMessages" :{
@@ -589,8 +608,8 @@ alert("websocket " + event + " is closed");
 
 
 function myInit2(evt) { 
-//ws = new WebSocket("ws://62.204.201.214:8081");
-ws = new WebSocket("ws://62.204.201.218:8081");
+ws = new WebSocket("ws://62.204.201.214:8081");
+//ws = new WebSocket("ws://62.204.201.218:8081");
 
 wsopen.ws = ws;
 ws.onopen = wsopen;
@@ -809,7 +828,7 @@ function startExperiments(){
       //sendActuatorChange('Elapsed', $(".slider-time").val());
       disable();
       sendActuatorChange('ESD', "1");
-      getSensorData("ESDval");
+      
       
     }
   }
@@ -936,7 +955,7 @@ function stopExperiment(){
 
     function arranque(){
       
-      new Init("myCanvas", "esd");
+      varInit = new Init("myCanvas", "esd");
       myInit2();
       setTimeout(function(){
         myApp.hidePleaseWait()
