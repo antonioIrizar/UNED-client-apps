@@ -563,8 +563,24 @@ if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"){
 }
 
 if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
-  $(".slider-horizontal-axis").val(msg.payload.responseData.data);
+  horizontalAxis = reciveData(msg.payload.responseData.data[0], horizontalAxis);
+  $(".slider-horizontal-axis").val( horizontalAxis);
+  console.log(horizontalAxis);
+  myApp.hidePleaseWait();
 }
+
+if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Paneltilt"){
+  verticalAxis = reciveData(msg.payload.responseData.data, verticalAxis);
+  $(".slider-vertical-axis").val(verticalAxis);
+  myApp.hidePleaseWait();
+}
+
+if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Sun"){
+  lumens = reciveData(msg.payload.responseData.data, lumens);
+  $(".slider-lumens").val(lumens);
+  myApp.hidePleaseWait();
+}
+
 
 
 /*
@@ -601,6 +617,13 @@ else{
  
 //  console.log("received: [", data, "]");
 */
+}
+function reciveData(dataRecive, actuator){
+  if (actuator == null)
+    return dataRecive;
+  else 
+    return actuator + dataRecive;
+
 }
 
 function wsclose(event)
@@ -862,22 +885,25 @@ function sendLumens(){
   //var move =  realValueToSend(auxLumens, lumens);
   if (lumens  != 0){
     sendActuatorChange('Sun', lumens.toString());
+    myApp.showPleaseWait();
   }
 };
 function sendHorizontalAxis(){
-  var auxHorizontalAxis = horizontalAxis;
-  horizontalAxis = $(".slider-horizontal-axis").val();
-  var move = realValueToSend(auxHorizontalAxis, horizontalAxis);
+  var oldHorizontalAxis = horizontalAxis;
+  var auxHorizontalAxis = $(".slider-horizontal-axis").val();
+  var move = realValueToSend(oldHorizontalAxis, auxHorizontalAxis);
   if (move != 0){
     sendActuatorChange('Panelrot', move.toString());
+    myApp.showPleaseWait();
   }
 };
 function sendVerticalAxis(){
-  var auxVerticalAxis = verticalAxis;
-  verticalAxis = -$(".slider-vertical-axis").val();
-  var move = realValueToSend(auxVerticalAxis, verticalAxis);
+  var oldVerticalAxis = verticalAxis;
+  var auxVerticalAxis = -$(".slider-vertical-axis").val();
+  var move = realValueToSend(oldVerticalAxis, auxVerticalAxis);
   if (move != 0){
     sendActuatorChange('Paneltilt', move.toString());
+    myApp.showPleaseWait();
   }
 };
 
