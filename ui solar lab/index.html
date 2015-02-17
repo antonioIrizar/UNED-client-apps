@@ -571,7 +571,8 @@ if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
 
 if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Paneltilt"){
   verticalAxis = reciveData(msg.payload.responseData.data, verticalAxis);
-  $(".slider-vertical-axis").val(verticalAxis);
+  console.log(verticalAxis);
+  $(".slider-vertical-axis").val(-verticalAxis);
   myApp.hidePleaseWait();
 }
 
