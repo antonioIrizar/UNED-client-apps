@@ -562,6 +562,10 @@ if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"){
   }
 }
 
+if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
+  $(".slider-horizontal-axis").val(msg.payload.responseData.data);
+}
+
 
 /*
 "{"method":"sendActuatorData","accessRole":"controller","payload":{"actuatorId":"ESD","responseData":{"valueNames":["State"],"data":[1],"lastMeasured":["13022015T095315"]}}}"
@@ -757,16 +761,17 @@ function confirmAccept(){
   auxHorizontalAxis = getValueRadius("horizontalAxis");
 
   if (auxLumens!=null) {
-    lumens = auxLumens;
+    sendLumens();
   };
 
   if (auxVerticalAxis!=null) {
-    verticalAxis = auxVerticalAxis;
+    sendVerticalAxis();
   };
 
   if (auxHorizontalAxis!=null) {
-    horizontalAxis = auxHorizontalAxis;
+    sendHorizontalAxis();
   };
+  sendActuatorChange('ESD', "1");
   cleanForm();
   disable();
 };
@@ -817,9 +822,9 @@ function startExperiments(){
       $('#myModalConfirm').modal('show');
     }
     else{
-      //sendLumens();
-      //sendHorizontalAxis();
-      //sendVerticalAxis();
+      sendLumens();
+      sendHorizontalAxis();
+      sendVerticalAxis();
       //sendActuatorChange('Sun', $(".slider-lumens").val());
       //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
       //try this line with minus
@@ -827,9 +832,7 @@ function startExperiments(){
       //sendActuatorChange('ESDJ', $(".slider-battery").val());
       //sendActuatorChange('Elapsed', $(".slider-time").val());
       disable();
-      sendActuatorChange('ESD', "1");
-      
-      
+      sendActuatorChange('ESD', "1"); 
     }
   }
 };

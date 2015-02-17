@@ -15,8 +15,8 @@ window.sliders = sliders = ->
     step: 1,
     connect: "lower",
     range: {
-      'min': [-150],
-      'max': [150]
+      'min': [-110],
+      'max': [110]
     }
   })
 
@@ -26,7 +26,7 @@ window.sliders = sliders = ->
     connect: "lower",
     range: {
       'min': [0],
-      'max': [90]
+      'max': [60]
     }
   })
 
