@@ -550,7 +550,7 @@ if(msg.method == "sendActuatorData"){
 }
 
 if (msg.method == "getSensorData" && msg.sensorId == "ESDval"){
-  if (msg.responseData.valueNames.length == 4){
+  if (msg.responseData.valueNames.length == 7){
     console.log(msg.responseData.data[0]);
     varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[3])
   }
@@ -570,14 +570,15 @@ if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
 }
 
 if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Paneltilt"){
-  verticalAxis = reciveData(msg.payload.responseData.data, verticalAxis);
-  console.log(verticalAxis);
+  verticalAxis = reciveData(msg.payload.responseData.data[0], verticalAxis);
+  console.log( $(".slider-vertical-axis").noUiSlider('options').range.min[0]);
   $(".slider-vertical-axis").val(-verticalAxis);
   myApp.hidePleaseWait();
 }
 
 if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Sun"){
-  lumens = reciveData(msg.payload.responseData.data, lumens);
+  lumens = reciveData(msg.payload.responseData.data[0], lumens);
+  console.log(lumens);
   $(".slider-lumens").val(lumens);
   myApp.hidePleaseWait();
 }
@@ -619,11 +620,15 @@ else{
 //  console.log("received: [", data, "]");
 */
 }
-function reciveData(dataRecive, actuator){
+function reciveData(dataRecive, actuator, slider){
+  var result;
   if (actuator == null)
-    return dataRecive;
+    result = dataRecive;
   else 
-    return actuator + dataRecive;
+    result = actuator + dataRecive;
+
+  //if (result
+    return result;
 
 }
 
@@ -881,11 +886,10 @@ function errorLumens(){
   $('#myModalError').modal('show');
 };
 function sendLumens(){
-  var auxLumens = lumens;
-  lumens = $(".slider-lumens").val();
+  var auxLumens = $(".slider-lumens").val();
   //var move =  realValueToSend(auxLumens, lumens);
-  if (lumens  != 0){
-    sendActuatorChange('Sun', lumens.toString());
+  if (auxLumens  != 0){
+    sendActuatorChange('Sun', auxLumens.toString());
     myApp.showPleaseWait();
   }
 };
