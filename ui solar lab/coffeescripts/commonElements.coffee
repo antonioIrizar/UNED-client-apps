@@ -50,6 +50,7 @@ class CommonElements
         postfix: '%'
         })
         })
+        $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
 
     time: ->
 
@@ -93,6 +94,7 @@ class CommonElements
         countdown:true,
         fontSize: 14,
         });
+        $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
 
 
 

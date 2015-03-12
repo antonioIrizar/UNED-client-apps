@@ -113,7 +113,7 @@ class SolarElements
         postfix: 'º'
         })
         })
-
+        $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
 
 
 window.SolarElements = SolarElements

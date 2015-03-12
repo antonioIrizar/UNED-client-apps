@@ -101,7 +101,7 @@
           postfix: 'º'
         })
       });
-      return $(".slider-horizontal-axis").noUiSlider_pips({
+      $(".slider-horizontal-axis").noUiSlider_pips({
         mode: 'count',
         values: 11,
         density: 2,
@@ -109,6 +109,9 @@
         format: wNumb({
           postfix: 'º'
         })
+      });
+      return $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
+        return $(this).html("<span>" + Math.floor(value) + "</span>");
       });
     };
 

@@ -44,7 +44,7 @@
           'max': [100]
         }
       });
-      return $(".slider-battery").noUiSlider_pips({
+      $(".slider-battery").noUiSlider_pips({
         mode: 'count',
         values: 10,
         density: 2,
@@ -52,6 +52,9 @@
         format: wNumb({
           postfix: '%'
         })
+      });
+      return $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
+        return $(this).html("<span>" + Math.floor(value) + "</span>");
       });
     };
 
@@ -85,10 +88,13 @@
           postfix: '\''
         })
       });
-      return $('#countdown').timeTo({
+      $('#countdown').timeTo({
         seconds: 3,
         countdown: true,
         fontSize: 14
+      });
+      return $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
+        return $(this).html("<span>" + Math.floor(value) + "</span>");
       });
     };
 
