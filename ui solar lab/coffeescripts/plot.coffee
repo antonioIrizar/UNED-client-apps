@@ -14,13 +14,15 @@ class Plot
     inputCurrent: null
     inputVoltage: null 
     workToDo: null
+    stop: true
 
     constructor:  ->
         @data = [[]]
         #@esd = new Esd idCanvas, img
         @chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        @resize()
+        @stop = true
         google.setOnLoadCallback @drawChart()
+        #@resize()
         #@init()
             
         ###
@@ -34,14 +36,42 @@ class Plot
         ###
     resize: ->
         if window.innerWidth >= 1200
-            height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
+            height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("webcam").offsetHeight - 90
             height = height - 20
+            @options = {
+                chartArea:{left:40,top:20,height: height-50, width:"100%"},
+                legend: {position: 'none'}   
+                series: {
+                    0: {color: "red"},
+                    1: { color: "green"},
+                    2: { color: "blue"},
+                    }    
+            }
         else
-            height = document.getElementById("chart_div").offsetWidth *0.6
-        document.getElementById("chart_div").setAttribute "style","height:"+ height + "px"
+            height = 250
+            @options = {
+                chartArea:{left:40,top:20,height: "200", width:"100%"},
+                legend: {position: 'none'}   
+                series: {
+                    0: {color: "red"},
+                    1: { color: "green"},
+                    2: { color: "blue"},
+                    }    
+            }
+        
 
-    resizeEvent: ->
-        #@esd.drawImageInCanvas()
+        if window.innerWidth < 760 
+            margin = Math.round((760 - window.innerWidth)*0.12)
+            document.getElementById("legend").setAttribute "style", "margin-left: -" + margin + "px"
+        else
+            document.getElementById("legend").removeAttribute "style"
+
+        #fix this problems with full resolutions
+        document.getElementById("chart_div").setAttribute "style","height:"+ height + "px"
+        @chart.draw(@dataPlot, @options)
+
+    resizeEvent: (esd) ->
+        esd.drawImageInCanvas()
         @resize()
         if @initChart 
             if @time > 18
@@ -57,21 +87,31 @@ class Plot
 
             if a >0
                 @options1 = {
-                    chartArea:{left:40,top:20,height: "80%", width:"85%"},
+                    chartArea:{left:40,top:20,height: "80%", width:"100%"},
                     legend: {position: 'none'},
                     animation:{
                         duration: a ,
                         easing: 'linear',
                         }
+                    series: {
+                        0: {color: "red"},
+                        1: { color: "green"},
+                        2: { color: "blue"},
+                    }    
                 }
             else
                 @options1 = {
-                    chartArea:{left:40,top:20,height: "80%", width:"85%"},
+                    chartArea:{left:40,top:20,height: "80%", width:"100%"},
                     legend: {position: 'none'},
                     animation:{
                         duration: 1,
                         easing: 'linear',
                     }
+                    series: {
+                        0: {color: "red"},
+                        1: { color: "green"},
+                        2: { color: "blue"},
+                    }    
                 }
             @chart.draw(@dataPlot, @options1)
                 
@@ -84,8 +124,13 @@ class Plot
         @data[@time] = ['0', 0.000, 0.000, 0.000]
         @time++
         @options = {
-            chartArea:{left:40,top:20,height: "80%", width:"85%"},
-            legend: {position: 'none'}       
+            chartArea:{left:40,top:20,height: "80%", width:"100%"},
+            legend: {position: 'none'}   
+            series: {
+                0: {color: "red"},
+                1: { color: "green"},
+                2: { color: "blue"},
+                }    
         }
         @chart.draw(@dataPlot, @options)
 
@@ -93,34 +138,44 @@ class Plot
         #@chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         google.visualization.events.addListener @chart, 'animationfinish', => 
             console.log "dentro del lisenet"
-
-            if @time > 18
-                @dataPlot.removeRow 0
-            @data[@time] = [''+(@time), parseFloat(@inputCurrent.toFixed(3)), parseFloat(@inputVoltage.toFixed(3)), parseFloat(@workToDo.toFixed(3))]
-            @dataPlot.addRow @data[@time]
-            @time++
-            @options1 = {
-                chartArea:{left:40,top:20,height: "80%", width:"85%"},
-                legend: {position: 'none'},
-                animation:{
-                    duration: 1900,
-                    easing: 'linear',
+            if not @stop
+                if @time > 18
+                    @dataPlot.removeRow 0
+                @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
+                @dataPlot.addRow @data[@time]
+                @time++
+                @options1 = {
+                    chartArea:{left:40,top:20,height: "80%", width:"100%"},
+                    legend: {position: 'none'},
+                    animation:{
+                        duration: 1900,
+                        easing: 'linear',
+                    }
+                    series: {
+                        0: {color: "red"},
+                        1: { color: "green"},
+                        2: { color: "blue"},
+                    }    
                 }
-            }
-            @chart.draw(@dataPlot, @options1)
+                @chart.draw(@dataPlot, @options1)
             #@esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)     
 
     init: ->
-        @data[@time] = [''+(@time), parseFloat(@inputCurrent.toFixed(3)), parseFloat(@inputVoltage.toFixed(3)), parseFloat(@workToDo.toFixed(3))]
+        @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
         @dataPlot.addRow @data[@time]
         @time++
         @options1 = {
-                chartArea:{left:40,top:20,height: "80%", width:"85%"},
+                chartArea:{left:40,top:20,height: "80%", width:"100%"},
                 legend: {position: 'none'},
                 animation:{
                     duration: 900,
                     easing: 'linear',
                 }
+                series: {
+                    0: {color: "red"},
+                    1: { color: "green"},
+                    2: { color: "blue"},
+                }    
             }
         @chart.draw(@dataPlot, @options1)
         ###

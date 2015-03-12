@@ -3,7 +3,8 @@
   <head>
     <title>Solar Lab</title>
     <link rel="shortcut icon" href="favicon.ico" />
-    <meta charset="utf-8" />
+    <meta charset="utf-8"  />
+    <meta content="X-Content-Type-Options=nosniff" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Antonio Jesus Iŕizar López" />
     <meta name="description" content="Solar Laboratory" />
@@ -111,6 +112,10 @@
   <script src="javascripts/plot.js"></script>
   <script src="javascripts/sliders.js"></script>
   <script src="javascripts/esd.js"></script>
+  <script src="javascripts/item.js"></script>
+  <script src="javascripts/elements.js"></script>
+  <script src="javascripts/solarElements.js"></script>
+  <script src="javascripts/commonElements.js"></script>
   <script src="javascripts/init.js"></script>
   </head>
   <body onload="arranque()">
@@ -137,83 +142,13 @@ myApp = myApp || (function () {
             <div class="panel-heading">
               <h3 class="panel-title">Elements you can interact with</h3>
             </div>
-            <div id="elements-interect" class="panel-body">
-              <div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3">
-                  <img src="images/bulb.png" class="img-responsive" alt="bulb">
-                </div>
-                <div class="col-xs-9 col-lg-9">
-                  <form class="form" role="form" autocomplete="off">
-                    <div class="form-group">
-                      <strong>Lumens</strong>
-                      <button onclick="sendLumens()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                      <div class="slidera">
-                        <div id="slider-lumens" class="slider slider-lumens"></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3">
-                  <img src="images/solar_panel.png" class="img-responsive" alt="solar panel">
-                </div>
-                <div class="col-xs-9 col-lg-9">
-                  <p class="text-center"><strong>Spin of the solar panel on:</strong></p>
-                  <form class="form" role="form" autocomplete="off">
-                    <div class="form-group">
-                      <strong>Horizontal axis</strong>
-                      <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                      <div class="slidera">
-                        <div id="slider-horizontal-axis" class="slider slider-horizontal-axis"></div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <strong>Vertical axis</strong>
-                      <button onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                      <div class="slidera">
-                        <div id="slider-vertical-axis" class="slider slider-vertical-axis"></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3">
-                  <p class="text-center">10%</p>
-                  <img id="img-battery" src="images/battery1.png" class="img-responsive" alt="battery">
-                </div>
-                <div class="col-xs-9 col-lg-9">
-                  <form class="form" role="form">
-                    <div class="form-group">
-                      <strong>
-                        How much charge do you want? 
-                      </strong>
-                      <a class="info-pop-up" data-container="body" data-toggle="popover"  tabindex="0" data-trigger="focus"  data-content="And here's some amazing content. It's very engaging. Right?">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                      </a>
-                      <div class="slidera">
-                        <div id="slider-battery" class="slider slider-battery"></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3">
-         
-                  <div id="countdown"></div>
-    
-                </div>
-                <div class="col-xs-9 col-lg-9">
-                  <form class="form" role="form">
-                    <div class="form-group">
-                      <strong>
-                        Time charging
-                      </strong>
-                      <a href="#" data-toggle="modal" data-target="#myModal">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                      </a>
+            <div class="panel-body">
+            <div id="not-common-elements">
+
+            </div>
+              <div id="elements-commons">
+
+              
                         <!-- Modal -->
                         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                           <div class="modal-dialog">
@@ -259,13 +194,9 @@ myApp = myApp || (function () {
                             </div>
                           </div>
                         </div>
-                      <div class="slidera">
-                        <div id="slider-time" class="slider slider-time"></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
+
+    
+  </div>
               <div class="row">
                 <div id="adapt-to-height"></div>
                 <div class="center-block text-center">
@@ -276,6 +207,9 @@ myApp = myApp || (function () {
                   </form>
                 </div>
               </div> 
+            
+          
+
             </div>
           </div>
         </div>
@@ -296,21 +230,16 @@ myApp = myApp || (function () {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xs-4 col-lg-4">
-                      <img id="turn" src="images/turn.png" class="img-responsive" alt="move weigth">
-                    </div>
-                    <div class="col-xs-8 col-lg-8">
+                    <div class="col-lg-12">
                       <strong>
-                        Move the weigth(comming soon)
+                        Select the follow the options:
                       </strong>
                       <a href="#" data-toggle="modal" data-target="#myModal">
                         <span class="glyphicon glyphicon-info-sign"></span>
                       </a>
-                      <div class="slidera">
-                        <div class="slider slider-weigth"></div>
-                      </div>
-                      <div class="center-block text-center">
-                        <button type="button" class="btn btn-success disabled">Start</button>
+                      <div style="margin-top: 10px" class="center-block text-center">
+                        <button type="button" class="btn btn-success disabled">charging</button>
+                        <button type="button" class="btn btn-danger disabled">discharging</button>
                       </div>
                     </div>
                   </div>
@@ -318,15 +247,16 @@ myApp = myApp || (function () {
               </div>
             </div>
           <div class="col-lg-7" >
-            <div  class="panel panel-success">
+            <div id="webcam" class="panel panel-success">
               <div class="panel-heading">
                 <h3 class="panel-title">Webcam</h3>
               </div>
               <div id="panelGraph" class="panel-body ">
                 <!--<img src="http://62.204.201.150:31/snapshot.cgi?&user=userSolar&pwd=&t=" onload='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 1)' onerror='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 5000)' alt='' class="img-responsive"/>-->
               <!--<img src="images/webcam.JPG" class="img-responsive">      -->
-                <img src="http://62.204.201.150:31/videostream.cgi?user=userSolar&amp;pwd=" class="img-responsive" alt="">
+                <img  id="imgCamera" src="" class="img-responsive" alt="">
 <!--
+  src="http://62.204.201.150:31/videostream.cgi?user=userSolar&amp;pwd="
 <iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
               </div>
             </div>
@@ -372,7 +302,16 @@ myApp = myApp || (function () {
               <!-- Modal -->
             </div>
             <div class="panel-body">
-              <div id="chart_div"></div>
+              <div class="row">
+                <div id="chart_div" class="col-lg-10 col-xs-10"></div>
+                <div id="legend" class="col-lg-2 col-xs-2">
+                  <ul style="list-style-type:square"> 
+                    <li style="color:red">Amps</li>
+                    <li style="color:green">Volts</li>
+                    <li style="color:blue">Joules</li>
+                  </ul> 
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -436,9 +375,13 @@ myApp = myApp || (function () {
     var lumens = null,
       verticalAxis = null,
       horizontalAxis = null,
-      varInit = null;
+      varInit = null,
+      wsCameraIsReady = false,
+      wsIsReady = false,
+      startExperiment = false,
+      actualBattery = null;
 
-  function disable(){
+  function disableAll(){
     $(".slider-battery").attr('disabled', 'disabled');
     $(".slider-lumens").attr('disabled', 'disabled');
     $(".slider-time").attr('disabled', 'disabled');
@@ -447,6 +390,12 @@ myApp = myApp || (function () {
     $("#startExperiment").attr('disabled', 'disabled');
     $(".button-accept").attr('disabled', 'disabled');
   };
+
+  function disable(){
+    $("#startExperiment").attr('disabled', 'disabled');
+    $(".slider-time").attr('disabled', 'disabled');
+    $(".slider-battery").attr('disabled', 'disabled');
+  }
 
   function enable(){
     $(".slider-battery").removeAttr('disabled');
@@ -465,10 +414,13 @@ $('#countdown').timeTo({
   });
  function wsopen(event)
 {
-  console.log("aqui");
-  alert("websocket " + event + " is open");
+  //alert("websocket " + event + " is open");
+  //send laboratory start
+  console.log("abierto el ws");
   sendActuatorChange('SolarLab', "1");
- 
+  
+        //improve this
+  
   //ws.send('{"method": "getSensorMetadata"}'); // get sensor info
   //ws.send('{"method": "getActuatorMetadata"}'); // just pretend we don't know
   /*
@@ -526,8 +478,8 @@ function sendActuatorChange(actuatorId, data) {
 
 }
 
-function getSensorData(sensorId){
-  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": 'controller', "updateFrequency":"1", "sensorId":sensorId});
+function getSensorData(sensorId, accessRole){
+  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId});
   ws.send(jsonRequest);
 }
 
@@ -535,50 +487,84 @@ function wsmessage(event)
 {
  var data = event.data+"";
 console.log(data);
-console.log("despues del parser");
 var msg = JSON.parse(data);
 console.log(msg);
 
+//improve this with case
 if(msg.method == "sendActuatorData"){
   if (msg.responseMessages != null && msg.responseMessages.code == 409){
     alert("You can't controller the laboratory. Other user is used it")
     console.log("codigo 409");
-    disable();
+    disableAll();
     $("#stop").attr('disabled', 'disabled');
     $("#reset").attr('disabled', 'disabled');
+    getSensorData("ESDval", "observer");
+    getSensorData("Light", "observer");
+    getSensorData("PanelRot", "observer");
+    getSensorData("PanelTilt", "observer");
+    return;
   }
-}
+  if (msg.payload.actuatorId == "SolarLab" && msg.payload.responseData.data == 1){
+    getSensorData("ESDval", "controller");
+    $("#stop").attr('disabled', 'disabled');
+    $("#reset").attr('disabled', 'disabled');
+    return;
 
-if (msg.method == "getSensorData" && msg.sensorId == "ESDval"){
-  if (msg.responseData.valueNames.length == 7){
-    varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[3])
   }
 }
 
 if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"){
-  if (msg.payload.responseData.data == 1){
-    getSensorData("ESDval");
+    if (msg.payload.responseData.data == 1){
+      getSensorData("ESDval", "controller");
+      $("#stop").removeAttr('disabled');
+      $("#reset").removeAttr('disabled');
+      return;
+    }
   }
+
+  if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
+    horizontalAxis = reciveData(parseInt(msg.payload.responseData.data[0]), horizontalAxis, ".slider-horizontal-axis", "Panelrot");
+    $(".slider-horizontal-axis").val( horizontalAxis);
+    myApp.hidePleaseWait();
+    return;
+  }
+
+  if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Paneltilt"){
+    verticalAxis = reciveData(parseInt(msg.payload.responseData.data[0]), verticalAxis, ".slider-vertical-axis", "Paneltilt"); 
+    $(".slider-vertical-axis").val(verticalAxis);
+    myApp.hidePleaseWait();
+    return;
+  }
+
+  if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Sun"){
+    lumens = reciveData(parseInt(msg.payload.responseData.data[0]), lumens, ".slider-lumens", "Sun"); 
+    $(".slider-lumens").val(lumens);
+    myApp.hidePleaseWait();
+    return;
+  }
+
+if (msg.method == "getSensorData" && msg.sensorId == "ESDval"){
+  if (msg.responseData.valueNames.length == 7){
+    varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6]);
+  }
+  finishInitLoading(msg.responseData.data[0]);
 }
 
-if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
-  horizontalAxis = reciveData(msg.payload.responseData.data[0], horizontalAxis);
-  $(".slider-horizontal-axis").val( horizontalAxis);
-  myApp.hidePleaseWait();
+if (msg.method == "getSensorData" && msg.sensorId == "Light"){
+  $(".slider-lumens").val(parseInt(msg.responseData.data[0]));
+  return;
+}
+if (msg.method == "getSensorData" && msg.sensorId == "PanelTilt"){
+  $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]));
+  return;
+}
+if (msg.method == "getSensorData" && msg.sensorId == "PanelRot"){
+  $(".slider-horizontal-axis").val(parseInt(msg.responseData.data[0]));
+  return;
 }
 
-if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Paneltilt"){
-  verticalAxis = reciveData(msg.payload.responseData.data[0], verticalAxis);
-  $(".slider-vertical-axis").val(-verticalAxis);
-  myApp.hidePleaseWait();
-}
 
-if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Sun"){
-  lumens = reciveData(msg.payload.responseData.data[0], lumens);
-  $(".slider-lumens").val(lumens);
-  myApp.hidePleaseWait();
-}
-
+// put recive message jouls and time
 
 
 /*
@@ -616,40 +602,112 @@ else{
 //  console.log("received: [", data, "]");
 */
 }
-function reciveData(dataRecive, actuator, slider){
+
+function finishInitLoading(data){
+  if (!wsIsReady){
+    $(".slider-battery").val(data);
+    actualBattery = data;
+    $("p#textBattery").text(data + "%");
+    if (wsCameraIsReady)
+      myApp.hidePleaseWait();
+    wsIsReady = true;
+  }
+}
+
+function reciveData(dataRecive, dataActuator, slider, nameActuator){
   var result;
-  if (actuator == null)
+  if (dataActuator == null || nameActuator == "Sun")
     result = dataRecive;
   else 
-    result = actuator + dataRecive;
+    result = dataRecive + dataActuator;
 
-  //if (result
+  if (result < $(slider).noUiSlider('options').range.min[0]){
+    console.log((Math.abs(result) + $(slider).noUiSlider('options').range.min[0]));
+    sendActuatorChange(nameActuator, (Math.abs(result) + $(slider).noUiSlider('options').range.min[0]).toString());
+    result = $(slider).noUiSlider('options').range.min[0];
+    console.log("minimo");
+  }
+  else{
+    if (result > $(slider).noUiSlider('options').range.max[0]){
+      console.log($(slider).noUiSlider('options').range.max[0]-result);
+      sendActuatorChange(nameActuator, ($(slider).noUiSlider('options').range.max[0]-result).toString());
+      result = $(slider).noUiSlider('options').range.max[0];
+      console.log("maximo");
+    }
+  }
+  console.log("dentro una vez");
     return result;
 
 }
-
+/*
 function wsclose(event)
 {
 //   item = document.getElementById("receive");
 //  item.firstChild.nodeValue +=  " websocket is closed";
 alert("websocket " + event + " is closed");
 }
-
+*/
 
 function myInit2(evt) { 
-ws = new WebSocket("ws://62.204.201.214:8081");
-//ws = new WebSocket("ws://62.204.201.218:8081");
+console.log("iniciando");
+wsIsReady = false;
+wsCameraIsReady = false;
 
-wsopen.ws = ws;
+//ws = new WebSocket("ws://62.204.201.214:8081");
+ws = new WebSocket("ws://62.204.201.214:8081");
+
+
+wsCamera = new WebSocket("ws://62.204.201.214:8081");
+
+  wsCamera.binaryType = 'arraybuffer';
+wsCamera.onopen = function(){
+  console.log("abriendo websocket camara");
+  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": 'observer',  "updateFrequency":"1", "sensorId":"video"});
+  wsCamera.send(jsonRequest);
+}
+wsCamera.onmessage = function (msg){
+  //console.log(msg.data); 
+   var arrayBuffer = msg.data;
+   var bytes = new Uint8Array(arrayBuffer);
+   var blob = new Blob([bytes.buffer]);
+
+   var image = document.getElementById('imgCamera');
+
+   var reader = new FileReader();
+   reader.onload = function(e) {
+       image.src = e.target.result;
+   };
+   reader.readAsDataURL(blob);
+   if (!wsCameraIsReady){
+      wsCameraIsReady = true;
+      if (wsIsReady)
+        myApp.hidePleaseWait();
+   }
+}
+ wsCamera.onclose = function(code, reason){
+  console.log(code);
+  console.log(reason);
+};
+
+
+     wsopen.ws = ws;
 ws.onopen = wsopen;
+ ws.onerror = function(msg){
+  console.log(msg);
+ }
 /*ws.onopen =  function (event) 
      { alert("websocket " + event + " is open");
   ws.send("hello dear");
 
 };*/
-console.log("caca");
+
 ws.onmessage = wsmessage;
-ws.onclose = wsclose;
+ws.onclose = function(code, reason){
+  console.log(code);
+  console.log(reason);
+};
+
+
 } 
 
   
@@ -785,17 +843,24 @@ function confirmAccept(){
   auxVerticalAxis = getValueRadius("verticalAxis");
   auxHorizontalAxis = getValueRadius("horizontalAxis");
 
-  if (auxLumens!=null) {
+  if (auxLumens != null && lumens != auxLumens) 
     sendLumens();
-  };
+  else
+    $(".slider-lumens").val(lumens);
 
-  if (auxVerticalAxis!=null) {
+  if (auxVerticalAxis!=null && verticalAxis != auxVerticalAxis) 
     sendVerticalAxis();
-  };
+  else
+    $(".slider-vertical-axis").val(verticalAxis);
 
-  if (auxHorizontalAxis!=null) {
+  if (auxHorizontalAxis!=null && horizontalAxis != auxHorizontalAxis) 
     sendHorizontalAxis();
-  };
+  else
+    $(".slider-horizontal-axis").val(horizontalAxis);
+
+  sendTime();
+  sendJouls();
+
   sendActuatorChange('ESD', "1");
   cleanForm();
   disable();
@@ -829,6 +894,8 @@ function startExperiments(){
     var modal = false;
 
     if (lumens != null && lumens != $(".slider-lumens").val()){
+      console.log(lumens);
+      console.log($(".slider-lumens").val());
       newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString(), "lumens");
       modal = true;
     }
@@ -847,9 +914,21 @@ function startExperiments(){
       $('#myModalConfirm').modal('show');
     }
     else{
+      startExperiment = true;
+      /* revisar esto */
+      /*
       sendLumens();
       sendHorizontalAxis();
       sendVerticalAxis();
+      */
+      if (lumens != $(".slider-lumens").val())
+        sendLumens();
+      if (horizontalAxis != $(".slider-horizontal-axis").val())
+        sendHorizontalAxis();
+      if (verticalAxis != $(".slider-vertical-axis").val())
+        sendVerticalAxis();
+      sendTime();
+      sendJouls();
       //sendActuatorChange('Sun', $(".slider-lumens").val());
       //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
       //try this line with minus
@@ -860,6 +939,7 @@ function startExperiments(){
       sendActuatorChange('ESD', "1"); 
     }
   }
+  varInit.stopFalse();
 };
 
 function resetExperiment(){
@@ -876,13 +956,23 @@ function resetExperiment(){
   $(".slider-battery").val(10);
   $(".slider-time").val(0);
   //Reset experiment
-  sendActuatorChange('SolarLab', "0");
+  varInit.stopTrue();
+  sendActuatorChange('SolarLab', "0"); 
+  //try this, i don't know if it'll work
+  sendActuatorChange('SolarLab', "1"); 
 }
+
 function errorLumens(){
   $('#myModalError').modal('show');
 };
+
 function sendLumens(){
   var auxLumens = $(".slider-lumens").val();
+  //block 680 for problems with it
+  if (auxLumens == 680){
+    console.log("poner 681");
+    auxLumens = 660;
+  }
   //var move =  realValueToSend(auxLumens, lumens);
   if (auxLumens  != 0){
     sendActuatorChange('Sun', auxLumens.toString());
@@ -900,13 +990,25 @@ function sendHorizontalAxis(){
 };
 function sendVerticalAxis(){
   var oldVerticalAxis = verticalAxis;
-  var auxVerticalAxis = -$(".slider-vertical-axis").val();
+  var auxVerticalAxis = $(".slider-vertical-axis").val();
   var move = realValueToSend(oldVerticalAxis, auxVerticalAxis);
   if (move != 0){
     sendActuatorChange('Paneltilt', move.toString());
     myApp.showPleaseWait();
   }
 };
+
+function sendTime(){
+  var time = $(".slider-time").val();
+  if (time != 0)
+    sendActuatorChange('Elapsed',time);
+}
+
+function sendJouls(){
+  var jouls =realValueToSend(actualBattery, $(".slider-battery").val());
+  if (jouls != 0)
+    sendActuatorChange('TOgetJ',jouls);
+}
 
 function realValueToSend(oldNumber, newNumber){
   if (oldNumber==null){
@@ -937,9 +1039,11 @@ function newRadio(value, checked, newOrOld, name){
   input.setAttribute('type', 'radio');
   input.setAttribute('name', name);
   input.setAttribute('value', value);
+  
   if (checked){
     input.setAttribute('checked', true);
   }
+
   labelRadio.appendChild(input);
   text = document.createTextNode(value + newOrOld);
   labelRadio.appendChild(text);
@@ -950,6 +1054,7 @@ function stopExperiment(){
   sendActuatorChange('ESD', "0");
   //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
   //ws.send(jsonRequest);
+  varInit.stopTrue();
   enable();
 };
 
@@ -983,15 +1088,37 @@ function stopExperiment(){
   
 });
 
+  $('.slider-battery').on(
+  "set", function(event){
+
+    a = $(".slider-battery").val();
+    
+    // need this for bug in library noUIslider
+    if(a == 100){
+      a = 100;
+    }
+    if (a < actualBattery){
+      $(".slider-battery").val(actualBattery);
+    }
+
+   
+
+});
+
     function arranque(){
-      
-      varInit = new Init("myCanvas", "esd");
+  
+
+            varInit = new Init("myCanvas", "esd");
       myInit2();
+      new SolarElements();
+      new CommonElements();
       setTimeout(function(){
-        myApp.hidePleaseWait()
+        myApp.hidePleaseWait();
+     
+          
 
       },1000);
-      console.log($(".slider-lumens").val());
+
 
     };
   

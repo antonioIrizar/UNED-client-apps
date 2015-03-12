@@ -29,10 +29,12 @@
 
     Plot.prototype.workToDo = null;
 
+    Plot.prototype.stop = true;
+
     function Plot() {
       this.data = [[]];
       this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      this.resize();
+      this.stop = true;
       google.setOnLoadCallback(this.drawChart());
 
       /*
@@ -47,18 +49,70 @@
     }
 
     Plot.prototype.resize = function() {
-      var height;
+      var height, margin;
       if (window.innerWidth >= 1200) {
-        height = document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90;
+        height = document.getElementById("div_formula_col").offsetHeight - document.getElementById("webcam").offsetHeight - 90;
         height = height - 20;
+        this.options = {
+          chartArea: {
+            left: 40,
+            top: 20,
+            height: height - 50,
+            width: "100%"
+          },
+          legend: {
+            position: 'none'
+          },
+          series: {
+            0: {
+              color: "red"
+            },
+            1: {
+              color: "green"
+            },
+            2: {
+              color: "blue"
+            }
+          }
+        };
       } else {
-        height = document.getElementById("chart_div").offsetWidth * 0.6;
+        height = 250;
+        this.options = {
+          chartArea: {
+            left: 40,
+            top: 20,
+            height: "200",
+            width: "100%"
+          },
+          legend: {
+            position: 'none'
+          },
+          series: {
+            0: {
+              color: "red"
+            },
+            1: {
+              color: "green"
+            },
+            2: {
+              color: "blue"
+            }
+          }
+        };
       }
-      return document.getElementById("chart_div").setAttribute("style", "height:" + height + "px");
+      if (window.innerWidth < 760) {
+        margin = Math.round((760 - window.innerWidth) * 0.12);
+        document.getElementById("legend").setAttribute("style", "margin-left: -" + margin + "px");
+      } else {
+        document.getElementById("legend").removeAttribute("style");
+      }
+      document.getElementById("chart_div").setAttribute("style", "height:" + height + "px");
+      return this.chart.draw(this.dataPlot, this.options);
     };
 
-    Plot.prototype.resizeEvent = function() {
+    Plot.prototype.resizeEvent = function(esd) {
       var a, b, d;
+      esd.drawImageInCanvas();
       this.resize();
       if (this.initChart) {
         if (this.time > 18) {
@@ -77,7 +131,7 @@
               left: 40,
               top: 20,
               height: "80%",
-              width: "85%"
+              width: "100%"
             },
             legend: {
               position: 'none'
@@ -85,6 +139,17 @@
             animation: {
               duration: a,
               easing: 'linear'
+            },
+            series: {
+              0: {
+                color: "red"
+              },
+              1: {
+                color: "green"
+              },
+              2: {
+                color: "blue"
+              }
             }
           };
         } else {
@@ -93,7 +158,7 @@
               left: 40,
               top: 20,
               height: "80%",
-              width: "85%"
+              width: "100%"
             },
             legend: {
               position: 'none'
@@ -101,6 +166,17 @@
             animation: {
               duration: 1,
               easing: 'linear'
+            },
+            series: {
+              0: {
+                color: "red"
+              },
+              1: {
+                color: "green"
+              },
+              2: {
+                color: "blue"
+              }
             }
           };
         }
@@ -117,44 +193,68 @@
           left: 40,
           top: 20,
           height: "80%",
-          width: "85%"
+          width: "100%"
         },
         legend: {
           position: 'none'
+        },
+        series: {
+          0: {
+            color: "red"
+          },
+          1: {
+            color: "green"
+          },
+          2: {
+            color: "blue"
+          }
         }
       };
       this.chart.draw(this.dataPlot, this.options);
       return google.visualization.events.addListener(this.chart, 'animationfinish', (function(_this) {
         return function() {
           console.log("dentro del lisenet");
-          if (_this.time > 18) {
-            _this.dataPlot.removeRow(0);
-          }
-          _this.data[_this.time] = ['' + _this.time, parseFloat(_this.inputCurrent.toFixed(3)), parseFloat(_this.inputVoltage.toFixed(3)), parseFloat(_this.workToDo.toFixed(3))];
-          _this.dataPlot.addRow(_this.data[_this.time]);
-          _this.time++;
-          _this.options1 = {
-            chartArea: {
-              left: 40,
-              top: 20,
-              height: "80%",
-              width: "85%"
-            },
-            legend: {
-              position: 'none'
-            },
-            animation: {
-              duration: 1900,
-              easing: 'linear'
+          if (!_this.stop) {
+            if (_this.time > 18) {
+              _this.dataPlot.removeRow(0);
             }
-          };
-          return _this.chart.draw(_this.dataPlot, _this.options1);
+            _this.data[_this.time] = ['' + _this.time, parseFloat(_this.inputCurrent), parseFloat(_this.inputVoltage), parseFloat(_this.workToDo)];
+            _this.dataPlot.addRow(_this.data[_this.time]);
+            _this.time++;
+            _this.options1 = {
+              chartArea: {
+                left: 40,
+                top: 20,
+                height: "80%",
+                width: "100%"
+              },
+              legend: {
+                position: 'none'
+              },
+              animation: {
+                duration: 1900,
+                easing: 'linear'
+              },
+              series: {
+                0: {
+                  color: "red"
+                },
+                1: {
+                  color: "green"
+                },
+                2: {
+                  color: "blue"
+                }
+              }
+            };
+            return _this.chart.draw(_this.dataPlot, _this.options1);
+          }
         };
       })(this));
     };
 
     Plot.prototype.init = function() {
-      this.data[this.time] = ['' + this.time, parseFloat(this.inputCurrent.toFixed(3)), parseFloat(this.inputVoltage.toFixed(3)), parseFloat(this.workToDo.toFixed(3))];
+      this.data[this.time] = ['' + this.time, parseFloat(this.inputCurrent), parseFloat(this.inputVoltage), parseFloat(this.workToDo)];
       this.dataPlot.addRow(this.data[this.time]);
       this.time++;
       this.options1 = {
@@ -162,7 +262,7 @@
           left: 40,
           top: 20,
           height: "80%",
-          width: "85%"
+          width: "100%"
         },
         legend: {
           position: 'none'
@@ -170,6 +270,17 @@
         animation: {
           duration: 900,
           easing: 'linear'
+        },
+        series: {
+          0: {
+            color: "red"
+          },
+          1: {
+            color: "green"
+          },
+          2: {
+            color: "blue"
+          }
         }
       };
       return this.chart.draw(this.dataPlot, this.options1);
