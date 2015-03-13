@@ -3,36 +3,29 @@
   var SolarElements;
 
   SolarElements = (function() {
+    SolarElements.prototype.solar = null;
+
+    SolarElements.prototype.NAMEPARENT = "noCommonElements";
+
     function SolarElements() {
+      this.solar = document.createElement("div");
+      this.solar.setAttribute("id", "solarElements");
+      document.getElementById(this.NAMEPARENT).appendChild(this.solar);
       this.bulb();
       this.solarPanel();
-
-      /*
-      smallElementBulb = 
-          typeElement: "img"
-          attr:
-              nameAttr: ["src", "class", "alt"]
-              dataAttr: ["images/bulb.png", "img-responsive", "bulb"]
-      
-      bigElementBulb = 
-          typeElement: "div"
-          atrr:
-              nameAttr: ["class"]
-              dataAttr: []
-       */
     }
 
     SolarElements.prototype.bulb = function() {
-      var a, bigElementBulb, bulb, button, div, divSlider, smallElementBulb, strong;
+      var bigElementBulb, bulb, button, div, divSlider, smallElementBulb, strong;
       smallElementBulb = new Item("img", ["src", "class", "alt"], ["images/bulb.png", "img-responsive", "bulb"], null, false, null);
       strong = new Item("strong", [], [], "Lumens", false, null);
       button = new Item("button", ["onclick", "type", "class"], ["sendLumens()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null);
       divSlider = new Item("div", ["id", "class"], ["slider-lumens", "slider slider-lumens"], null, false, null);
       div = new Item("div", ["class"], ["slidera"], null, true, [divSlider]);
       bigElementBulb = new Item("div", ["class"], ["form-group"], null, true, [strong, button, div]);
-      bulb = new Element([smallElementBulb], [bigElementBulb]);
-      a = document.getElementById("not-common-elements");
-      a.appendChild(bulb.div);
+      bulb = new Element();
+      bulb.specialElement([smallElementBulb], [bigElementBulb]);
+      this.solar.appendChild(bulb.div);
       $('.slider-lumens').noUiSlider({
         start: 0,
         step: 20,
@@ -57,7 +50,7 @@
     };
 
     SolarElements.prototype.solarPanel = function() {
-      var a, button1, button2, div1, div2, divForm1, divForm2, divSlider1, divSlider2, p, smallElementSolar, solar, strong1, strong2, strong3;
+      var button1, button2, div1, div2, divForm1, divForm2, divSlider1, divSlider2, p, smallElementSolar, solar, strong1, strong2, strong3;
       smallElementSolar = new Item("img", ["src", "class", "alt"], ["images/solar_panel.png", "img-responsive", "solar panel"], null, false, null);
       strong1 = new Item("strong", [], [], "Spin of the solar panel on:", false, null);
       p = new Item("p", ["class"], ["text-center"], null, true, [strong1]);
@@ -71,9 +64,9 @@
       divSlider2 = new Item("div", ["id", "class"], ["slider-vertical-axis", "slider slider-vertical-axis"], null, false, null);
       div2 = new Item("div", ["class"], ["slidera"], null, true, [divSlider2]);
       divForm2 = new Item("div", ["class"], ["form-group"], null, true, [strong2, button2, div2]);
-      solar = new Element([smallElementSolar], [p, divForm1, divForm2]);
-      a = document.getElementById("not-common-elements");
-      a.appendChild(solar.div);
+      solar = new Element();
+      solar.specialElement([smallElementSolar], [p, divForm1, divForm2]);
+      this.solar.appendChild(solar.div);
       $('.slider-horizontal-axis').noUiSlider({
         start: 0,
         step: 1,
@@ -115,88 +108,14 @@
       });
     };
 
+    SolarElements.prototype.remove = function() {
+      return this.solar.parentNode.removeChild(this.solar);
+    };
+
     return SolarElements;
 
   })();
 
   window.SolarElements = SolarElements;
-
-
-  /*
-  <div id="not-common-elements">
-  
-                <div class="row vertical-align">
-                  <div class="col-xs-3 col-lg-3">
-                    <img src="images/solar_panel.png" class="img-responsive" alt="solar panel">
-                  </div>
-                  <div class="col-xs-9 col-lg-9">
-                   
-                    <form class="form" role="form" autocomplete="off">
-                       <p class="text-center"><strong>Spin of the solar panel on:</strong></p>
-                      <div class="form-group">
-                        <strong>Horizontal axis</strong>
-                        <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                        <div class="slidera">
-                          <div id="slider-horizontal-axis" class="slider slider-horizontal-axis"></div>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <strong>Vertical axis</strong>
-                        <button onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                        <div class="slidera">
-                          <div id="slider-vertical-axis" class="slider slider-vertical-axis"></div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-  
-                </div>
-                <div id="elements-commons">
-  
-                <div class="row vertical-align">
-                  <div class="col-xs-3 col-lg-3">
-                    <p id="textBattery" class="text-center">10%</p>
-                    <img id="img-battery" src="images/battery1.png" class="img-responsive" alt="battery">
-                  </div>
-                  <div class="col-xs-9 col-lg-9">
-                    <form class="form" role="form">
-                      <div class="form-group">
-                        <strong>
-                          How much charge do you want? 
-                        </strong>
-                        <a class="info-pop-up" data-container="body" data-toggle="popover"  tabindex="0" data-trigger="focus"  data-content="And here's some amazing content. It's very engaging. Right?">
-                          <span class="glyphicon glyphicon-info-sign"></span>
-                        </a>
-                        <div class="slidera">
-                          <div id="slider-battery" class="slider slider-battery"></div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div class="row vertical-align">
-                  <div class="col-xs-3 col-lg-3">
-           
-                    <div id="countdown"></div>
-      
-                  </div>
-                  <div class="col-xs-9 col-lg-9">
-                    <form class="form" role="form">
-                      <div class="form-group">
-                        <strong>
-                          Time charging
-                        </strong>
-                        <a href="#" data-toggle="modal" data-target="#myModal">
-                          <span class="glyphicon glyphicon-info-sign"></span>
-                        </a>       
-  
-  
-  
-                        <div class="slidera">
-                          <div id="slider-time" class="slider slider-time"></div>
-                        </div>
-                      </div>
-   */
 
 }).call(this);

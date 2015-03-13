@@ -5,13 +5,26 @@
   Element = (function() {
     Element.prototype.div = null;
 
-    function Element(smallArgs, bigArgs) {
+    function Element() {
       this.div = document.createElement("div");
+    }
+
+    Element.prototype.standardElement = function(args) {
+      var item, _i, _len, _results;
+      this.div.setAttribute("class", "row");
+      _results = [];
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        item = args[_i];
+        _results.push(this.div.appendChild(this.createMyElement(this.div, item)));
+      }
+      return _results;
+    };
+
+    Element.prototype.specialElement = function(smallArgs, bigArgs) {
       this.div.setAttribute("class", "row vertical-align");
       this.div.appendChild(this.smallElement(smallArgs));
-      this.div.appendChild(this.bigElement(bigArgs));
-      this.div;
-    }
+      return this.div.appendChild(this.bigElement(bigArgs));
+    };
 
     Element.prototype.smallElement = function(args) {
       var div, item, _i, _len;
@@ -66,52 +79,5 @@
   })();
 
   window.Element = Element;
-
-
-  /*
-  <div class="row vertical-align">
-                  <div class="col-xs-3 col-lg-3">
-                    <img src="images/bulb.png" class="img-responsive" alt="bulb">
-                  </div>
-                  <div class="col-xs-9 col-lg-9">
-                    <form class="form" role="form" autocomplete="off">
-                      <div class="form-group">
-                        <strong>Lumens</strong>
-                        <button onclick="sendLumens()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                        <div class="slidera">
-                          <div id="slider-lumens" class="slider slider-lumens"></div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-  
-  
-  
-                 <div class="row vertical-align">
-                  <div class="col-xs-3 col-lg-3">
-                    <img src="images/solar_panel.png" class="img-responsive" alt="solar panel">
-                  </div>
-                  <div class="col-xs-9 col-lg-9">
-                    <p class="text-center"><strong>Spin of the solar panel on:</strong></p>
-                    <form class="form" role="form" autocomplete="off">
-                      <div class="form-group">
-                        <strong>Horizontal axis</strong>
-                        <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                        <div class="slidera">
-                          <div id="slider-horizontal-axis" class="slider slider-horizontal-axis"></div>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <strong>Vertical axis</strong>
-                        <button onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                        <div class="slidera">
-                          <div id="slider-vertical-axis" class="slider slider-vertical-axis"></div>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-   */
 
 }).call(this);

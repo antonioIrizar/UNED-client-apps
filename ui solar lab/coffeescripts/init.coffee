@@ -2,7 +2,10 @@ class Init
 
     plot: null
     resizeActive: null
-    Esd: null
+    esd: null
+    solar: null
+    crane: null
+    common: null
 
     constructor: (idCanvas, img)->
         @plot = new Plot
@@ -39,7 +42,13 @@ class Init
         if @resizeActive 
                 clearTimeout(@resizeActive)
             @resizeActive = setTimeout( =>
+                adapt = document.getElementById("adaptToHeight")
+                if adapt isnt null
+                    height = window.innerHeight - document.getElementById("panel-elements").offsetHeight 
+                    height = height-20
+                    adapt.setAttribute "style","height:"+ height + "px"
                 @plot.resizeEvent(@esd)
+                
             , 250)
 
     stopTrue: ->
@@ -47,4 +56,25 @@ class Init
 
     stopFalse: ->
         @plot.stop = false
+
+    selectCharge: ->
+        if @crane is null
+            @common = new CommonElements true
+        else
+            @crane.remove()
+            delete @crane
+            @crane = null
+            @common.mySwitch true
+        @solar = new SolarElements()
+        
+    selectDischarge: ->
+        if @solar is null
+            @common = new CommonElements false
+        else
+            @solar.remove()
+            delete @solar
+            @solar = null
+            @common.mySwitch false
+        @crane = new CraneElements()
+
 window.Init = Init

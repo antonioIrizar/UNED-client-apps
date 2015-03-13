@@ -32,9 +32,6 @@ class Esd
         @height = @canvas.height = @img.height
   
         ctx = @canvas.getContext "2d"
-        a = window.innerHeight - document.getElementById("panel-elements").offsetHeight 
-        a = a-20
-        document.getElementById("adapt-to-height").setAttribute "style","height:"+ a + "px"
         
         ctx.font = Math.floor(@width*0.05)+"px monospace"
         ctx.fillText "Amps", (@width/11), (8*(@height/20)) 

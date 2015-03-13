@@ -116,6 +116,7 @@
   <script src="javascripts/elements.js"></script>
   <script src="javascripts/solarElements.js"></script>
   <script src="javascripts/commonElements.js"></script>
+  <script src="javascripts/craneElements.js"></script>
   <script src="javascripts/init.js"></script>
   </head>
   <body onload="arranque()">
@@ -142,13 +143,9 @@ myApp = myApp || (function () {
             <div class="panel-heading">
               <h3 class="panel-title">Elements you can interact with</h3>
             </div>
-            <div class="panel-body">
-            <div id="not-common-elements">
-
-            </div>
-              <div id="elements-commons">
-
-              
+            <div id="tusmuertos" class="panel-body">
+              <div id="noCommonElements"></div>
+                          
                         <!-- Modal -->
                         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                           <div class="modal-dialog">
@@ -195,19 +192,7 @@ myApp = myApp || (function () {
                           </div>
                         </div>
 
-    
-  </div>
-              <div class="row">
-                <div id="adapt-to-height"></div>
-                <div class="center-block text-center">
-                  <form class="form" role="form" autocomplete="off">
-                    <button type="button" id="startExperiment" class="btn btn-success" onclick="startExperiments()">Start</button>
-                    <button type="button" id="stop" class="btn btn-primary" onclick="stopExperiment()">Stop</button>
-                    <button type="reset" id="reset" class="btn btn-danger" onclick="resetExperiment()">Reset</button>
-                  </form>
-                </div>
-              </div> 
-            
+            <div id="elementsCommons"></div>
           
 
             </div>
@@ -238,8 +223,8 @@ myApp = myApp || (function () {
                         <span class="glyphicon glyphicon-info-sign"></span>
                       </a>
                       <div style="margin-top: 10px" class="center-block text-center">
-                        <button type="button" class="btn btn-success disabled">charging</button>
-                        <button type="button" class="btn btn-danger disabled">discharging</button>
+                        <button type="button" class="btn btn-success" onclick="varInit.selectCharge()">Charging</button>
+                        <button type="button" class="btn btn-danger" onclick="varInit.selectDischarge()">Discharging</button>
                       </div>
                     </div>
                   </div>
@@ -407,11 +392,7 @@ myApp = myApp || (function () {
     $(".button-accept").removeAttr('disabled');
   };
 
-$('#countdown').timeTo({ 
-  seconds: 3,
-  countdown:true,
-    fontSize: 14,
-  });
+
  function wsopen(event)
 {
   //alert("websocket " + event + " is open");
@@ -1108,13 +1089,10 @@ function stopExperiment(){
     function arranque(){
   
 
-            varInit = new Init("myCanvas", "esd");
+      varInit = new Init("myCanvas", "esd");
       myInit2();
-      new SolarElements();
-      new CommonElements();
       setTimeout(function(){
         myApp.hidePleaseWait();
-     
           
 
       },1000);

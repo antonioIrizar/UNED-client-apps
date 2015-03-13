@@ -1,12 +1,18 @@
 class Element
   div:null
 
-  constructor:(smallArgs, bigArgs) ->
+  constructor: ->
     @div = document.createElement "div"
+
+   standardElement: (args)->
+    @div.setAttribute "class", "row"
+    for item in args
+      @div.appendChild @createMyElement @div, item
+
+  specialElement: (smallArgs, bigArgs) ->
     @div.setAttribute "class", "row vertical-align"
     @div.appendChild @smallElement smallArgs
     @div.appendChild @bigElement bigArgs
-    @div
 
   smallElement: (args) ->
     div = document.createElement "div"
@@ -44,55 +50,3 @@ class Element
     parent.appendChild element
 
 window.Element = Element
-
-
-
-
-
-
-
-###
-<div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3">
-                  <img src="images/bulb.png" class="img-responsive" alt="bulb">
-                </div>
-                <div class="col-xs-9 col-lg-9">
-                  <form class="form" role="form" autocomplete="off">
-                    <div class="form-group">
-                      <strong>Lumens</strong>
-                      <button onclick="sendLumens()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                      <div class="slidera">
-                        <div id="slider-lumens" class="slider slider-lumens"></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-
-
-
-               <div class="row vertical-align">
-                <div class="col-xs-3 col-lg-3">
-                  <img src="images/solar_panel.png" class="img-responsive" alt="solar panel">
-                </div>
-                <div class="col-xs-9 col-lg-9">
-                  <p class="text-center"><strong>Spin of the solar panel on:</strong></p>
-                  <form class="form" role="form" autocomplete="off">
-                    <div class="form-group">
-                      <strong>Horizontal axis</strong>
-                      <button onclick="sendHorizontalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                      <div class="slidera">
-                        <div id="slider-horizontal-axis" class="slider slider-horizontal-axis"></div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <strong>Vertical axis</strong>
-                      <button onclick="sendVerticalAxis()" type="button" class="btn btn-info btn-xs button-accept">Accept</button>
-                      <div class="slidera">
-                        <div id="slider-vertical-axis" class="slider slider-vertical-axis"></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-###

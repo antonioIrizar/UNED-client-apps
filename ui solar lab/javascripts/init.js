@@ -8,7 +8,13 @@
 
     Init.prototype.resizeActive = null;
 
-    Init.prototype.Esd = null;
+    Init.prototype.esd = null;
+
+    Init.prototype.solar = null;
+
+    Init.prototype.crane = null;
+
+    Init.prototype.common = null;
 
     function Init(idCanvas, img) {
       this.resize = __bind(this.resize, this);
@@ -51,6 +57,13 @@
       }
       return this.resizeActive = setTimeout((function(_this) {
         return function() {
+          var adapt, height;
+          adapt = document.getElementById("adaptToHeight");
+          if (adapt !== null) {
+            height = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
+            height = height - 20;
+            adapt.setAttribute("style", "height:" + height + "px");
+          }
           return _this.plot.resizeEvent(_this.esd);
         };
       })(this), 250);
@@ -62,6 +75,30 @@
 
     Init.prototype.stopFalse = function() {
       return this.plot.stop = false;
+    };
+
+    Init.prototype.selectCharge = function() {
+      if (this.crane === null) {
+        this.common = new CommonElements(true);
+      } else {
+        this.crane.remove();
+        delete this.crane;
+        this.crane = null;
+        this.common.mySwitch(true);
+      }
+      return this.solar = new SolarElements();
+    };
+
+    Init.prototype.selectDischarge = function() {
+      if (this.solar === null) {
+        this.common = new CommonElements(false);
+      } else {
+        this.solar.remove();
+        delete this.solar;
+        this.solar = null;
+        this.common.mySwitch(false);
+      }
+      return this.crane = new CraneElements();
     };
 
     return Init;

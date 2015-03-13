@@ -38,13 +38,10 @@
     }
 
     Esd.prototype.drawImageInCanvas = function() {
-      var a, ctx;
+      var ctx;
       this.width = this.canvas.width = this.img.width;
       this.height = this.canvas.height = this.img.height;
       ctx = this.canvas.getContext("2d");
-      a = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
-      a = a - 20;
-      document.getElementById("adapt-to-height").setAttribute("style", "height:" + a + "px");
       ctx.font = Math.floor(this.width * 0.05) + "px monospace";
       ctx.fillText("Amps", this.width / 11, 8 * (this.height / 20));
       ctx.fillText("Volts", this.width / 11, 11 * (this.height / 20));
