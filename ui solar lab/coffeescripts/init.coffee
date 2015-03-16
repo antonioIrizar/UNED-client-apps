@@ -6,9 +6,13 @@ class Init
     solar: null
     crane: null
     common: null
+    wsData: null
+    wsCamera: null
 
     constructor: (idCanvas, img)->
-        @plot = new Plot
+        @wsData = new WebsocketData()
+        @wsCamera = new WebSocketCamera()
+        @plot = new Plot()
         sliders()
         @esd = new Esd idCanvas, img
         @plot.resize()

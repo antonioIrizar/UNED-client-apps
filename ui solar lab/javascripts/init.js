@@ -16,9 +16,15 @@
 
     Init.prototype.common = null;
 
+    Init.prototype.wsData = null;
+
+    Init.prototype.wsCamera = null;
+
     function Init(idCanvas, img) {
       this.resize = __bind(this.resize, this);
-      this.plot = new Plot;
+      this.wsData = new WebsocketData();
+      this.wsCamera = new WebSocketCamera();
+      this.plot = new Plot();
       sliders();
       this.esd = new Esd(idCanvas, img);
       this.plot.resize();

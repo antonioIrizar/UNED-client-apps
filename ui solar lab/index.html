@@ -117,19 +117,34 @@
   <script src="javascripts/solarElements.js"></script>
   <script src="javascripts/commonElements.js"></script>
   <script src="javascripts/craneElements.js"></script>
+  <script src="javascripts/websocketCamera.js"></script>
+  <script src="javascripts/websocketData.js"></script>
   <script src="javascripts/init.js"></script>
   </head>
   <body onload="arranque()">
     <script type="text/javascript">
    var myApp;
 myApp = myApp || (function () {
-    var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h1>Loading...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
+    var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header text-danger"><h1 id="titleShowModal">Loading...</h1></div><div id="bodyModalShow" class="modal-body"><div id="progressBarModal" class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
     return {
-        showPleaseWait: function() {
+        showPleaseWait: function(text) {
+          $("#titleShowModal").html(text);
             pleaseWaitDiv.modal();
         },
         hidePleaseWait: function () {
             pleaseWaitDiv.modal('hide');
+        },
+        showError: function(title, text){
+          $("#titleShowModal").html(title);
+          $("#progressBarModal").remove();
+          div = document.createElement('div');
+          p = document.createElement('p');
+          ptext = document.createTextNode(text);
+          p.appendChild(ptext);
+          div.appendChild(p);
+          document.getElementById("bodyModalShow").appendChild(div);
+
+          pleaseWaitDiv.modal();
         },
 
     };
@@ -365,6 +380,37 @@ myApp = myApp || (function () {
       wsIsReady = false,
       startExperiment = false,
       actualBattery = null;
+      function arranque(){
+  
+
+      varInit = new Init("myCanvas", "esd");
+
+      /*
+      setTimeout(function(){
+        myApp.hidePleaseWait();
+          
+
+      },1000);
+
+      */
+    };
+
+function sendActuatorChange(actuatorId, data) {
+var actuatorRequest = {
+method: 'sendActuatorData',
+authToken: 'skfjs343kjKJ',
+accessRole: 'controller',
+actuatorId: actuatorId,
+valueNames: "",
+data: data
+}
+var jsonRequest = JSON.stringify(actuatorRequest);
+varInit.wsData.wsData.send(jsonRequest);
+}
+function getSensorData(sensorId, accessRole){
+var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId});
+varInit.wsData.wsData.send(jsonRequest);
+}
 
   function disableAll(){
     $(".slider-battery").attr('disabled', 'disabled');
@@ -393,204 +439,16 @@ myApp = myApp || (function () {
   };
 
 
- function wsopen(event)
-{
-  //alert("websocket " + event + " is open");
-  //send laboratory start
-  console.log("abierto el ws");
-  sendActuatorChange('SolarLab', "1");
-  
-        //improve this
-  
-  //ws.send('{"method": "getSensorMetadata"}'); // get sensor info
-  //ws.send('{"method": "getActuatorMetadata"}'); // just pretend we don't know
-  /*
-  ws.send( '{  
-      \"method\":\"sendActuatorData\",
-      \"accessRole\":\"controller\",
-      \"payload\":{  
-         \"actuatorId\":\"Panelrot\",
-         \"valueNames\":[  
-            \"Rotation\"
-         ],
-         \"data\":[  
-            120
-         ]
-      }');
-*/
-  /*
-  var sensorRequest = {
-     method: 'getSensorData',
-    sensorId: 'sinus',
-    accessRole: 'controller'
-    }
-   */
-   //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
-/*
-  var jsonRequest = JSON.stringify({  
-      "method":"sendActuatorData",
-      "accessRole":"controller",
-       
-         "actuatorId":"Panelrot",
-         "valueNames":  
-            ""
-         ,
-         "data": "30"
-   });
-*/
-  //console.log(jsonRequest);
- //ws.send(jsonRequest);
-
-}
-
-function sendActuatorChange(actuatorId, data) {
-
- var actuatorRequest = {
-    method: 'sendActuatorData',
-    authToken: 'skfjs343kjKJ',
-    accessRole: 'controller',
-    actuatorId: actuatorId,
-    valueNames: "",
-    data: data  
-  }
-
-  var jsonRequest = JSON.stringify(actuatorRequest);
-  ws.send(jsonRequest);
-
-}
-
-function getSensorData(sensorId, accessRole){
-  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId});
-  ws.send(jsonRequest);
-}
-
-function wsmessage(event)
-{
- var data = event.data+"";
-console.log(data);
-var msg = JSON.parse(data);
-console.log(msg);
-
-//improve this with case
-if(msg.method == "sendActuatorData"){
-  if (msg.responseMessages != null && msg.responseMessages.code == 409){
-    alert("You can't controller the laboratory. Other user is used it")
-    console.log("codigo 409");
-    disableAll();
-    $("#stop").attr('disabled', 'disabled');
-    $("#reset").attr('disabled', 'disabled');
-    getSensorData("ESDval", "observer");
-    getSensorData("Light", "observer");
-    getSensorData("PanelRot", "observer");
-    getSensorData("PanelTilt", "observer");
-    return;
-  }
-  if (msg.payload.actuatorId == "SolarLab" && msg.payload.responseData.data == 1){
-    getSensorData("ESDval", "controller");
-    $("#stop").attr('disabled', 'disabled');
-    $("#reset").attr('disabled', 'disabled');
-    return;
-
-  }
-}
-
-if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"){
-    if (msg.payload.responseData.data == 1){
-      getSensorData("ESDval", "controller");
-      $("#stop").removeAttr('disabled');
-      $("#reset").removeAttr('disabled');
-      return;
-    }
-  }
-
-  if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot"){
-    horizontalAxis = reciveData(parseInt(msg.payload.responseData.data[0]), horizontalAxis, ".slider-horizontal-axis", "Panelrot");
-    $(".slider-horizontal-axis").val( horizontalAxis);
-    myApp.hidePleaseWait();
-    return;
-  }
-
-  if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Paneltilt"){
-    verticalAxis = reciveData(parseInt(msg.payload.responseData.data[0]), verticalAxis, ".slider-vertical-axis", "Paneltilt"); 
-    $(".slider-vertical-axis").val(verticalAxis);
-    myApp.hidePleaseWait();
-    return;
-  }
-
-  if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Sun"){
-    lumens = reciveData(parseInt(msg.payload.responseData.data[0]), lumens, ".slider-lumens", "Sun"); 
-    $(".slider-lumens").val(lumens);
-    myApp.hidePleaseWait();
-    return;
-  }
-
-if (msg.method == "getSensorData" && msg.sensorId == "ESDval"){
-  if (msg.responseData.valueNames.length == 7){
-    varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6]);
-  }
-  finishInitLoading(msg.responseData.data[0]);
-}
-
-if (msg.method == "getSensorData" && msg.sensorId == "Light"){
-  $(".slider-lumens").val(parseInt(msg.responseData.data[0]));
-  return;
-}
-if (msg.method == "getSensorData" && msg.sensorId == "PanelTilt"){
-  $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]));
-  return;
-}
-if (msg.method == "getSensorData" && msg.sensorId == "PanelRot"){
-  $(".slider-horizontal-axis").val(parseInt(msg.responseData.data[0]));
-  return;
-}
-
-
-// put recive message jouls and time
-
-
-/*
-"{"method":"sendActuatorData","accessRole":"controller","payload":{"actuatorId":"ESD","responseData":{"valueNames":["State"],"data":[1],"lastMeasured":["13022015T095315"]}}}"
-
-
-"{"method":"getSensorData","sensorId":"ESDval","accessRole":"","responseData":{"valueNames":["input voltage","input current","input wattage","worktodo"],"data":[1.7309999465942383,0,0,4],"lastMeasured":["12022015T151255","12022015T151255","12022015T151255","12022015T151255"]}}"
-
-"{
- "method": "sendActuatorData",
- "responseMessages" :{
-    "code": 409,
-    "message": "AccesRole controller already assigned."
-}
-}"
-if (msg.method == "getSensorMetadata") {
-  document.querySelector('#sensorInfo').value = msg.sensors[0].description; // display description of the 1st sensor
-  document.querySelector('#SensorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
-  }
-else 
-if (msg.method == "getActuatorMetadata") {
-  document.querySelector('#ActuatorInfo').value = msg.actuators[0].description; // display description of the 1st sensor
-  document.querySelector('#ActuatorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
-  }
-else{
-
-  if (msg.responseData) {
-    document.querySelector('#sensorVal').value = msg.responseData.data[0];
-  }
-  else
-    document.querySelector('#sensorVal').value ="err: " +msg.responseMessages.code + " " +msg.responseMessages.message  ;
-    
-    }
- 
-//  console.log("received: [", data, "]");
-*/
-}
-
 function finishInitLoading(data){
   if (!wsIsReady){
     $(".slider-battery").val(data);
     actualBattery = data;
     $("p#textBattery").text(data + "%");
-    if (wsCameraIsReady)
+    console.log(wsCameraIsReady);
+    if (wsCameraIsReady){
       myApp.hidePleaseWait();
+    
+  }
     wsIsReady = true;
   }
 }
@@ -620,6 +478,10 @@ function reciveData(dataRecive, dataActuator, slider, nameActuator){
     return result;
 
 }
+
+
+
+
 /*
 function wsclose(event)
 {
@@ -628,68 +490,6 @@ function wsclose(event)
 alert("websocket " + event + " is closed");
 }
 */
-
-function myInit2(evt) { 
-console.log("iniciando");
-wsIsReady = false;
-wsCameraIsReady = false;
-
-//ws = new WebSocket("ws://62.204.201.214:8081");
-ws = new WebSocket("ws://62.204.201.214:8081");
-
-
-wsCamera = new WebSocket("ws://62.204.201.214:8081");
-
-  wsCamera.binaryType = 'arraybuffer';
-wsCamera.onopen = function(){
-  console.log("abriendo websocket camara");
-  var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": 'observer',  "updateFrequency":"1", "sensorId":"video"});
-  wsCamera.send(jsonRequest);
-}
-wsCamera.onmessage = function (msg){
-  //console.log(msg.data); 
-   var arrayBuffer = msg.data;
-   var bytes = new Uint8Array(arrayBuffer);
-   var blob = new Blob([bytes.buffer]);
-
-   var image = document.getElementById('imgCamera');
-
-   var reader = new FileReader();
-   reader.onload = function(e) {
-       image.src = e.target.result;
-   };
-   reader.readAsDataURL(blob);
-   if (!wsCameraIsReady){
-      wsCameraIsReady = true;
-      if (wsIsReady)
-        myApp.hidePleaseWait();
-   }
-}
- wsCamera.onclose = function(code, reason){
-  console.log(code);
-  console.log(reason);
-};
-
-
-     wsopen.ws = ws;
-ws.onopen = wsopen;
- ws.onerror = function(msg){
-  console.log(msg);
- }
-/*ws.onopen =  function (event) 
-     { alert("websocket " + event + " is open");
-  ws.send("hello dear");
-
-};*/
-
-ws.onmessage = wsmessage;
-ws.onclose = function(code, reason){
-  console.log(code);
-  console.log(reason);
-};
-
-
-} 
 
   
 /* deprecate */
@@ -1086,19 +886,7 @@ function stopExperiment(){
 
 });
 
-    function arranque(){
   
-
-      varInit = new Init("myCanvas", "esd");
-      myInit2();
-      setTimeout(function(){
-        myApp.hidePleaseWait();
-          
-
-      },1000);
-
-
-    };
   
     </script>
   </body>
