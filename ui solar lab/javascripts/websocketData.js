@@ -8,12 +8,20 @@
 
     WebsocketData.prototype.URLWS = "ws://62.204.201.214:8081";
 
+    WebsocketData.prototype.firstTimeBattery = true;
+
+    WebsocketData.prototype.wsDataIsReady = false;
+
+    WebsocketData.prototype.role = "observer";
+
     function WebsocketData() {
+      this.onmessage = __bind(this.onmessage, this);
       this.onclose = __bind(this.onclose, this);
       this.onopen = __bind(this.onopen, this);
-      var wsIsReady;
+      this.wsDataIsReady = false;
+      this.firstTimeBattery = true;
+      this.role = "observer";
       this.wsData = new WebSocket(this.URLWS);
-      wsIsReady = false;
       this.wsData.onopen = this.onopen;
       this.wsData.onmessage = this.onmessage;
       this.wsData.onclose = this.onclose;
@@ -43,7 +51,7 @@
     };
 
     WebsocketData.prototype.onmessage = function(event) {
-      var data, horizontalAxis, lumens, msg, verticalAxis;
+      var data, eve, horizontalAxis, lumens, msg, verticalAxis;
       data = event.data + "";
       console.log(data);
       msg = JSON.parse(data);
@@ -52,9 +60,6 @@
         if (msg.responseMessages !== void 0 && msg.responseMessages.code === 409) {
           alert("You can't controller the laboratory. Other user is used it");
           console.log("codigo 409");
-          disableAll();
-          $("#stop").attr('disabled', 'disabled');
-          $("#reset").attr('disabled', 'disabled');
           getSensorData("ESDval", "observer");
           getSensorData("Light", "observer");
           getSensorData("PanelRot", "observer");
@@ -63,9 +68,8 @@
         }
         if (msg.payload.actuatorId === "SolarLab" && msg.payload.responseData.data[0] === "1") {
           console.log("dentro del solarlab");
+          this.role = "controller";
           getSensorData("ESDval", "controller");
-          $("#stop").attr('disabled', 'disabled');
-          $("#reset").attr('disabled', 'disabled');
           return;
         }
       }
@@ -99,18 +103,39 @@
         if (msg.responseData.valueNames.length === 7) {
           varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6]);
         }
-        finishInitLoading(msg.responseData.data[0]);
+        if (this.firstTimeBattery) {
+          this.firstTimeBattery = false;
+          eve = document.createEvent('CustomEvent');
+          eve.initCustomEvent('selectInterface', true, false, {
+            'role': this.role,
+            'battery': msg.responseData.data[0]
+          });
+          document.dispatchEvent(eve);
+          if (this.role === 'controller') {
+            this.wsDataIsReady = true;
+          }
+          eve = document.createEvent('Event');
+          eve.initEvent('allWsAreReady', true, false);
+          document.dispatchEvent(eve);
+        }
+        return;
       }
       if (msg.method === "getSensorData" && msg.sensorId === "Light") {
         $(".slider-lumens").val(parseInt(msg.responseData.data[0]));
         return;
       }
-      if (msg.method === "getSensorData" && msg.sensorId === "PanelTilt") {
-        $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]));
-        return;
-      }
       if (msg.method === "getSensorData" && msg.sensorId === "PanelRot") {
         $(".slider-horizontal-axis").val(parseInt(msg.responseData.data[0]));
+        return;
+      }
+      if (msg.method === "getSensorData" && msg.sensorId === "PanelTilt") {
+        $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]));
+        if (!this.wsDataIsReady) {
+          this.wsDataIsReady = true;
+          eve = document.createEvent('Event');
+          eve.initEvent('allWsAreReady', true, false);
+          document.dispatchEvent(eve);
+        }
       }
 
       /*

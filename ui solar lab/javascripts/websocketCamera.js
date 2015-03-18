@@ -8,11 +8,12 @@
 
     WebSocketCamera.prototype.URLWS = "ws://62.204.201.214:8081";
 
+    WebSocketCamera.prototype.wsCameraIsReady = false;
+
     function WebSocketCamera() {
       this.onmessage = __bind(this.onmessage, this);
       this.onopen = __bind(this.onopen, this);
-      var wsCameraIsReady;
-      wsCameraIsReady = false;
+      this.wsCameraIsReady = false;
       this.wsCamera = new WebSocket(this.URLWS);
       this.wsCamera.binaryType = 'arraybuffer';
       this.wsCamera.onopen = this.onopen;
@@ -33,7 +34,7 @@
     };
 
     WebSocketCamera.prototype.onmessage = function(msg) {
-      var arrayBuffer, blob, bytes, image, reader, wsCameraIsReady;
+      var arrayBuffer, blob, bytes, eve, image, reader;
       arrayBuffer = msg.data;
       bytes = new Uint8Array(arrayBuffer);
       blob = new Blob([bytes.buffer]);
@@ -43,12 +44,19 @@
         return image.src = e.target.result;
       };
       reader.readAsDataURL(blob);
-      if (!wsCameraIsReady) {
-        wsCameraIsReady = true;
-        if (wsIsReady) {
-          return myApp.hidePleaseWait();
-        }
+      if (!this.wsCameraIsReady) {
+        this.wsCameraIsReady = true;
+        eve = document.createEvent('Event');
+        eve.initEvent('allWsAreReady', true, false);
+        return document.dispatchEvent(eve);
       }
+
+      /*
+      if !wsCameraIsReady
+        wsCameraIsReady = true
+        if wsIsReady
+          myApp.hidePleaseWait()
+       */
     };
 
     WebSocketCamera.prototype.onclose = function(code) {

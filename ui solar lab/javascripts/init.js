@@ -21,7 +21,11 @@
     Init.prototype.wsCamera = null;
 
     function Init(idCanvas, img) {
+      this.eventReadyAll = __bind(this.eventReadyAll, this);
+      this.selectInterface = __bind(this.selectInterface, this);
       this.resize = __bind(this.resize, this);
+      document.addEventListener('selectInterface', this.selectInterface, false);
+      document.addEventListener('allWsAreReady', this.eventReadyAll, false);
       this.wsData = new WebsocketData();
       this.wsCamera = new WebSocketCamera();
       this.plot = new Plot();
@@ -89,10 +93,13 @@
       } else {
         this.crane.remove();
         delete this.crane;
+        document.getElementById('dischargeButton').removeAttribute('disabled');
         this.crane = null;
         this.common.mySwitch(true);
       }
-      return this.solar = new SolarElements();
+      this.solar = new SolarElements();
+      document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
+      return document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
     };
 
     Init.prototype.selectDischarge = function() {
@@ -101,10 +108,45 @@
       } else {
         this.solar.remove();
         delete this.solar;
+        document.getElementById('chargeButton').removeAttribute('disabled');
         this.solar = null;
         this.common.mySwitch(false);
       }
-      return this.crane = new CraneElements();
+      this.crane = new CraneElements();
+      document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
+      return document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+    };
+
+    Init.prototype.selectInterface = function(e) {
+      var actualBattery, battery, role;
+      battery = e.detail.battery;
+      role = document.getElementById('yourRole');
+      if (battery >= 90) {
+        this.selectCharge();
+      } else {
+        this.selectDischarge();
+      }
+      if (e.detail.role === 'observer') {
+        disableAll();
+        $("#stop").attr('disabled', 'disabled');
+        $("#reset").attr('disabled', 'disabled');
+        document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+        document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+        role.appendChild(document.createTextNode('You are mode observer'));
+      } else {
+        $("#stop").attr('disabled', 'disabled');
+        $("#reset").attr('disabled', 'disabled');
+        role.appendChild(document.createTextNode('You are mode controller'));
+      }
+      $(".slider-battery").val(battery);
+      actualBattery = battery;
+      return $("p#textBattery").text(battery + "%");
+    };
+
+    Init.prototype.eventReadyAll = function(e) {
+      if (this.wsData.wsDataIsReady && this.wsCamera.wsCameraIsReady) {
+        return myApp.hidePleaseWait();
+      }
     };
 
     return Init;

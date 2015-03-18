@@ -1,14 +1,19 @@
 class WebsocketData
     wsData: null
     URLWS: "ws://62.204.201.214:8081"
+    firstTimeBattery: true
+    wsDataIsReady: false
+    role: "observer"
 
     constructor: ->
+        @wsDataIsReady = false
+        @firstTimeBattery = true
+        @role = "observer"
+
         @wsData = new WebSocket @URLWS
-        wsIsReady = false
 
         @wsData.onopen = @onopen
         @wsData.onmessage = @onmessage
-
         @wsData.onclose = @onclose
         @wsData.onerror = @onerror
 
@@ -31,7 +36,7 @@ class WebsocketData
                 myApp.hidePleaseWait()
                 myApp.showError "Something's not right", "Sorry impossible to conect to the server. If it's the first time reload the web, it isn't maybe the server is down. Please try later."
 
-    onmessage: (event) ->
+    onmessage: (event) =>
         data = event.data+""
         console.log data
         msg = JSON.parse data
@@ -42,9 +47,6 @@ class WebsocketData
             if msg.responseMessages isnt undefined && msg.responseMessages.code == 409
                 alert "You can't controller the laboratory. Other user is used it"
                 console.log "codigo 409"
-                disableAll()
-                $("#stop").attr('disabled', 'disabled')
-                $("#reset").attr('disabled', 'disabled')
                 getSensorData("ESDval", "observer")
                 getSensorData("Light", "observer")
                 getSensorData("PanelRot", "observer")
@@ -53,9 +55,8 @@ class WebsocketData
 
             if msg.payload.actuatorId is "SolarLab" and msg.payload.responseData.data[0] is "1"
                 console.log "dentro del solarlab"
+                @role  = "controller"
                 getSensorData("ESDval", "controller")
-                $("#stop").attr('disabled', 'disabled')
-                $("#reset").attr('disabled', 'disabled')
                 return
 
         if msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"
@@ -86,19 +87,35 @@ class WebsocketData
         if msg.method == "getSensorData" && msg.sensorId == "ESDval"
             if (msg.responseData.valueNames.length == 7)
                 varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6])
-            finishInitLoading(msg.responseData.data[0])
+            if @firstTimeBattery 
+                @firstTimeBattery = false
+                eve = document.createEvent 'CustomEvent'
+                eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : msg.responseData.data[0]}
+                document.dispatchEvent eve
+                if @role is 'controller'
+                     @wsDataIsReady = true
+                    eve = document.createEvent 'Event'
+                    eve.initEvent 'allWsAreReady', true, false
+                    document.dispatchEvent eve
+            return
+            #finishInitLoading(msg.responseData.data[0])
 
         if msg.method == "getSensorData" && msg.sensorId == "Light"
             $(".slider-lumens").val(parseInt(msg.responseData.data[0]))
             return
         
-        if msg.method == "getSensorData" && msg.sensorId == "PanelTilt"
-            $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]))
-            return
-        
         if msg.method == "getSensorData" && msg.sensorId == "PanelRot"
           $(".slider-horizontal-axis").val(parseInt(msg.responseData.data[0]))
           return
+
+        if msg.method == "getSensorData" && msg.sensorId == "PanelTilt"
+            $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]))
+            if not @wsDataIsReady 
+                @wsDataIsReady = true
+                eve = document.createEvent 'Event'
+                eve.initEvent 'allWsAreReady', true, false
+                document.dispatchEvent eve
+            return
 
         # put recive message jouls and time
         ###
@@ -157,4 +174,5 @@ class WebsocketData
         jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId})
         @wsData.send(jsonRequest)
 ###
+
 window.WebsocketData = WebsocketData

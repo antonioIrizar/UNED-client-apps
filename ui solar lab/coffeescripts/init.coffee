@@ -10,6 +10,9 @@ class Init
     wsCamera: null
 
     constructor: (idCanvas, img)->
+        #Listen for the event wsDataReady
+        document.addEventListener 'selectInterface', @selectInterface, false
+        document.addEventListener 'allWsAreReady', @eventReadyAll, false
         @wsData = new WebsocketData()
         @wsCamera = new WebSocketCamera()
         @plot = new Plot()
@@ -41,7 +44,6 @@ class Init
         if @plot.stop
             @plot.initChart = false
         
-
     resize: =>
         if @resizeActive 
                 clearTimeout(@resizeActive)
@@ -67,9 +69,15 @@ class Init
         else
             @crane.remove()
             delete @crane
+            document.getElementById 'dischargeButton'
+                .removeAttribute 'disabled'
             @crane = null
             @common.mySwitch true
         @solar = new SolarElements()
+        document.getElementById "panelHeadingElements" 
+            .innerHTML = 'Elements you can interact with: Mode charge'
+        document.getElementById 'chargeButton'
+            .setAttribute 'disabled', 'disabled'
         
     selectDischarge: ->
         if @solar is null
@@ -77,8 +85,43 @@ class Init
         else
             @solar.remove()
             delete @solar
+            document.getElementById 'chargeButton'
+                .removeAttribute 'disabled'
             @solar = null
             @common.mySwitch false
         @crane = new CraneElements()
+        document.getElementById "panelHeadingElements" 
+            .innerHTML = 'Elements you can interact with: Mode discharge'
+        document.getElementById 'dischargeButton'
+            .setAttribute 'disabled', 'disabled'
+
+    selectInterface: (e) =>
+        battery = e.detail.battery
+        role = document.getElementById 'yourRole'
+        if battery >= 90
+            @selectCharge()
+        else
+            @selectDischarge()
+        if e.detail.role is 'observer'
+            disableAll()
+            $("#stop").attr('disabled', 'disabled')
+            $("#reset").attr('disabled', 'disabled')
+            document.getElementById 'dischargeButton'
+                .setAttribute 'disabled', 'disabled'
+            document.getElementById 'chargeButton'
+                .setAttribute 'disabled', 'disabled'
+            role.appendChild document.createTextNode 'You are mode observer'
+        else
+            $("#stop").attr('disabled', 'disabled')
+            $("#reset").attr('disabled', 'disabled')
+            role.appendChild document.createTextNode 'You are mode controller'
+
+        $(".slider-battery").val battery
+        actualBattery = battery
+        $("p#textBattery").text battery + "%"
+
+    eventReadyAll: (e) =>
+        if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady
+            myApp.hidePleaseWait()
 
 window.Init = Init

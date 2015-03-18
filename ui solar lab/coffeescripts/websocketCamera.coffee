@@ -1,9 +1,10 @@
 class WebSocketCamera
   wsCamera: null
   URLWS: "ws://62.204.201.214:8081"
+  wsCameraIsReady: false
 
   constructor: ->
-    wsCameraIsReady = false
+    @wsCameraIsReady = false
     @wsCamera = new WebSocket @URLWS
     @wsCamera.binaryType = 'arraybuffer'
 
@@ -29,11 +30,18 @@ class WebSocketCamera
       image.src = e.target.result
 
     reader.readAsDataURL blob
+    if not @wsCameraIsReady 
+      @wsCameraIsReady = true
+      eve = document.createEvent 'Event'
+      eve.initEvent 'allWsAreReady', true, false
+      document.dispatchEvent eve
+    ###
     if !wsCameraIsReady
       wsCameraIsReady = true
       if wsIsReady
         myApp.hidePleaseWait()
-   
+    ###
+
   onclose: (code) ->
     console.log code
 

@@ -156,7 +156,7 @@ myApp = myApp || (function () {
         <div class="col-lg-4" id="div_formula_col">
           <div id="panel-elements" class="panel panel-primary">
             <div class="panel-heading">
-              <h3 class="panel-title">Elements you can interact with</h3>
+              <h3 id="panelHeadingElements" class="panel-title"></h3>
             </div>
             <div id="tusmuertos" class="panel-body">
               <div id="noCommonElements"></div>
@@ -238,9 +238,10 @@ myApp = myApp || (function () {
                         <span class="glyphicon glyphicon-info-sign"></span>
                       </a>
                       <div style="margin-top: 10px" class="center-block text-center">
-                        <button type="button" class="btn btn-success" onclick="varInit.selectCharge()">Charging</button>
-                        <button type="button" class="btn btn-danger" onclick="varInit.selectDischarge()">Discharging</button>
+                        <button id="chargeButton" type="button" class="btn btn-success" onclick="varInit.selectCharge()">Charging</button>
+                        <button id="dischargeButton" type="button" class="btn btn-danger" onclick="varInit.selectDischarge()">Discharging</button>
                       </div>
+                      <p id="yourRole"><p>
                     </div>
                   </div>
                 </div>
@@ -439,20 +440,6 @@ varInit.wsData.wsData.send(jsonRequest);
   };
 
 
-function finishInitLoading(data){
-  if (!wsIsReady){
-    $(".slider-battery").val(data);
-    actualBattery = data;
-    $("p#textBattery").text(data + "%");
-    console.log(wsCameraIsReady);
-    if (wsCameraIsReady){
-      myApp.hidePleaseWait();
-    
-  }
-    wsIsReady = true;
-  }
-}
-
 function reciveData(dataRecive, dataActuator, slider, nameActuator){
   var result;
   if (dataActuator == null || nameActuator == "Sun")
@@ -479,7 +466,18 @@ function reciveData(dataRecive, dataActuator, slider, nameActuator){
 
 }
 
-
+function finishInitLoading(data){
+if (!wsIsReady){
+$(".slider-battery").val(data);
+actualBattery = data;
+$("p#textBattery").text(data + "%");
+console.log(wsCameraIsReady);
+if (wsCameraIsReady){
+myApp.hidePleaseWait();
+}
+wsIsReady = true;
+}
+}
 
 
 /*
