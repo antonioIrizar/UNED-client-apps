@@ -4,6 +4,7 @@ class WebsocketData
     firstTimeBattery: true
     wsDataIsReady: false
     role: "observer"
+    battery: null
 
     constructor: ->
         @wsDataIsReady = false
@@ -19,9 +20,12 @@ class WebsocketData
 
     onopen: =>
         console.log "ws data llamada"
-        sendActuatorChange 'SolarLab', "1"
+        @getSensorData("ESDval", "observer")
+        #sendActuatorChange 'SolarLab', "1"
+        #sendActuatorChange 'CraneLab', "1"
 
     onclose: (event) =>
+        console.log "me he cerrado"
         switch event.code
             when 1000
                 myApp.hidePleaseWait()
@@ -47,21 +51,47 @@ class WebsocketData
             if msg.responseMessages isnt undefined && msg.responseMessages.code == 409
                 alert "You can't controller the laboratory. Other user is used it"
                 console.log "codigo 409"
-                getSensorData("ESDval", "observer")
-                getSensorData("Light", "observer")
-                getSensorData("PanelRot", "observer")
-                getSensorData("PanelTilt", "observer")
+                #getSensorData("ESDval", "observer")
+                eve = document.createEvent 'CustomEvent'
+                eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
+                document.dispatchEvent eve
+                if @battery <= 90
+                    @getSensorData("Light", "observer")
+                    @getSensorData("PanelRot", "observer")
+                    @getSensorData("PanelTilt", "observer")
                 return
 
             if msg.payload.actuatorId is "SolarLab" and msg.payload.responseData.data[0] is "1"
                 console.log "dentro del solarlab"
-                @role  = "controller"
-                getSensorData("ESDval", "controller")
+                if not @wsDataIsReady 
+                    @role  = "controller"
+                    eve = document.createEvent 'CustomEvent'
+                    eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
+                    document.dispatchEvent eve
+                    @wsDataIsReady = true
+                    eve = document.createEvent 'Event'
+                    eve.initEvent 'allWsAreReady', true, false
+                    document.dispatchEvent eve
+                    #getSensorData("ESDval", "controller")
+                return
+
+            if msg.payload.actuatorId is "CraneLab" and msg.payload.responseData.data[0] is "1"
+                console.log "centro del crane"
+                if not @wsDataIsReady
+                    @role  = "controller" 
+                    eve = document.createEvent 'CustomEvent'
+                    eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
+                    document.dispatchEvent eve
+                    @wsDataIsReady = true
+                    eve = document.createEvent 'Event'
+                    eve.initEvent 'allWsAreReady', true, false
+                    document.dispatchEvent eve
+                    #getSensorData("ESDval", "controller")
                 return
 
         if msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"
             if msg.payload.responseData.data[0] == "1"
-                getSensorData("ESDval", "controller")
+                @getSensorData("ESDval", "controller")
                 $("#stop").removeAttr('disabled')
                 $("#reset").removeAttr('disabled')
                 return
@@ -89,14 +119,11 @@ class WebsocketData
                 varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6])
             if @firstTimeBattery 
                 @firstTimeBattery = false
-                eve = document.createEvent 'CustomEvent'
-                eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : msg.responseData.data[0]}
-                document.dispatchEvent eve
-                if @role is 'controller'
-                     @wsDataIsReady = true
-                    eve = document.createEvent 'Event'
-                    eve.initEvent 'allWsAreReady', true, false
-                    document.dispatchEvent eve
+                @battery = msg.responseData.data[0]
+                if @battery <= 90
+                    @sendActuatorChange 'SolarLab', "1"
+                else
+                    @sendActuatorChange 'CraneLab', "1"
             return
             #finishInitLoading(msg.responseData.data[0])
 
@@ -116,6 +143,29 @@ class WebsocketData
                 eve.initEvent 'allWsAreReady', true, false
                 document.dispatchEvent eve
             return
+
+    sendActuatorChange: (actuatorId, data) -> 
+        actuatorRequest = 
+            'method': 'sendActuatorData'
+            'authToken': 'skfjs343kjKJ'
+            'accessRole': 'controller'
+            'actuatorId': actuatorId
+            'valueNames': ''
+            'data': data
+        
+        jsonRequest = JSON.stringify actuatorRequest
+        @wsData.send jsonRequest
+    
+    getSensorData: (sensorId, accessRole) ->
+        sensorRequest = 
+            'method': 'getSensorData'
+            'accessRole': accessRole
+            'updateFrequency': '1' 
+            'sensorId': sensorId
+
+        jsonRequest = JSON.stringify sensorRequest
+        @wsData.send jsonRequest
+
 
         # put recive message jouls and time
         ###

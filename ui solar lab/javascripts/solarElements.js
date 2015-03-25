@@ -7,7 +7,10 @@
 
     SolarElements.prototype.NAMEPARENT = "noCommonElements";
 
-    function SolarElements() {
+    SolarElements.prototype.wsData = null;
+
+    function SolarElements(wsData) {
+      this.wsData = wsData;
       this.solar = document.createElement("div");
       this.solar.setAttribute("id", "solarElements");
       document.getElementById(this.NAMEPARENT).appendChild(this.solar);
@@ -26,27 +29,7 @@
       bulb = new Element();
       bulb.specialElement([smallElementBulb], [bigElementBulb]);
       this.solar.appendChild(bulb.div);
-      $('.slider-lumens').noUiSlider({
-        start: 0,
-        step: 20,
-        connect: "lower",
-        range: {
-          'min': [0],
-          'max': [700]
-        }
-      });
-      $(".slider-lumens").noUiSlider_pips({
-        mode: 'count',
-        values: 8,
-        density: 3,
-        stepped: true,
-        format: wNumb({
-          postfix: 'lm'
-        })
-      });
-      return $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
-        return $(this).html("<span>" + Math.floor(value) + "</span>");
-      });
+      return new Slider('slider-lumens', 0, 20, [0], [700], 8, 3, 'lm');
     };
 
     SolarElements.prototype.solarPanel = function() {
@@ -67,50 +50,28 @@
       solar = new Element();
       solar.specialElement([smallElementSolar], [p, divForm1, divForm2]);
       this.solar.appendChild(solar.div);
-      $('.slider-horizontal-axis').noUiSlider({
-        start: 0,
-        step: 1,
-        connect: "lower",
-        range: {
-          'min': [-150],
-          'max': [150]
-        }
-      });
-      $('.slider-vertical-axis').noUiSlider({
-        start: 0,
-        step: 1,
-        connect: "lower",
-        range: {
-          'min': [0],
-          'max': [60]
-        }
-      });
-      $(".slider-vertical-axis").noUiSlider_pips({
-        mode: 'count',
-        values: 10,
-        density: 3,
-        stepped: true,
-        format: wNumb({
-          postfix: 'º'
-        })
-      });
-      $(".slider-horizontal-axis").noUiSlider_pips({
-        mode: 'count',
-        values: 11,
-        density: 2,
-        stepped: true,
-        format: wNumb({
-          postfix: 'º'
-        })
-      });
-      return $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
-        return $(this).html("<span>" + Math.floor(value) + "</span>");
-      });
+      new Slider('slider-horizontal-axis', 0, 1, [-150], [150], 11, 2, 'º');
+      return new Slider('slider-vertical-axis', 0, 1, [0], [60], 10, 3, 'º');
     };
 
     SolarElements.prototype.remove = function() {
       return this.solar.parentNode.removeChild(this.solar);
     };
+
+
+    /*
+    
+    sendLumens: ->
+        auxLumens = $(".slider-lumens").val()
+         *block 680 for problems with it
+        if auxLumens is 680
+            console.log "poner 681"
+            auxLumens = 660
+         *var move =  realValueToSend(auxLumens, lumens);
+        if auxLumens isnt 0
+        sendActuatorChange 'Sun', auxLumens.toString()
+        myApp.showPleaseWait()
+     */
 
     return SolarElements;
 

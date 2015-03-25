@@ -29,25 +29,7 @@ class CommonElements
         parent = document.getElementById "elementsCommons"
         parent.appendChild battery.div
 
-        $('.slider-battery').noUiSlider({
-        start: 10,
-        step: 1,
-        connect: "lower",
-        range: {
-        'min': [10],
-        'max': [100]
-        }
-        })
-        $(".slider-battery").noUiSlider_pips({
-        mode: 'count',
-        values: 10,
-        density: 2,
-        stepped: true,
-        format: wNumb({
-        postfix: '%'
-        })
-        })
-        $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
+        new Slider 'slider-battery', 10, 1, [10], [100], 10, 2, '%'
 
     time: ->
 
@@ -69,35 +51,11 @@ class CommonElements
         parent = document.getElementById "elementsCommons"
         parent.appendChild time.div
 
-        $('.slider-time').noUiSlider({
-        start: 0,
-        step: 1,
-        connect: "lower",
-        range: {
-        'min': [0],
-        'max': [30]
-        }
-        })
-        $(".slider-time").noUiSlider_pips({
-        mode: 'count',
-        values: 7,
-        density: 3,
-        stepped: true,
-        format: wNumb({
-        postfix: '\''
-        })
-        })
-
-        $('#countdown').timeTo({ 
-        seconds: 3,
-        countdown:true,
-        fontSize: 14,
-        });
-        $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
-
+        new Slider 'slider-time', 0, 1, [0], [30], 7, 3, '\'' 
+        
     buttons: ->
         div1 = new Item "div", ["id"], ["adaptToHeight"], null, false, null
-        buttonStart = new Item "button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "startExperiments()"], "Start", false, null
+        buttonStart = new Item "button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "Init.prototype.startExperiments()"], "Start", false, null
         buttonStop = new Item "button", ["id", "class", "type","style", "onclick"], ["stop", "btn btn-primary", "button", "margin-left: 4px", "stopExperiment()"], "Stop", false, null
         buttonReset = new Item "button", ["id", "class", "type","style", "onclick"], ["reset", "btn btn-danger", "button", "margin-left: 4px", "resetExperiment()"], "Reset", false, null
         form = new Item "form", ["class", "role", "autocomplete"], ["form", "form", "off"], null, true, [buttonStart, buttonStop, buttonReset]
@@ -121,13 +79,6 @@ class CommonElements
         @selectNameVar()
         document.getElementById("timeText").innerHTML = @timeText
         document.getElementById("batteryText").innerHTML = @batteryText
-
-
-
-
-
- 
-
 
  
 window.CommonElements = CommonElements

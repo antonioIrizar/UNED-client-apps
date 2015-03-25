@@ -19,28 +19,11 @@ class CraneElements
         distance.specialElement [smallElementDistance], [bigElementDistance] 
 
         @crane.appendChild distance.div
-    
-        $('.slider-distance').noUiSlider({
-        start: 0,
-        step: 1,
-        connect: "lower",
-        range: {
-          'min': [0],
-          'max': [100]
-        }
-        })
-        $(".slider-distance").noUiSlider_pips({
-        mode: 'count',
-        values: 5,
-        density: 2,
-        stepped: true,
-        format: wNumb({
-          postfix: 'cm'
-        })
-        })
-        $(".slider").Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
+
+        new Slider 'slider-distance', 0, 1, [0], [100], 5, 2, 'cm' 
 
     remove: ->
         @crane.parentNode.removeChild @crane
+
 
 window.CraneElements = CraneElements

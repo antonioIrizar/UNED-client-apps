@@ -8,6 +8,7 @@ class Init
     common: null
     wsData: null
     wsCamera: null
+    charge: null
 
     constructor: (idCanvas, img)->
         #Listen for the event wsDataReady
@@ -16,9 +17,8 @@ class Init
         @wsData = new WebsocketData()
         @wsCamera = new WebSocketCamera()
         @plot = new Plot()
-        sliders()
         @esd = new Esd idCanvas, img
-        @plot.resize()
+        
 
 
         ### stop working in firefox
@@ -57,39 +57,47 @@ class Init
                 
             , 250)
 
-    stopTrue: ->
+    stopTrue: =>
         @plot.stop = true
 
-    stopFalse: ->
+    stopFalse: =>
         @plot.stop = false
 
-    selectCharge: ->
-        if @crane is null
+    selectCharge: =>
+        if @common is null
             @common = new CommonElements true
         else
+            sendActuatorChange 'CraneLab', "0"
             @crane.remove()
             delete @crane
             document.getElementById 'dischargeButton'
                 .removeAttribute 'disabled'
             @crane = null
             @common.mySwitch true
+            sendActuatorChange 'SolarLab', "1"
         @solar = new SolarElements()
+        @charge = true
+
         document.getElementById "panelHeadingElements" 
             .innerHTML = 'Elements you can interact with: Mode charge'
         document.getElementById 'chargeButton'
             .setAttribute 'disabled', 'disabled'
         
-    selectDischarge: ->
-        if @solar is null
+    selectDischarge: =>
+        if @common is null
             @common = new CommonElements false
         else
+            sendActuatorChange 'SolarLab', "0"
             @solar.remove()
             delete @solar
             document.getElementById 'chargeButton'
                 .removeAttribute 'disabled'
             @solar = null
             @common.mySwitch false
+            sendActuatorChange 'CraneLab', "1"
         @crane = new CraneElements()
+        @charge = false
+
         document.getElementById "panelHeadingElements" 
             .innerHTML = 'Elements you can interact with: Mode discharge'
         document.getElementById 'dischargeButton'
@@ -99,10 +107,11 @@ class Init
         battery = e.detail.battery
         role = document.getElementById 'yourRole'
         if battery >= 90
-            @selectCharge()
+            @selectDischarge()     
         else
-            @selectDischarge()
+            @selectCharge()
         if e.detail.role is 'observer'
+            console.log "entro por aqui y no se porque"
             disableAll()
             $("#stop").attr('disabled', 'disabled')
             $("#reset").attr('disabled', 'disabled')
@@ -119,9 +128,75 @@ class Init
         $(".slider-battery").val battery
         actualBattery = battery
         $("p#textBattery").text battery + "%"
+        @plot.resize()
 
     eventReadyAll: (e) =>
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady
             myApp.hidePleaseWait()
+
+    startExperiments: =>
+        if @charge
+            @chargeStart()
+        else
+            @dischargeStart()
+
+        @stopFalse()
+
+    chargeStart: ->
+        if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0)
+            $('#myModalError').modal('show')
+        else
+            modal = false;
+            if (lumens != null && lumens != $(".slider-lumens").val())
+                console.log(lumens)
+                console.log($(".slider-lumens").val())
+                newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString(), "lumens")
+                modal = true
+
+            if (horizontalAxis != null && horizontalAxis!= $(".slider-horizontal-axis").val())
+                newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , horizontalAxis.toString(), "horizontalAxis")
+                modal = true;
+
+            if (verticalAxis != null && verticalAxis != $(".slider-vertical-axis").val())
+                newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , verticalAxis.toString(), "verticalAxis")
+                modal = true
+
+            if (modal)
+                $('#myModalConfirm').modal('show')
+            else
+                startExperiment = true
+                # revisar esto *
+                ###
+                sendLumens()
+                sendHorizontalAxis()
+                sendVerticalAxis()
+                ###
+                if (lumens != $(".slider-lumens").val())
+                    sendLumens();
+                if (horizontalAxis != $(".slider-horizontal-axis").val())
+                    sendHorizontalAxis()
+                if (verticalAxis != $(".slider-vertical-axis").val())
+                    sendVerticalAxis()
+                sendTime()
+                sendJouls()
+                ###
+                //sendActuatorChange('Sun', $(".slider-lumens").val());
+                //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+                //try this line with minus
+                //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
+                //sendActuatorChange('ESDJ', $(".slider-battery").val());
+                //sendActuatorChange('Elapsed', $(".slider-time").val());
+                ###
+                disable()
+                sendActuatorChange('ESD', "1")
+            
+        
+
+    dischargeStart: -> 
+        sendDistance()
+        sendActuatorChange('ESD', "1")
+        sendJoulsToUse()
+        sendTime()
+
 
 window.Init = Init

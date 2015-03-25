@@ -15,7 +15,13 @@ class WebSocketCamera
 
   onopen: =>
     console.log "ws camera inciado"
-    jsonRequest = JSON.stringify {"method":"getSensorData", "accessRole": 'observer',  "updateFrequency":"1", "sensorId":"video"}
+    cameraRequest = 
+      "method":"getSensorData"
+      "accessRole": 'observer'
+      "updateFrequency":"1"
+      "sensorId":"video"
+
+    jsonRequest = JSON.stringify cameraRequest
     @wsCamera.send jsonRequest
 
   onmessage: (msg) =>
@@ -43,6 +49,7 @@ class WebSocketCamera
     ###
 
   onclose: (code) ->
+    console.log "me cierro"
     console.log code
 
 window.WebSocketCamera = WebSocketCamera

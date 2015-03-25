@@ -14,6 +14,8 @@
 
     WebsocketData.prototype.role = "observer";
 
+    WebsocketData.prototype.battery = null;
+
     function WebsocketData() {
       this.onmessage = __bind(this.onmessage, this);
       this.onclose = __bind(this.onclose, this);
@@ -30,10 +32,11 @@
 
     WebsocketData.prototype.onopen = function() {
       console.log("ws data llamada");
-      return sendActuatorChange('SolarLab', "1");
+      return this.getSensorData("ESDval", "observer");
     };
 
     WebsocketData.prototype.onclose = function(event) {
+      console.log("me he cerrado");
       switch (event.code) {
         case 1000:
           myApp.hidePleaseWait();
@@ -60,22 +63,57 @@
         if (msg.responseMessages !== void 0 && msg.responseMessages.code === 409) {
           alert("You can't controller the laboratory. Other user is used it");
           console.log("codigo 409");
-          getSensorData("ESDval", "observer");
-          getSensorData("Light", "observer");
-          getSensorData("PanelRot", "observer");
-          getSensorData("PanelTilt", "observer");
+          eve = document.createEvent('CustomEvent');
+          eve.initCustomEvent('selectInterface', true, false, {
+            'role': this.role,
+            'battery': this.battery
+          });
+          document.dispatchEvent(eve);
+          if (this.battery <= 90) {
+            this.getSensorData("Light", "observer");
+            this.getSensorData("PanelRot", "observer");
+            this.getSensorData("PanelTilt", "observer");
+          }
           return;
         }
         if (msg.payload.actuatorId === "SolarLab" && msg.payload.responseData.data[0] === "1") {
           console.log("dentro del solarlab");
-          this.role = "controller";
-          getSensorData("ESDval", "controller");
+          if (!this.wsDataIsReady) {
+            this.role = "controller";
+            eve = document.createEvent('CustomEvent');
+            eve.initCustomEvent('selectInterface', true, false, {
+              'role': this.role,
+              'battery': this.battery
+            });
+            document.dispatchEvent(eve);
+            this.wsDataIsReady = true;
+            eve = document.createEvent('Event');
+            eve.initEvent('allWsAreReady', true, false);
+            document.dispatchEvent(eve);
+          }
+          return;
+        }
+        if (msg.payload.actuatorId === "CraneLab" && msg.payload.responseData.data[0] === "1") {
+          console.log("centro del crane");
+          if (!this.wsDataIsReady) {
+            this.role = "controller";
+            eve = document.createEvent('CustomEvent');
+            eve.initCustomEvent('selectInterface', true, false, {
+              'role': this.role,
+              'battery': this.battery
+            });
+            document.dispatchEvent(eve);
+            this.wsDataIsReady = true;
+            eve = document.createEvent('Event');
+            eve.initEvent('allWsAreReady', true, false);
+            document.dispatchEvent(eve);
+          }
           return;
         }
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "ESD") {
         if (msg.payload.responseData.data[0] === "1") {
-          getSensorData("ESDval", "controller");
+          this.getSensorData("ESDval", "controller");
           $("#stop").removeAttr('disabled');
           $("#reset").removeAttr('disabled');
           return;
@@ -105,18 +143,12 @@
         }
         if (this.firstTimeBattery) {
           this.firstTimeBattery = false;
-          eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('selectInterface', true, false, {
-            'role': this.role,
-            'battery': msg.responseData.data[0]
-          });
-          document.dispatchEvent(eve);
-          if (this.role === 'controller') {
-            this.wsDataIsReady = true;
+          this.battery = msg.responseData.data[0];
+          if (this.battery <= 90) {
+            this.sendActuatorChange('SolarLab', "1");
+          } else {
+            this.sendActuatorChange('CraneLab', "1");
           }
-          eve = document.createEvent('Event');
-          eve.initEvent('allWsAreReady', true, false);
-          document.dispatchEvent(eve);
         }
         return;
       }
@@ -137,6 +169,32 @@
           document.dispatchEvent(eve);
         }
       }
+    };
+
+    WebsocketData.prototype.sendActuatorChange = function(actuatorId, data) {
+      var actuatorRequest, jsonRequest;
+      actuatorRequest = {
+        'method': 'sendActuatorData',
+        'authToken': 'skfjs343kjKJ',
+        'accessRole': 'controller',
+        'actuatorId': actuatorId,
+        'valueNames': '',
+        'data': data
+      };
+      jsonRequest = JSON.stringify(actuatorRequest);
+      return this.wsData.send(jsonRequest);
+    };
+
+    WebsocketData.prototype.getSensorData = function(sensorId, accessRole) {
+      var jsonRequest, sensorRequest;
+      sensorRequest = {
+        'method': 'getSensorData',
+        'accessRole': accessRole,
+        'updateFrequency': '1',
+        'sensorId': sensorId
+      };
+      jsonRequest = JSON.stringify(sensorRequest);
+      return this.wsData.send(jsonRequest);
 
       /*
       "{"method":"sendActuatorData","accessRole":"controller","payload":{"actuatorId":"ESD","responseData":{"valueNames":["State"],"data":[1],"lastMeasured":["13022015T095315"]}}}"

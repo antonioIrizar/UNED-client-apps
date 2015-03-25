@@ -125,9 +125,11 @@
     <script type="text/javascript">
    var myApp;
 myApp = myApp || (function () {
-    var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header text-danger"><h1 id="titleShowModal">Loading...</h1></div><div id="bodyModalShow" class="modal-body"><div id="progressBarModal" class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
+    var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h1 id="titleShowModal" class="text-info">Loading...</h1></div><div id="bodyModalShow" class="modal-body"><div id="progressBarModal" class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
     return {
         showPleaseWait: function(text) {
+          $("#titleShowModal").removeClass("text-danger");
+          $("#titleShowModal").addClass("text-info");
           $("#titleShowModal").html(text);
             pleaseWaitDiv.modal();
         },
@@ -135,6 +137,8 @@ myApp = myApp || (function () {
             pleaseWaitDiv.modal('hide');
         },
         showError: function(title, text){
+          $("#titleShowModal").removeClass("text-primary");
+          $("#titleShowModal").addClass("text-danger");
           $("#titleShowModal").html(title);
           $("#progressBarModal").remove();
           div = document.createElement('div');
@@ -143,7 +147,6 @@ myApp = myApp || (function () {
           p.appendChild(ptext);
           div.appendChild(p);
           document.getElementById("bodyModalShow").appendChild(div);
-
           pleaseWaitDiv.modal();
         },
 
@@ -255,7 +258,7 @@ myApp = myApp || (function () {
               <div id="panelGraph" class="panel-body ">
                 <!--<img src="http://62.204.201.150:31/snapshot.cgi?&user=userSolar&pwd=&t=" onload='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 1)' onerror='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 5000)' alt='' class="img-responsive"/>-->
               <!--<img src="images/webcam.JPG" class="img-responsive">      -->
-                <img  id="imgCamera" src="" class="img-responsive" alt="">
+                <img  id="imgCamera" src="" class="img-responsive center-block" alt="webcam in real time from solar lab">
 <!--
   src="http://62.204.201.150:31/videostream.cgi?user=userSolar&amp;pwd="
 <iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
@@ -665,61 +668,7 @@ function cleanForm(){
   form.appendChild(divForm);
 };
 
-function startExperiments(){
-  if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0){
-    $('#myModalError').modal('show');
-  }
-  else{
-    var modal = false;
 
-    if (lumens != null && lumens != $(".slider-lumens").val()){
-      console.log(lumens);
-      console.log($(".slider-lumens").val());
-      newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString(), "lumens");
-      modal = true;
-    }
-
-    if (horizontalAxis != null && horizontalAxis!= $(".slider-horizontal-axis").val()){
-      newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , horizontalAxis.toString(), "horizontalAxis");
-      modal = true;
-    }
-
-    if (verticalAxis != null && verticalAxis != $(".slider-vertical-axis").val()){
-      newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , verticalAxis.toString(), "verticalAxis");
-      modal = true;
-    }
-
-    if (modal){
-      $('#myModalConfirm').modal('show');
-    }
-    else{
-      startExperiment = true;
-      /* revisar esto */
-      /*
-      sendLumens();
-      sendHorizontalAxis();
-      sendVerticalAxis();
-      */
-      if (lumens != $(".slider-lumens").val())
-        sendLumens();
-      if (horizontalAxis != $(".slider-horizontal-axis").val())
-        sendHorizontalAxis();
-      if (verticalAxis != $(".slider-vertical-axis").val())
-        sendVerticalAxis();
-      sendTime();
-      sendJouls();
-      //sendActuatorChange('Sun', $(".slider-lumens").val());
-      //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
-      //try this line with minus
-      //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
-      //sendActuatorChange('ESDJ', $(".slider-battery").val());
-      //sendActuatorChange('Elapsed', $(".slider-time").val());
-      disable();
-      sendActuatorChange('ESD', "1"); 
-    }
-  }
-  varInit.stopFalse();
-};
 
 function resetExperiment(){
   enable();
@@ -758,6 +707,13 @@ function sendLumens(){
     myApp.showPleaseWait();
   }
 };
+
+function sendDistance(){
+  var auxDistance = $(".slider-distance").val();
+  if (auxDistance  != 0){
+    sendActuatorChange('WeightTrip', auxDistance.toString());
+  }
+};
 function sendHorizontalAxis(){
   var oldHorizontalAxis = horizontalAxis;
   var auxHorizontalAxis = $(".slider-horizontal-axis").val();
@@ -784,9 +740,15 @@ function sendTime(){
 }
 
 function sendJouls(){
-  var jouls =realValueToSend(actualBattery, $(".slider-battery").val());
+  var jouls = realValueToSend(actualBattery, $(".slider-battery").val());
   if (jouls != 0)
     sendActuatorChange('TOgetJ',jouls);
+}
+
+function sendJoulsToUse(){
+  var jouls = realValueToSend(actualBattery, $(".slider-battery").val());
+  if (jouls != 0)
+    sendActuatorChange('TOuseJ',jouls);
 }
 
 function realValueToSend(oldNumber, newNumber){

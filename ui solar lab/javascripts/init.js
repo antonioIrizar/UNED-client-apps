@@ -20,18 +20,23 @@
 
     Init.prototype.wsCamera = null;
 
+    Init.prototype.charge = null;
+
     function Init(idCanvas, img) {
+      this.startExperiments = __bind(this.startExperiments, this);
       this.eventReadyAll = __bind(this.eventReadyAll, this);
       this.selectInterface = __bind(this.selectInterface, this);
+      this.selectDischarge = __bind(this.selectDischarge, this);
+      this.selectCharge = __bind(this.selectCharge, this);
+      this.stopFalse = __bind(this.stopFalse, this);
+      this.stopTrue = __bind(this.stopTrue, this);
       this.resize = __bind(this.resize, this);
       document.addEventListener('selectInterface', this.selectInterface, false);
       document.addEventListener('allWsAreReady', this.eventReadyAll, false);
       this.wsData = new WebsocketData();
       this.wsCamera = new WebSocketCamera();
       this.plot = new Plot();
-      sliders();
       this.esd = new Esd(idCanvas, img);
-      this.plot.resize();
 
       /* stop working in firefox
       window.addEventListener "resize", => 
@@ -88,31 +93,37 @@
     };
 
     Init.prototype.selectCharge = function() {
-      if (this.crane === null) {
+      if (this.common === null) {
         this.common = new CommonElements(true);
       } else {
+        sendActuatorChange('CraneLab', "0");
         this.crane.remove();
         delete this.crane;
         document.getElementById('dischargeButton').removeAttribute('disabled');
         this.crane = null;
         this.common.mySwitch(true);
+        sendActuatorChange('SolarLab', "1");
       }
       this.solar = new SolarElements();
+      this.charge = true;
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
       return document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
     };
 
     Init.prototype.selectDischarge = function() {
-      if (this.solar === null) {
+      if (this.common === null) {
         this.common = new CommonElements(false);
       } else {
+        sendActuatorChange('SolarLab', "0");
         this.solar.remove();
         delete this.solar;
         document.getElementById('chargeButton').removeAttribute('disabled');
         this.solar = null;
         this.common.mySwitch(false);
+        sendActuatorChange('CraneLab', "1");
       }
       this.crane = new CraneElements();
+      this.charge = false;
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       return document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
     };
@@ -122,11 +133,12 @@
       battery = e.detail.battery;
       role = document.getElementById('yourRole');
       if (battery >= 90) {
-        this.selectCharge();
-      } else {
         this.selectDischarge();
+      } else {
+        this.selectCharge();
       }
       if (e.detail.role === 'observer') {
+        console.log("entro por aqui y no se porque");
         disableAll();
         $("#stop").attr('disabled', 'disabled');
         $("#reset").attr('disabled', 'disabled');
@@ -140,13 +152,86 @@
       }
       $(".slider-battery").val(battery);
       actualBattery = battery;
-      return $("p#textBattery").text(battery + "%");
+      $("p#textBattery").text(battery + "%");
+      return this.plot.resize();
     };
 
     Init.prototype.eventReadyAll = function(e) {
       if (this.wsData.wsDataIsReady && this.wsCamera.wsCameraIsReady) {
         return myApp.hidePleaseWait();
       }
+    };
+
+    Init.prototype.startExperiments = function() {
+      if (this.charge) {
+        this.chargeStart();
+      } else {
+        this.dischargeStart();
+      }
+      return this.stopFalse();
+    };
+
+    Init.prototype.chargeStart = function() {
+      var modal, startExperiment;
+      if ((lumens === null || lumens === 0) && $(".slider-lumens").val() === 0) {
+        return $('#myModalError').modal('show');
+      } else {
+        modal = false;
+        if (lumens !== null && lumens !== $(".slider-lumens").val()) {
+          console.log(lumens);
+          console.log($(".slider-lumens").val());
+          newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString(), lumens.toString(), "lumens");
+          modal = true;
+        }
+        if (horizontalAxis !== null && horizontalAxis !== $(".slider-horizontal-axis").val()) {
+          newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString(), horizontalAxis.toString(), "horizontalAxis");
+          modal = true;
+        }
+        if (verticalAxis !== null && verticalAxis !== $(".slider-vertical-axis").val()) {
+          newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString(), verticalAxis.toString(), "verticalAxis");
+          modal = true;
+        }
+        if (modal) {
+          return $('#myModalConfirm').modal('show');
+        } else {
+          startExperiment = true;
+
+          /*
+          sendLumens()
+          sendHorizontalAxis()
+          sendVerticalAxis()
+           */
+          if (lumens !== $(".slider-lumens").val()) {
+            sendLumens();
+          }
+          if (horizontalAxis !== $(".slider-horizontal-axis").val()) {
+            sendHorizontalAxis();
+          }
+          if (verticalAxis !== $(".slider-vertical-axis").val()) {
+            sendVerticalAxis();
+          }
+          sendTime();
+          sendJouls();
+
+          /*
+          //sendActuatorChange('Sun', $(".slider-lumens").val());
+          //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
+          //try this line with minus
+          //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
+          //sendActuatorChange('ESDJ', $(".slider-battery").val());
+          //sendActuatorChange('Elapsed', $(".slider-time").val());
+           */
+          disable();
+          return sendActuatorChange('ESD', "1");
+        }
+      }
+    };
+
+    Init.prototype.dischargeStart = function() {
+      sendDistance();
+      sendActuatorChange('ESD', "1");
+      sendJoulsToUse();
+      return sendTime();
     };
 
     return Init;

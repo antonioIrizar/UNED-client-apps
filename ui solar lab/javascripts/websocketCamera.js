@@ -22,14 +22,15 @@
     }
 
     WebSocketCamera.prototype.onopen = function() {
-      var jsonRequest;
+      var cameraRequest, jsonRequest;
       console.log("ws camera inciado");
-      jsonRequest = JSON.stringify({
+      cameraRequest = {
         "method": "getSensorData",
         "accessRole": 'observer',
         "updateFrequency": "1",
         "sensorId": "video"
-      });
+      };
+      jsonRequest = JSON.stringify(cameraRequest);
       return this.wsCamera.send(jsonRequest);
     };
 
@@ -60,6 +61,7 @@
     };
 
     WebSocketCamera.prototype.onclose = function(code) {
+      console.log("me cierro");
       return console.log(code);
     };
 
