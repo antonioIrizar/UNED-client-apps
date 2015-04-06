@@ -116,12 +116,12 @@ class CommonElements
             @wsData.sendActuatorChange 'Elapsed', time.toString()
 
     sendJouls: ->
-        jouls = realValueToSend(actualBattery, parseInt $(".slider-battery").val())
+        jouls = realValueToSend(@wsData.battery, parseInt $(".slider-battery").val())
         if jouls isnt 0
             @wsData.sendActuatorChange 'TOgetJ', jouls.toString()
 
     sendJoulsToUse: ->
-        jouls = realValueToSend(actualBattery, parseInt $(".slider-battery").val())
+        jouls = realValueToSend(@wsData.battery, parseInt $(".slider-battery").val())
         if jouls isnt 0
             sendActuatorChange 'TOuseJ', jouls.toString()
 

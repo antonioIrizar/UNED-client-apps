@@ -120,7 +120,7 @@
 
     CommonElements.prototype.sendJouls = function() {
       var jouls;
-      jouls = realValueToSend(actualBattery, parseInt($(".slider-battery").val()));
+      jouls = realValueToSend(this.wsData.battery, parseInt($(".slider-battery").val()));
       if (jouls !== 0) {
         return this.wsData.sendActuatorChange('TOgetJ', jouls.toString());
       }
@@ -128,7 +128,7 @@
 
     CommonElements.prototype.sendJoulsToUse = function() {
       var jouls;
-      jouls = realValueToSend(actualBattery, parseInt($(".slider-battery").val()));
+      jouls = realValueToSend(this.wsData.battery, parseInt($(".slider-battery").val()));
       if (jouls !== 0) {
         return sendActuatorChange('TOuseJ', jouls.toString());
       }
