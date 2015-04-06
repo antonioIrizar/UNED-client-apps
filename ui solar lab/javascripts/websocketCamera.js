@@ -10,7 +10,10 @@
 
     WebSocketCamera.prototype.wsCameraIsReady = false;
 
-    function WebSocketCamera() {
+    WebSocketCamera.prototype.token = null;
+
+    function WebSocketCamera(token) {
+      this.token = token;
       this.onmessage = __bind(this.onmessage, this);
       this.onopen = __bind(this.onopen, this);
       this.wsCameraIsReady = false;
@@ -26,6 +29,7 @@
       console.log("ws camera inciado");
       cameraRequest = {
         "method": "getSensorData",
+        'authToken': this.token.toString(),
         "accessRole": 'observer',
         "updateFrequency": "1",
         "sensorId": "video"

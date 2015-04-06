@@ -14,8 +14,9 @@ class Init
         #Listen for the event wsDataReady
         document.addEventListener 'selectInterface', @selectInterface, false
         document.addEventListener 'allWsAreReady', @eventReadyAll, false
-        @wsData = new WebsocketData()
-        @wsCamera = new WebSocketCamera()
+        token = Math.random()
+        @wsData = new WebsocketData token
+        @wsCamera = new WebSocketCamera token
         @plot = new Plot()
         @esd = new Esd idCanvas, img
         
@@ -65,17 +66,17 @@ class Init
 
     selectCharge: =>
         if @common is null
-            @common = new CommonElements true
+            @common = new CommonElements @wsData, true
         else
-            sendActuatorChange 'CraneLab', "0"
+            @wsData.sendActuatorChange 'CraneLab', "0"
             @crane.remove()
             delete @crane
             document.getElementById 'dischargeButton'
                 .removeAttribute 'disabled'
             @crane = null
             @common.mySwitch true
-            sendActuatorChange 'SolarLab', "1"
-        @solar = new SolarElements()
+            @wsData.sendActuatorChange 'SolarLab', "1"
+        @solar = new SolarElements @wsData
         @charge = true
 
         document.getElementById "panelHeadingElements" 
@@ -85,17 +86,17 @@ class Init
         
     selectDischarge: =>
         if @common is null
-            @common = new CommonElements false
+            @common = new CommonElements @wsData, false
         else
-            sendActuatorChange 'SolarLab', "0"
+            @wsData.sendActuatorChange 'SolarLab', "0"
             @solar.remove()
             delete @solar
             document.getElementById 'chargeButton'
                 .removeAttribute 'disabled'
             @solar = null
             @common.mySwitch false
-            sendActuatorChange 'CraneLab', "1"
-        @crane = new CraneElements()
+            @wsData.sendActuatorChange 'CraneLab', "1"
+        @crane = new CraneElements @wsData
         @charge = false
 
         document.getElementById "panelHeadingElements" 
@@ -136,6 +137,7 @@ class Init
 
     startExperiments: =>
         if @charge
+            console.log "cargarrr"
             @chargeStart()
         else
             @dischargeStart()
@@ -172,13 +174,13 @@ class Init
                 sendVerticalAxis()
                 ###
                 if (lumens != $(".slider-lumens").val())
-                    sendLumens();
+                    @solar.sendLumens();
                 if (horizontalAxis != $(".slider-horizontal-axis").val())
-                    sendHorizontalAxis()
+                    @solar.sendHorizontalAxis()
                 if (verticalAxis != $(".slider-vertical-axis").val())
-                    sendVerticalAxis()
-                sendTime()
-                sendJouls()
+                    @solar.sendVerticalAxis()
+                @common.sendTime()
+                @common.sendJouls()
                 ###
                 //sendActuatorChange('Sun', $(".slider-lumens").val());
                 //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
@@ -188,15 +190,15 @@ class Init
                 //sendActuatorChange('Elapsed', $(".slider-time").val());
                 ###
                 disable()
-                sendActuatorChange('ESD', "1")
+                @wsData.sendActuatorChange('ESD', "1")
             
         
 
     dischargeStart: -> 
-        sendDistance()
-        sendActuatorChange('ESD', "1")
-        sendJoulsToUse()
-        sendTime()
+        @crane.sendDistance()
+        @wsData.sendActuatorChange('ESD', "1")
+        @common.sendJoulsToUse()
+        @common.sendTime()
 
 
 window.Init = Init

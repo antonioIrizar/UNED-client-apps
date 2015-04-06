@@ -1,15 +1,16 @@
 class CraneElements
     crane: null
     NAMEPARENT: "noCommonElements"
+    wsData: null
 
-    constructor: ->
+    constructor: (@wsData) ->
         @crane = document.createElement "div"
         @crane.setAttribute "id", "elementsTheCrane"
         document.getElementById(@NAMEPARENT).appendChild @crane
         @distance()
 
     distance: ->
-        smallElementDistance = new Item "img", ["src", "class", "alt"], ["images/bulb.png", "img-responsive", "bulb"], null, false, null
+        smallElementDistance = new Item "img", ["src", "class", "alt"], ["images/crane.png", "img-responsive", "crane image"], null, false, null
         strong = new Item "strong", [], [], "How much distance do you want?", false, null
         divSlider = new Item "div", ["id", "class"], ["slider-distance", "slider slider-distance"], null, false, null
         div = new Item "div", ["class"], ["slidera"], null, true, [divSlider]
@@ -25,5 +26,10 @@ class CraneElements
     remove: ->
         @crane.parentNode.removeChild @crane
 
+    sendDistance: ->
+        auxDistance = parseInt $(".slider-distance").val()
+        if auxDistance isnt 0
+            @wsData.sendActuatorChange 'WeightTrip', auxDistance.toString()
+  
 
 window.CraneElements = CraneElements

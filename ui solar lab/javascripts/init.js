@@ -31,10 +31,12 @@
       this.stopFalse = __bind(this.stopFalse, this);
       this.stopTrue = __bind(this.stopTrue, this);
       this.resize = __bind(this.resize, this);
+      var token;
       document.addEventListener('selectInterface', this.selectInterface, false);
       document.addEventListener('allWsAreReady', this.eventReadyAll, false);
-      this.wsData = new WebsocketData();
-      this.wsCamera = new WebSocketCamera();
+      token = Math.random();
+      this.wsData = new WebsocketData(token);
+      this.wsCamera = new WebSocketCamera(token);
       this.plot = new Plot();
       this.esd = new Esd(idCanvas, img);
 
@@ -94,17 +96,17 @@
 
     Init.prototype.selectCharge = function() {
       if (this.common === null) {
-        this.common = new CommonElements(true);
+        this.common = new CommonElements(this.wsData, true);
       } else {
-        sendActuatorChange('CraneLab', "0");
+        this.wsData.sendActuatorChange('CraneLab', "0");
         this.crane.remove();
         delete this.crane;
         document.getElementById('dischargeButton').removeAttribute('disabled');
         this.crane = null;
         this.common.mySwitch(true);
-        sendActuatorChange('SolarLab', "1");
+        this.wsData.sendActuatorChange('SolarLab', "1");
       }
-      this.solar = new SolarElements();
+      this.solar = new SolarElements(this.wsData);
       this.charge = true;
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
       return document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
@@ -112,17 +114,17 @@
 
     Init.prototype.selectDischarge = function() {
       if (this.common === null) {
-        this.common = new CommonElements(false);
+        this.common = new CommonElements(this.wsData, false);
       } else {
-        sendActuatorChange('SolarLab', "0");
+        this.wsData.sendActuatorChange('SolarLab', "0");
         this.solar.remove();
         delete this.solar;
         document.getElementById('chargeButton').removeAttribute('disabled');
         this.solar = null;
         this.common.mySwitch(false);
-        sendActuatorChange('CraneLab', "1");
+        this.wsData.sendActuatorChange('CraneLab', "1");
       }
-      this.crane = new CraneElements();
+      this.crane = new CraneElements(this.wsData);
       this.charge = false;
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       return document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
@@ -164,6 +166,7 @@
 
     Init.prototype.startExperiments = function() {
       if (this.charge) {
+        console.log("cargarrr");
         this.chargeStart();
       } else {
         this.dischargeStart();
@@ -202,16 +205,16 @@
           sendVerticalAxis()
            */
           if (lumens !== $(".slider-lumens").val()) {
-            sendLumens();
+            this.solar.sendLumens();
           }
           if (horizontalAxis !== $(".slider-horizontal-axis").val()) {
-            sendHorizontalAxis();
+            this.solar.sendHorizontalAxis();
           }
           if (verticalAxis !== $(".slider-vertical-axis").val()) {
-            sendVerticalAxis();
+            this.solar.sendVerticalAxis();
           }
-          sendTime();
-          sendJouls();
+          this.common.sendTime();
+          this.common.sendJouls();
 
           /*
           //sendActuatorChange('Sun', $(".slider-lumens").val());
@@ -222,16 +225,16 @@
           //sendActuatorChange('Elapsed', $(".slider-time").val());
            */
           disable();
-          return sendActuatorChange('ESD', "1");
+          return this.wsData.sendActuatorChange('ESD', "1");
         }
       }
     };
 
     Init.prototype.dischargeStart = function() {
-      sendDistance();
-      sendActuatorChange('ESD', "1");
-      sendJoulsToUse();
-      return sendTime();
+      this.crane.sendDistance();
+      this.wsData.sendActuatorChange('ESD', "1");
+      this.common.sendJoulsToUse();
+      return this.common.sendTime();
     };
 
     return Init;

@@ -399,22 +399,6 @@ myApp = myApp || (function () {
       */
     };
 
-function sendActuatorChange(actuatorId, data) {
-var actuatorRequest = {
-method: 'sendActuatorData',
-authToken: 'skfjs343kjKJ',
-accessRole: 'controller',
-actuatorId: actuatorId,
-valueNames: "",
-data: data
-}
-var jsonRequest = JSON.stringify(actuatorRequest);
-varInit.wsData.wsData.send(jsonRequest);
-}
-function getSensorData(sensorId, accessRole){
-var jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId});
-varInit.wsData.wsData.send(jsonRequest);
-}
 
   function disableAll(){
     $(".slider-battery").attr('disabled', 'disabled');
@@ -694,62 +678,8 @@ function errorLumens(){
   $('#myModalError').modal('show');
 };
 
-function sendLumens(){
-  var auxLumens = $(".slider-lumens").val();
-  //block 680 for problems with it
-  if (auxLumens == 680){
-    console.log("poner 681");
-    auxLumens = 660;
-  }
-  //var move =  realValueToSend(auxLumens, lumens);
-  if (auxLumens  != 0){
-    sendActuatorChange('Sun', auxLumens.toString());
-    myApp.showPleaseWait();
-  }
-};
 
-function sendDistance(){
-  var auxDistance = $(".slider-distance").val();
-  if (auxDistance  != 0){
-    sendActuatorChange('WeightTrip', auxDistance.toString());
-  }
-};
-function sendHorizontalAxis(){
-  var oldHorizontalAxis = horizontalAxis;
-  var auxHorizontalAxis = $(".slider-horizontal-axis").val();
-  var move = realValueToSend(oldHorizontalAxis, auxHorizontalAxis);
-  if (move != 0){
-    sendActuatorChange('Panelrot', move.toString());
-    myApp.showPleaseWait();
-  }
-};
-function sendVerticalAxis(){
-  var oldVerticalAxis = verticalAxis;
-  var auxVerticalAxis = $(".slider-vertical-axis").val();
-  var move = realValueToSend(oldVerticalAxis, auxVerticalAxis);
-  if (move != 0){
-    sendActuatorChange('Paneltilt', move.toString());
-    myApp.showPleaseWait();
-  }
-};
 
-function sendTime(){
-  var time = $(".slider-time").val();
-  if (time != 0)
-    sendActuatorChange('Elapsed',time);
-}
-
-function sendJouls(){
-  var jouls = realValueToSend(actualBattery, $(".slider-battery").val());
-  if (jouls != 0)
-    sendActuatorChange('TOgetJ',jouls);
-}
-
-function sendJoulsToUse(){
-  var jouls = realValueToSend(actualBattery, $(".slider-battery").val());
-  if (jouls != 0)
-    sendActuatorChange('TOuseJ',jouls);
-}
 
 function realValueToSend(oldNumber, newNumber){
   if (oldNumber==null){

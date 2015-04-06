@@ -13,7 +13,8 @@ class SolarElements
     bulb: ->
         smallElementBulb = new Item "img", ["src", "class", "alt"], ["images/bulb.png", "img-responsive", "bulb"], null, false, null
         strong = new Item "strong", [], [], "Lumens", false, null
-        button = new Item "button", ["onclick", "type", "class"], ["sendLumens()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
+        #carefully with function onclick need put name var of init and the name of var solar 
+        button = new Item "button", ["onclick", "type", "class"], ["varInit.solar.sendLumens()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
         divSlider = new Item "div", ["id", "class"], ["slider-lumens", "slider slider-lumens"], null, false, null
         div = new Item "div", ["class"], ["slidera"], null, true, [divSlider]
         bigElementBulb = new Item "div", ["class"], ["form-group"], null, true, [strong, button, div]
@@ -32,14 +33,16 @@ class SolarElements
         p = new Item "p", ["class"], ["text-center"], null, true, [strong1]
 
         strong2 = new Item "strong", [], [], "Horizontal axis", false, null
-        button1 = new Item "button", ["onclick", "type", "class"], ["sendHorizontalAxis()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
+        #carefully with function onclick need put name var of init and the name of var solar 
+        button1 = new Item "button", ["onclick", "type", "class"], ["varInit.solar.sendHorizontalAxis()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
         divSlider1 = new Item "div", ["id", "class"], ["slider-horizontal-axis", "slider slider-horizontal-axis"], null, false, null
         div1 = new Item "div", ["class"], ["slidera"], null, true, [divSlider1]
 
         divForm1 = new Item "div", ["class"], ["form-group"], null, true, [strong1, button1, div1]
 
         strong3 = new Item "strong", [], [], "Vertical axis", false, null
-        button2 = new Item "button", ["onclick", "type", "class"], ["sendVerticalAxis()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
+        #carefully with function onclick need put name var of init and the name of var solar 
+        button2 = new Item "button", ["onclick", "type", "class"], ["varInit.solar.sendVerticalAxis()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
         divSlider2 = new Item "div", ["id", "class"], ["slider-vertical-axis", "slider slider-vertical-axis"], null, false, null
         div2 = new Item "div", ["class"], ["slidera"], null, true, [divSlider2]
 
@@ -56,20 +59,31 @@ class SolarElements
     remove: ->
         @solar.parentNode.removeChild @solar
 
-    ###
-
-    sendLumens: ->
-        auxLumens = $(".slider-lumens").val()
+    sendLumens: =>
+        auxLumens = parseInt $(".slider-lumens").val()
         #block 680 for problems with it
         if auxLumens is 680
-            console.log "poner 681"
             auxLumens = 660
         #var move =  realValueToSend(auxLumens, lumens);
         if auxLumens isnt 0
-        sendActuatorChange 'Sun', auxLumens.toString()
-        myApp.showPleaseWait()
-
-    ###
+            @wsData.sendActuatorChange 'Sun', auxLumens.toString()
+            myApp.showPleaseWait()
+  
+    sendHorizontalAxis: ->
+        oldHorizontalAxis = horizontalAxis
+        auxHorizontalAxis = parseInt $(".slider-horizontal-axis").val()
+        move = realValueToSend oldHorizontalAxis, auxHorizontalAxis
+        if move isnt 0
+            @wsData.sendActuatorChange 'Panelrot', move.toString()
+            myApp.showPleaseWait()
+  
+    sendVerticalAxis: ->
+        oldVerticalAxis = verticalAxis
+        auxVerticalAxis = parseInt $(".slider-vertical-axis").val()
+        move = realValueToSend oldVerticalAxis, auxVerticalAxis
+        if move isnt 0
+            @wsData.sendActuatorChange 'Paneltilt', move.toString()
+            myApp.showPleaseWait()
 
 
 window.SolarElements = SolarElements

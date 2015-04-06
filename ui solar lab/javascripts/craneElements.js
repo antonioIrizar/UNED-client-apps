@@ -7,7 +7,10 @@
 
     CraneElements.prototype.NAMEPARENT = "noCommonElements";
 
-    function CraneElements() {
+    CraneElements.prototype.wsData = null;
+
+    function CraneElements(wsData) {
+      this.wsData = wsData;
       this.crane = document.createElement("div");
       this.crane.setAttribute("id", "elementsTheCrane");
       document.getElementById(this.NAMEPARENT).appendChild(this.crane);
@@ -16,7 +19,7 @@
 
     CraneElements.prototype.distance = function() {
       var bigElementDistance, distance, div, divSlider, smallElementDistance, strong;
-      smallElementDistance = new Item("img", ["src", "class", "alt"], ["images/bulb.png", "img-responsive", "bulb"], null, false, null);
+      smallElementDistance = new Item("img", ["src", "class", "alt"], ["images/crane.png", "img-responsive", "crane image"], null, false, null);
       strong = new Item("strong", [], [], "How much distance do you want?", false, null);
       divSlider = new Item("div", ["id", "class"], ["slider-distance", "slider slider-distance"], null, false, null);
       div = new Item("div", ["class"], ["slidera"], null, true, [divSlider]);
@@ -29,6 +32,14 @@
 
     CraneElements.prototype.remove = function() {
       return this.crane.parentNode.removeChild(this.crane);
+    };
+
+    CraneElements.prototype.sendDistance = function() {
+      var auxDistance;
+      auxDistance = parseInt($(".slider-distance").val());
+      if (auxDistance !== 0) {
+        return this.wsData.sendActuatorChange('WeightTrip', auxDistance.toString());
+      }
     };
 
     return CraneElements;

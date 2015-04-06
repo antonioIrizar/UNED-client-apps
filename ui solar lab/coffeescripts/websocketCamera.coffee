@@ -2,8 +2,9 @@ class WebSocketCamera
   wsCamera: null
   URLWS: "ws://62.204.201.214:8081"
   wsCameraIsReady: false
+  token: null
 
-  constructor: ->
+  constructor: (@token) ->
     @wsCameraIsReady = false
     @wsCamera = new WebSocket @URLWS
     @wsCamera.binaryType = 'arraybuffer'
@@ -17,6 +18,7 @@ class WebSocketCamera
     console.log "ws camera inciado"
     cameraRequest = 
       "method":"getSensorData"
+      'authToken': @token.toString()
       "accessRole": 'observer'
       "updateFrequency":"1"
       "sensorId":"video"

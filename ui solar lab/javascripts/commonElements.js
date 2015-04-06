@@ -9,7 +9,10 @@
 
     CommonElements.prototype.batteryText = null;
 
-    function CommonElements(solar) {
+    CommonElements.prototype.wsData = null;
+
+    function CommonElements(wsData, solar) {
+      this.wsData = wsData;
       this.solar = solar;
       this.selectNameVar();
       this.battery();
@@ -35,7 +38,7 @@
     };
 
     CommonElements.prototype.time = function() {
-      var a, bigElementTime, div, divSlider, parent, smallElementTime, span, strong, time;
+      var a, bigElementTime, div, divSlider, maxTime, parent, smallElementTime, span, strong, time;
       smallElementTime = new Item("div", ["id"], ["countdown"], null, false, null);
       strong = new Item("strong", ["id"], ["timeText"], this.timeText, false, null);
       span = new Item("span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null);
@@ -47,13 +50,17 @@
       time.specialElement([smallElementTime], [bigElementTime]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(time.div);
-      return new Slider('slider-time', 0, 1, [0], [30], 7, 3, '\'');
+      maxTime = [1800];
+      if (!this.solar) {
+        maxTime = [180];
+      }
+      return new Slider('slider-time', 0, 10, [0], maxTime, 7, 3, '\'\'');
     };
 
     CommonElements.prototype.buttons = function() {
       var button, buttonReset, buttonStart, buttonStop, div1, div2, form, parent;
       div1 = new Item("div", ["id"], ["adaptToHeight"], null, false, null);
-      buttonStart = new Item("button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "Init.prototype.startExperiments()"], "Start", false, null);
+      buttonStart = new Item("button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "varInit.startExperiments()"], "Start", false, null);
       buttonStop = new Item("button", ["id", "class", "type", "style", "onclick"], ["stop", "btn btn-primary", "button", "margin-left: 4px", "stopExperiment()"], "Stop", false, null);
       buttonReset = new Item("button", ["id", "class", "type", "style", "onclick"], ["reset", "btn btn-danger", "button", "margin-left: 4px", "resetExperiment()"], "Reset", false, null);
       form = new Item("form", ["class", "role", "autocomplete"], ["form", "form", "off"], null, true, [buttonStart, buttonStop, buttonReset]);
@@ -75,10 +82,56 @@
     };
 
     CommonElements.prototype.mySwitch = function(solar) {
+      var maxTime;
       this.solar = solar;
       this.selectNameVar();
+      maxTime = [1800];
+      if (!this.solar) {
+        maxTime = [180];
+      }
+      $('.slider-time').noUiSlider({
+        range: {
+          min: [0],
+          max: maxTime
+        }
+      }, true);
+      $('.slider-time').noUiSlider_pips({
+        'mode': 'count',
+        'values': 7,
+        'density': 3,
+        'stepped': true,
+        'format': wNumb({
+          'postfix': '\'\''
+        })
+      });
+      $('.slider-time').val(0);
       document.getElementById("timeText").innerHTML = this.timeText;
       return document.getElementById("batteryText").innerHTML = this.batteryText;
+    };
+
+    CommonElements.prototype.sendTime = function() {
+      var time;
+      time = parseInt($('.slider-time').val());
+      if (time !== 0) {
+        console.log(time);
+        return this.wsData.sendActuatorChange('Elapsed', time.toString());
+      }
+    };
+
+    CommonElements.prototype.sendJouls = function() {
+      var jouls;
+      jouls = realValueToSend(actualBattery, parseInt($(".slider-battery").val()));
+      if (jouls !== 0) {
+        return this.wsData.sendActuatorChange('TOgetJ', jouls.toString());
+      }
+    };
+
+    CommonElements.prototype.sendJoulsToUse = function() {
+      var jouls;
+      jouls = realValueToSend(actualBattery, parseInt($(".slider-battery").val()));
+      if (jouls !== 0) {
+        return sendActuatorChange('TOuseJ', jouls.toString());
+      }
     };
 
     return CommonElements;

@@ -16,7 +16,10 @@
 
     WebsocketData.prototype.battery = null;
 
-    function WebsocketData() {
+    WebsocketData.prototype.token = null;
+
+    function WebsocketData(token) {
+      this.token = token;
       this.onmessage = __bind(this.onmessage, this);
       this.onclose = __bind(this.onclose, this);
       this.onopen = __bind(this.onopen, this);
@@ -54,7 +57,7 @@
     };
 
     WebsocketData.prototype.onmessage = function(event) {
-      var data, eve, horizontalAxis, lumens, msg, verticalAxis;
+      var actualBattery, data, eve, horizontalAxis, lumens, msg, verticalAxis;
       data = event.data + "";
       console.log(data);
       msg = JSON.parse(data);
@@ -142,6 +145,7 @@
           varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6]);
         }
         if (this.firstTimeBattery) {
+          actualBattery = msg.responseData.data[0];
           this.firstTimeBattery = false;
           this.battery = msg.responseData.data[0];
           if (this.battery <= 90) {
@@ -175,7 +179,7 @@
       var actuatorRequest, jsonRequest;
       actuatorRequest = {
         'method': 'sendActuatorData',
-        'authToken': 'skfjs343kjKJ',
+        'authToken': this.token.toString(),
         'accessRole': 'controller',
         'actuatorId': actuatorId,
         'valueNames': '',
@@ -189,6 +193,7 @@
       var jsonRequest, sensorRequest;
       sensorRequest = {
         'method': 'getSensorData',
+        'authToken': this.token.toString(),
         'accessRole': accessRole,
         'updateFrequency': '1',
         'sensorId': sensorId

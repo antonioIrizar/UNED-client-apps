@@ -2,8 +2,9 @@ class CommonElements
     solar:true
     timeText: null
     batteryText: null
+    wsData: null
 
-    constructor: (@solar) ->
+    constructor: (@wsData, @solar) ->
         @selectNameVar()
         @battery()
         @time()
@@ -51,11 +52,15 @@ class CommonElements
         parent = document.getElementById "elementsCommons"
         parent.appendChild time.div
 
-        new Slider 'slider-time', 0, 1, [0], [30], 7, 3, '\'' 
+        maxTime = [1800]
+        if not @solar 
+            maxTime = [180]
+
+        new Slider 'slider-time', 0, 10, [0], maxTime, 7, 3, '\'\'' 
         
     buttons: ->
         div1 = new Item "div", ["id"], ["adaptToHeight"], null, false, null
-        buttonStart = new Item "button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "Init.prototype.startExperiments()"], "Start", false, null
+        buttonStart = new Item "button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "varInit.startExperiments()"], "Start", false, null
         buttonStop = new Item "button", ["id", "class", "type","style", "onclick"], ["stop", "btn btn-primary", "button", "margin-left: 4px", "stopExperiment()"], "Stop", false, null
         buttonReset = new Item "button", ["id", "class", "type","style", "onclick"], ["reset", "btn btn-danger", "button", "margin-left: 4px", "resetExperiment()"], "Reset", false, null
         form = new Item "form", ["class", "role", "autocomplete"], ["form", "form", "off"], null, true, [buttonStart, buttonStop, buttonReset]
@@ -71,14 +76,54 @@ class CommonElements
         if @solar
             @timeText = "Time charging"
             @batteryText = "How much charge do you want?"
+           
         else
             @timeText = "Time discharging"
             @batteryText = "How much discharge do you want?" 
-
+            
     mySwitch: (@solar)->
         @selectNameVar()
+        
+        maxTime = [1800]
+        if not @solar 
+            maxTime = [180]
+
+        $('.slider-time').noUiSlider
+            range:
+                min: [0],
+                max: maxTime
+        , true
+
+        $('.slider-time').noUiSlider_pips(
+            'mode': 'count'
+            'values': 7
+            'density': 3
+            'stepped': true,
+            'format': wNumb(
+                'postfix': '\'\'' 
+            )
+        )
+
+        $('.slider-time').val 0
+    
         document.getElementById("timeText").innerHTML = @timeText
         document.getElementById("batteryText").innerHTML = @batteryText
+
+    sendTime: ->
+        time = parseInt $('.slider-time').val()
+        if time isnt 0
+            console.log time
+            @wsData.sendActuatorChange 'Elapsed', time.toString()
+
+    sendJouls: ->
+        jouls = realValueToSend(actualBattery, parseInt $(".slider-battery").val())
+        if jouls isnt 0
+            @wsData.sendActuatorChange 'TOgetJ', jouls.toString()
+
+    sendJoulsToUse: ->
+        jouls = realValueToSend(actualBattery, parseInt $(".slider-battery").val())
+        if jouls isnt 0
+            sendActuatorChange 'TOuseJ', jouls.toString()
 
  
 window.CommonElements = CommonElements

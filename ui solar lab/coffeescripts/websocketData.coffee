@@ -5,8 +5,9 @@ class WebsocketData
     wsDataIsReady: false
     role: "observer"
     battery: null
+    token: null
 
-    constructor: ->
+    constructor: (@token) ->
         @wsDataIsReady = false
         @firstTimeBattery = true
         @role = "observer"
@@ -116,8 +117,11 @@ class WebsocketData
 
         if msg.method == "getSensorData" && msg.sensorId == "ESDval"
             if (msg.responseData.valueNames.length == 7)
+                #fix this
                 varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6])
             if @firstTimeBattery 
+                #fix this
+                actualBattery = msg.responseData.data[0]
                 @firstTimeBattery = false
                 @battery = msg.responseData.data[0]
                 if @battery <= 90
@@ -147,7 +151,7 @@ class WebsocketData
     sendActuatorChange: (actuatorId, data) -> 
         actuatorRequest = 
             'method': 'sendActuatorData'
-            'authToken': 'skfjs343kjKJ'
+            'authToken': @token.toString()
             'accessRole': 'controller'
             'actuatorId': actuatorId
             'valueNames': ''
@@ -159,6 +163,7 @@ class WebsocketData
     getSensorData: (sensorId, accessRole) ->
         sensorRequest = 
             'method': 'getSensorData'
+            'authToken': @token.toString()
             'accessRole': accessRole
             'updateFrequency': '1' 
             'sensorId': sensorId
