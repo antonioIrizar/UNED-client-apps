@@ -34,17 +34,17 @@
     }
 
     CommonElements.prototype.battery = function() {
-      var a, battery, bigElementBatery, div, divSlider, p, parent, smallElementBatery, span, strong;
+      var a, battery, bigElementBattery, div, divSlider, imgBattery, p, parent, span, strong;
       p = new Item("p", ["id", "class"], ["textBattery", "text-center"], "10%", false, null);
-      smallElementBatery = new Item("img", ["src", "class", "alt"], ["images/battery1.png", "img-responsive", "battery"], null, true, [p]);
+      imgBattery = new Item("img", ["src", "class", "alt"], ["images/battery1.png", "img-responsive", "battery"], null, false, null);
       strong = new Item("strong", ["id"], ["batteryText"], this.batteryText, false, null);
       span = new Item("span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null);
       a = new Item("a", ["class", "data-container", "data-toggle", "tabindex", "data-trigger", "data-content"], ["info-pop-up", "body", "popover", "0", "focus", "And here's some amazing content. It's very engaging. Right?"], null, true, [span]);
       divSlider = new Item("div", ["id", "class"], ["slider-battery", "slider slider-battery"], null, false, null);
       div = new Item("div", ["class"], ["slidera"], null, true, [divSlider]);
-      bigElementBatery = new Item("div", ["class"], ["form-group"], null, true, [strong, a, div]);
+      bigElementBattery = new Item("div", ["class"], ["form-group"], null, true, [strong, a, div]);
       battery = new Element();
-      battery.specialElement([smallElementBatery], [bigElementBatery]);
+      battery.specialElement([p, imgBattery], [bigElementBattery]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(battery.div);
       return new Slider('slider-battery', 10, 1, [10], [100], 10, 2, '%');

@@ -20,7 +20,7 @@ class CommonElements
 
     battery: ->
         p = new Item "p", ["id", "class"], ["textBattery", "text-center"], "10%", false, null
-        smallElementBatery = new Item "img", ["src", "class", "alt"], ["images/battery1.png", "img-responsive", "battery"], null, true, [p]
+        imgBattery = new Item "img", ["src", "class", "alt"], ["images/battery1.png", "img-responsive", "battery"], null, false, null
 
         strong = new Item "strong", ["id"], ["batteryText"], @batteryText, false, null
         span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
@@ -30,10 +30,10 @@ class CommonElements
         divSlider = new Item "div", ["id", "class"], ["slider-battery", "slider slider-battery"], null, false, null
         div = new Item "div", ["class"], ["slidera"], null, true, [divSlider]
 
-        bigElementBatery = new Item "div", ["class"], ["form-group"], null, true, [strong, a, div]
+        bigElementBattery = new Item "div", ["class"], ["form-group"], null, true, [strong, a, div]
 
         battery = new Element()
-        battery.specialElement [smallElementBatery], [bigElementBatery]
+        battery.specialElement [p, imgBattery], [bigElementBattery]
 
         parent = document.getElementById "elementsCommons"
         parent.appendChild battery.div
