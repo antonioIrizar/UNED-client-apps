@@ -174,6 +174,23 @@
       return this.stopFalse();
     };
 
+    Init.prototype.stopExperiment = function() {
+      this.wsData.sendActuatorChange('ESD', '0');
+      this.stopTrue();
+      return enable();
+    };
+
+
+    /*
+    function stopExperiment(){
+      sendActuatorChange('ESD', "0");
+      //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
+      //ws.send(jsonRequest);
+      varInit.stopTrue();
+      enable();
+    };
+     */
+
     Init.prototype.chargeStart = function() {
       var modal, startExperiment;
       if ((lumens === null || lumens === 0) && $(".slider-lumens").val() === 0) {

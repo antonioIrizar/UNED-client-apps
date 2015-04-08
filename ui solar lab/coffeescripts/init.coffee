@@ -144,6 +144,19 @@ class Init
 
         @stopFalse()
 
+    stopExperiment: -> 
+        @wsData.sendActuatorChange 'ESD', '0'
+        @stopTrue()
+        enable()
+    ###
+    function stopExperiment(){
+  sendActuatorChange('ESD', "0");
+  //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
+  //ws.send(jsonRequest);
+  varInit.stopTrue();
+  enable();
+};
+    ###
     chargeStart: ->
         if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0)
             $('#myModalError').modal('show')

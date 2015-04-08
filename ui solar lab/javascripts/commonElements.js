@@ -85,7 +85,7 @@
       var button, buttonReset, buttonStart, buttonStop, div1, div2, form, parent;
       div1 = new Item("div", ["id"], ["adaptToHeight"], null, false, null);
       buttonStart = new Item("button", ["id", "class", "type", "onclick"], ["startExperiment", "btn btn-success", "button", "varInit.startExperiments()"], "Start", false, null);
-      buttonStop = new Item("button", ["id", "class", "type", "style", "onclick"], ["stop", "btn btn-primary", "button", "margin-left: 4px", "stopExperiment()"], "Stop", false, null);
+      buttonStop = new Item("button", ["id", "class", "type", "style", "onclick"], ["stop", "btn btn-primary", "button", "margin-left: 4px", "varInit.stopExperiment()"], "Stop", false, null);
       buttonReset = new Item("button", ["id", "class", "type", "style", "onclick"], ["reset", "btn btn-danger", "button", "margin-left: 4px", "resetExperiment()"], "Reset", false, null);
       form = new Item("form", ["class", "role", "autocomplete"], ["form", "form", "off"], null, true, [buttonStart, buttonStop, buttonReset]);
       div2 = new Item("div", ["class"], ["center-block text-center"], null, true, [form]);

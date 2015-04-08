@@ -652,7 +652,7 @@ function cleanForm(){
   form.appendChild(divForm);
 };
 
-
+//fixme
 
 function resetExperiment(){
   enable();
@@ -722,14 +722,8 @@ function newRadio(value, checked, newOrOld, name){
   return divRadio;
 };
 
-//fixme
-function stopExperiment(){
-  sendActuatorChange('ESD', "0");
-  //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
-  //ws.send(jsonRequest);
-  varInit.stopTrue();
-  enable();
-};
+
+
 
  var data = [
     [1, 2, 3, 4],
