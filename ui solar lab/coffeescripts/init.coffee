@@ -20,8 +20,6 @@ class Init
         @plot = new Plot()
         @esd = new Esd idCanvas, img
         
-
-
         ### stop working in firefox
         window.addEventListener "resize", => 
             console.log "mierda puta"
@@ -78,7 +76,7 @@ class Init
             @wsData.sendActuatorChange 'SolarLab', "1"
         @solar = new SolarElements @wsData
         @charge = true
-        
+
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()
@@ -148,7 +146,7 @@ class Init
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady
             myApp.hidePleaseWait()
 
-    startExperiments: =>
+    startExperiments: ->
         if @charge
             console.log "cargarrr"
             @chargeStart()
@@ -218,12 +216,6 @@ class Init
                 $('#myModalConfirm').modal('show')
             else
                 startExperiment = true
-                # revisar esto *
-                ###
-                sendLumens()
-                sendHorizontalAxis()
-                sendVerticalAxis()
-                ###
                 if (lumens != $(".slider-lumens").val())
                     @solar.sendLumens();
                 if (horizontalAxis != $(".slider-horizontal-axis").val())
@@ -232,15 +224,9 @@ class Init
                     @solar.sendVerticalAxis()
                 @common.sendTime()
                 @common.sendJouls()
-                ###
-                //sendActuatorChange('Sun', $(".slider-lumens").val());
-                //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
-                //try this line with minus
-                //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
-                //sendActuatorChange('ESDJ', $(".slider-battery").val());
-                //sendActuatorChange('Elapsed', $(".slider-time").val());
-                ###
+
                 @wsData.sendActuatorChange('ESD', "1")
+
                 @common.disableSliders()
                 @common.disableStart()
                 @common.enableStop()
@@ -250,7 +236,9 @@ class Init
         @crane.sendDistance()
         @common.sendJoulsToUse()
         @common.sendTime()
+
         @wsData.sendActuatorChange('ESD', "1")
+
         @common.disableSliders()
         @common.disableStart()
         @common.enableStop()

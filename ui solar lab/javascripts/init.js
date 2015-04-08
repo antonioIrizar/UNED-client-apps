@@ -23,7 +23,6 @@
     Init.prototype.charge = null;
 
     function Init(idCanvas, img) {
-      this.startExperiments = __bind(this.startExperiments, this);
       this.eventReadyAll = __bind(this.eventReadyAll, this);
       this.selectInterface = __bind(this.selectInterface, this);
       this.selectDischarge = __bind(this.selectDischarge, this);
@@ -245,12 +244,6 @@
           return $('#myModalConfirm').modal('show');
         } else {
           startExperiment = true;
-
-          /*
-          sendLumens()
-          sendHorizontalAxis()
-          sendVerticalAxis()
-           */
           if (lumens !== $(".slider-lumens").val()) {
             this.solar.sendLumens();
           }
@@ -262,15 +255,6 @@
           }
           this.common.sendTime();
           this.common.sendJouls();
-
-          /*
-          //sendActuatorChange('Sun', $(".slider-lumens").val());
-          //sendActuatorChange('Panelrot', $(".slider-horizontal-axis").val());
-          //try this line with minus
-          //sendActuatorChange('Paneltilt',"-" + $(".slider-vertical-axis").val());
-          //sendActuatorChange('ESDJ', $(".slider-battery").val());
-          //sendActuatorChange('Elapsed', $(".slider-time").val());
-           */
           this.wsData.sendActuatorChange('ESD', "1");
           this.common.disableSliders();
           this.common.disableStart();
