@@ -180,16 +180,25 @@
       return enable();
     };
 
-
-    /*
-    function stopExperiment(){
-      sendActuatorChange('ESD', "0");
-      //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
-      //ws.send(jsonRequest);
-      varInit.stopTrue();
-      enable();
+    Init.prototype.resetExperiment = function() {
+      var horizontalAxis, lumens, verticalAxis;
+      if (this.charge) {
+        enable();
+        lumens = null;
+        $('.slider-lumens').val(0);
+        horizontalAxis = null;
+        $('.slider-horizontal-axis').val(0);
+        verticalAxis = null;
+        $('.slider-vertical-axis').val(0);
+        $('.slider-time').val(0);
+        this.stopTrue();
+        this.wsData.sendActuatorChange('SolarLab', '0');
+        return this.wsData.sendActuatorChange('SolarLab', '1');
+      } else {
+        this.wsData.sendActuatorChange('CraneLab', '0');
+        return this.wsData.sendActuatorChange('CraneLab', '1');
+      }
     };
-     */
 
     Init.prototype.chargeStart = function() {
       var modal, startExperiment;

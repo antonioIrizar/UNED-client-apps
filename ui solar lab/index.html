@@ -652,27 +652,7 @@ function cleanForm(){
   form.appendChild(divForm);
 };
 
-//fixme
 
-function resetExperiment(){
-  enable();
-  lumens = null;
-  $(".slider-lumens").val(0);
- 
-  horizontalAxis = null
-  $(".slider-horizontal-axis").val(0);
- 
-  verticalAxis = null;
-  $(".slider-vertical-axis").val(0);
-
-  $(".slider-battery").val(10);
-  $(".slider-time").val(0);
-  //Reset experiment
-  varInit.stopTrue();
-  sendActuatorChange('SolarLab', "0"); 
-  //try this, i don't know if it'll work
-  sendActuatorChange('SolarLab', "1"); 
-}
 
 function errorLumens(){
   $('#myModalError').modal('show');

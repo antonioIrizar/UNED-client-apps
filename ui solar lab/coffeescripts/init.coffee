@@ -148,15 +148,30 @@ class Init
         @wsData.sendActuatorChange 'ESD', '0'
         @stopTrue()
         enable()
-    ###
-    function stopExperiment(){
-  sendActuatorChange('ESD', "0");
-  //var jsonRequest = JSON.stringify({"method":"getSensorData","sensorId":"ESDval"});
-  //ws.send(jsonRequest);
-  varInit.stopTrue();
-  enable();
-};
-    ###
+
+    resetExperiment: ->
+        if @charge
+            enable()
+            lumens = null
+            $('.slider-lumens').val 0
+
+            horizontalAxis = null
+            $('.slider-horizontal-axis').val 0
+     
+            verticalAxis = null
+            $('.slider-vertical-axis').val 0
+            #fix battery
+            #$('.slider-battery').val 10
+            $('.slider-time').val 0
+
+            #Reset experiment
+            @stopTrue()
+            @wsData.sendActuatorChange 'SolarLab', '0'
+            @wsData.sendActuatorChange 'SolarLab', '1'
+        else 
+            @wsData.sendActuatorChange 'CraneLab', '0'
+            @wsData.sendActuatorChange 'CraneLab', '1'
+
     chargeStart: ->
         if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0)
             $('#myModalError').modal('show')
