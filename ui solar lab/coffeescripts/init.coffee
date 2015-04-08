@@ -191,14 +191,12 @@ class Init
                 ###
                 disable()
                 @wsData.sendActuatorChange('ESD', "1")
-            
-        
 
     dischargeStart: -> 
         @crane.sendDistance()
-        @wsData.sendActuatorChange('ESD', "1")
         @common.sendJoulsToUse()
         @common.sendTime()
+        @wsData.sendActuatorChange('ESD', "1")
 
 
 window.Init = Init

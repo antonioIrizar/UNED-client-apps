@@ -232,9 +232,9 @@
 
     Init.prototype.dischargeStart = function() {
       this.crane.sendDistance();
-      this.wsData.sendActuatorChange('ESD', "1");
       this.common.sendJoulsToUse();
-      return this.common.sendTime();
+      this.common.sendTime();
+      return this.wsData.sendActuatorChange('ESD', "1");
     };
 
     return Init;

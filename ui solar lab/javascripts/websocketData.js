@@ -116,6 +116,9 @@
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "ESD") {
         if (msg.payload.responseData.data[0] === "1") {
+          eve = document.createEvent('Event');
+          eve.initEvent('ESDOn', true, false);
+          document.dispatchEvent(eve);
           this.getSensorData("ESDval", "controller");
           $("#stop").removeAttr('disabled');
           $("#reset").removeAttr('disabled');

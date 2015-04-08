@@ -3,12 +3,20 @@ class CommonElements
     timeText: null
     batteryText: null
     wsData: null
+    time: 0
 
     constructor: (@wsData, @solar) ->
         @selectNameVar()
         @battery()
         @time()
         @buttons()
+        document.addEventListener 'ESDOn', () => 
+            if @time isnt 0
+                $('#countdown').timeTo 
+                    seconds: @time
+                    start: true
+                @time = 0
+        , false
 
     battery: ->
         p = new Item "p", ["id", "class"], ["textBattery", "text-center"], "10%", false, null
@@ -33,6 +41,8 @@ class CommonElements
         new Slider 'slider-battery', 10, 1, [10], [100], 10, 2, '%'
 
     time: ->
+        #chargin mode the minimun time is 300 seconds and max 1800
+        #dischragin mode the minimun time is 10 seconds and max 90
 
         smallElementTime = new Item "div", ["id"], ["countdown"], null, false, null
 
@@ -52,11 +62,23 @@ class CommonElements
         parent = document.getElementById "elementsCommons"
         parent.appendChild time.div
 
-        maxTime = [1800]
         if not @solar 
-            maxTime = [180]
+            minTime = [0, 10]
+            maxTime = [90]
+            middle = 10
+            values = [0, 10, 30, 60, 90]
+        else
+            minTime = [0, 300]
+            maxTime = [1800]
+            middle = 300
+            values = [0, 300, 600, 900, 1200, 1500, 1800]
 
-        new Slider 'slider-time', 0, 10, [0], maxTime, 7, 3, '\'\'' 
+        @espacialSlider 'slider-time', 0, minTime, middle, maxTime, values, 3, '\'\'' 
+
+        $('#countdown').timeTo({
+            seconds:1,
+            fontSize: 14
+        })
         
     buttons: ->
         div1 = new Item "div", ["id"], ["adaptToHeight"], null, false, null
@@ -83,37 +105,31 @@ class CommonElements
             
     mySwitch: (@solar)->
         @selectNameVar()
-        
-        maxTime = [1800]
         if not @solar 
-            maxTime = [180]
+            minTime = [0, 10]
+            maxTime = [90]
+            middle = 10
+            values = [0, 10, 30, 60, 90]
+        else
+            minTime = [0, 300]
+            maxTime = [1800]
+            middle = 300
+            values = [0, 300, 600, 900, 1200, 1500, 1800]
 
-        $('.slider-time').noUiSlider
-            range:
-                min: [0],
-                max: maxTime
-        , true
-
-        $('.slider-time').noUiSlider_pips(
-            'mode': 'count'
-            'values': 7
-            'density': 3
-            'stepped': true,
-            'format': wNumb(
-                'postfix': '\'\'' 
-            )
-        )
-
+        @espacialSlider 'slider-time', 0, minTime, middle, maxTime, values, 3, '\'\'' 
+        
         $('.slider-time').val 0
     
         document.getElementById("timeText").innerHTML = @timeText
         document.getElementById("batteryText").innerHTML = @batteryText
 
     sendTime: ->
-        time = parseInt $('.slider-time').val()
-        if time isnt 0
-            console.log time
-            @wsData.sendActuatorChange 'Elapsed', time.toString()
+        @time = parseInt $('.slider-time').val()
+        if @time isnt 0
+            $('#countdown').timeTo
+                seconds: @time
+                start: false
+            @wsData.sendActuatorChange 'Elapsed', @time.toString()
 
     sendJouls: ->
         jouls = realValueToSend(@wsData.battery, parseInt $(".slider-battery").val())
@@ -123,7 +139,28 @@ class CommonElements
     sendJoulsToUse: ->
         jouls = realValueToSend(@wsData.battery, parseInt $(".slider-battery").val())
         if jouls isnt 0
-            sendActuatorChange 'TOuseJ', jouls.toString()
+            @wsData.sendActuatorChange 'TOuseJ', jouls.toString()
+
+    espacialSlider: (name, start, min, middle, max, values, density, postfix) ->
+     
+        $('.' + name).noUiSlider
+            'start': start
+            'connect': 'lower'
+            'range': 
+                'min': min
+                '10%': middle
+                'max': max       
+        , true 
+        # the true is for we can rewrite slider
+        $('.' + name).noUiSlider_pips
+            'mode': 'values'
+            'density': density
+            'stepped': true
+            'values': values
+            'format': wNumb
+                'postfix': postfix
+            
+        $("."+ name).Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
 
  
 window.CommonElements = CommonElements

@@ -11,6 +11,8 @@
 
     CommonElements.prototype.wsData = null;
 
+    CommonElements.prototype.time = 0;
+
     function CommonElements(wsData, solar) {
       this.wsData = wsData;
       this.solar = solar;
@@ -18,6 +20,17 @@
       this.battery();
       this.time();
       this.buttons();
+      document.addEventListener('ESDOn', (function(_this) {
+        return function() {
+          if (_this.time !== 0) {
+            $('#countdown').timeTo({
+              seconds: _this.time,
+              start: true
+            });
+            return _this.time = 0;
+          }
+        };
+      })(this), false);
     }
 
     CommonElements.prototype.battery = function() {
@@ -38,7 +51,7 @@
     };
 
     CommonElements.prototype.time = function() {
-      var a, bigElementTime, div, divSlider, maxTime, parent, smallElementTime, span, strong, time;
+      var a, bigElementTime, div, divSlider, maxTime, middle, minTime, parent, smallElementTime, span, strong, time, values;
       smallElementTime = new Item("div", ["id"], ["countdown"], null, false, null);
       strong = new Item("strong", ["id"], ["timeText"], this.timeText, false, null);
       span = new Item("span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null);
@@ -50,11 +63,22 @@
       time.specialElement([smallElementTime], [bigElementTime]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(time.div);
-      maxTime = [1800];
       if (!this.solar) {
-        maxTime = [180];
+        minTime = [0, 10];
+        maxTime = [90];
+        middle = 10;
+        values = [0, 10, 30, 60, 90];
+      } else {
+        minTime = [0, 300];
+        maxTime = [1800];
+        middle = 300;
+        values = [0, 300, 600, 900, 1200, 1500, 1800];
       }
-      return new Slider('slider-time', 0, 10, [0], maxTime, 7, 3, '\'\'');
+      this.espacialSlider('slider-time', 0, minTime, middle, maxTime, values, 3, '\'\'');
+      return $('#countdown').timeTo({
+        seconds: 1,
+        fontSize: 14
+      });
     };
 
     CommonElements.prototype.buttons = function() {
@@ -82,39 +106,34 @@
     };
 
     CommonElements.prototype.mySwitch = function(solar) {
-      var maxTime;
+      var maxTime, middle, minTime, values;
       this.solar = solar;
       this.selectNameVar();
-      maxTime = [1800];
       if (!this.solar) {
-        maxTime = [180];
+        minTime = [0, 10];
+        maxTime = [90];
+        middle = 10;
+        values = [0, 10, 30, 60, 90];
+      } else {
+        minTime = [0, 300];
+        maxTime = [1800];
+        middle = 300;
+        values = [0, 300, 600, 900, 1200, 1500, 1800];
       }
-      $('.slider-time').noUiSlider({
-        range: {
-          min: [0],
-          max: maxTime
-        }
-      }, true);
-      $('.slider-time').noUiSlider_pips({
-        'mode': 'count',
-        'values': 7,
-        'density': 3,
-        'stepped': true,
-        'format': wNumb({
-          'postfix': '\'\''
-        })
-      });
+      this.espacialSlider('slider-time', 0, minTime, middle, maxTime, values, 3, '\'\'');
       $('.slider-time').val(0);
       document.getElementById("timeText").innerHTML = this.timeText;
       return document.getElementById("batteryText").innerHTML = this.batteryText;
     };
 
     CommonElements.prototype.sendTime = function() {
-      var time;
-      time = parseInt($('.slider-time').val());
-      if (time !== 0) {
-        console.log(time);
-        return this.wsData.sendActuatorChange('Elapsed', time.toString());
+      this.time = parseInt($('.slider-time').val());
+      if (this.time !== 0) {
+        $('#countdown').timeTo({
+          seconds: this.time,
+          start: false
+        });
+        return this.wsData.sendActuatorChange('Elapsed', this.time.toString());
       }
     };
 
@@ -130,8 +149,32 @@
       var jouls;
       jouls = realValueToSend(this.wsData.battery, parseInt($(".slider-battery").val()));
       if (jouls !== 0) {
-        return sendActuatorChange('TOuseJ', jouls.toString());
+        return this.wsData.sendActuatorChange('TOuseJ', jouls.toString());
       }
+    };
+
+    CommonElements.prototype.espacialSlider = function(name, start, min, middle, max, values, density, postfix) {
+      $('.' + name).noUiSlider({
+        'start': start,
+        'connect': 'lower',
+        'range': {
+          'min': min,
+          '10%': middle,
+          'max': max
+        }
+      }, true);
+      $('.' + name).noUiSlider_pips({
+        'mode': 'values',
+        'density': density,
+        'stepped': true,
+        'values': values,
+        'format': wNumb({
+          'postfix': postfix
+        })
+      });
+      return $("." + name).Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
+        return $(this).html("<span>" + Math.floor(value) + "</span>");
+      });
     };
 
     return CommonElements;
