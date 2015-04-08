@@ -399,33 +399,12 @@ myApp = myApp || (function () {
       */
     };
 
-
-  function disableAll(){
-    $(".slider-battery").attr('disabled', 'disabled');
-    $(".slider-lumens").attr('disabled', 'disabled');
-    $(".slider-time").attr('disabled', 'disabled');
-    $(".slider-horizontal-axis").attr('disabled', 'disabled');
-    $(".slider-vertical-axis").attr('disabled', 'disabled');
-    $("#startExperiment").attr('disabled', 'disabled');
-    $(".button-accept").attr('disabled', 'disabled');
-  };
-
+//TODO this disable use in modal to confirm
   function disable(){
     $("#startExperiment").attr('disabled', 'disabled');
     $(".slider-time").attr('disabled', 'disabled');
     $(".slider-battery").attr('disabled', 'disabled');
   }
-
-  function enable(){
-    $(".slider-battery").removeAttr('disabled');
-    $(".slider-lumens").removeAttr('disabled');
-    $(".slider-time").removeAttr('disabled');
-    $(".slider-horizontal-axis").removeAttr('disabled');
-    $(".slider-vertical-axis").removeAttr('disabled');
-    $("#startExperiment").removeAttr('disabled');
-    $(".button-accept").removeAttr('disabled');
-  };
-
 
 function reciveData(dataRecive, dataActuator, slider, nameActuator){
   var result;

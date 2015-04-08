@@ -108,6 +108,11 @@
       }
       this.solar = new SolarElements(this.wsData);
       this.charge = true;
+      this.common.enableSliders();
+      this.common.enableStart();
+      this.common.disableStop();
+      this.common.disableReset();
+      this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
       return document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
     };
@@ -126,6 +131,11 @@
       }
       this.crane = new CraneElements(this.wsData);
       this.charge = false;
+      this.common.enableSliders();
+      this.common.enableStart();
+      this.common.disableStop();
+      this.common.disableReset();
+      this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       return document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
     };
@@ -140,16 +150,18 @@
         this.selectCharge();
       }
       if (e.detail.role === 'observer') {
-        console.log("entro por aqui y no se porque");
-        disableAll();
-        $("#stop").attr('disabled', 'disabled');
-        $("#reset").attr('disabled', 'disabled');
+        if (this.charge) {
+          this.solar.disable();
+        } else {
+          this.crane.disable();
+        }
+        this.common.disable();
         document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
         document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
         role.appendChild(document.createTextNode('You are mode observer'));
       } else {
-        $("#stop").attr('disabled', 'disabled');
-        $("#reset").attr('disabled', 'disabled');
+        this.common.disableStop();
+        this.common.disableReset();
         role.appendChild(document.createTextNode('You are mode controller'));
       }
       $(".slider-battery").val(battery);
@@ -177,13 +189,17 @@
     Init.prototype.stopExperiment = function() {
       this.wsData.sendActuatorChange('ESD', '0');
       this.stopTrue();
-      return enable();
+      this.common.enableSliders();
+      this.common.enableStart();
+      this.common.disableStop();
+      if (!this.charge) {
+        return this.crane.enable();
+      }
     };
 
     Init.prototype.resetExperiment = function() {
       var horizontalAxis, lumens, verticalAxis;
       if (this.charge) {
-        enable();
         lumens = null;
         $('.slider-lumens').val(0);
         horizontalAxis = null;
@@ -191,13 +207,18 @@
         verticalAxis = null;
         $('.slider-vertical-axis').val(0);
         $('.slider-time').val(0);
-        this.stopTrue();
         this.wsData.sendActuatorChange('SolarLab', '0');
-        return this.wsData.sendActuatorChange('SolarLab', '1');
+        this.wsData.sendActuatorChange('SolarLab', '1');
       } else {
+        this.crane.enable();
         this.wsData.sendActuatorChange('CraneLab', '0');
-        return this.wsData.sendActuatorChange('CraneLab', '1');
+        this.wsData.sendActuatorChange('CraneLab', '1');
       }
+      this.common.enableSliders();
+      this.common.enableStart();
+      this.common.disableStop();
+      this.common.disableReset();
+      return this.stopTrue();
     };
 
     Init.prototype.chargeStart = function() {
@@ -250,8 +271,11 @@
           //sendActuatorChange('ESDJ', $(".slider-battery").val());
           //sendActuatorChange('Elapsed', $(".slider-time").val());
            */
-          disable();
-          return this.wsData.sendActuatorChange('ESD', "1");
+          this.wsData.sendActuatorChange('ESD', "1");
+          this.common.disableSliders();
+          this.common.disableStart();
+          this.common.enableStop();
+          return this.common.enableReset();
         }
       }
     };
@@ -260,7 +284,11 @@
       this.crane.sendDistance();
       this.common.sendJoulsToUse();
       this.common.sendTime();
-      return this.wsData.sendActuatorChange('ESD', "1");
+      this.wsData.sendActuatorChange('ESD', "1");
+      this.common.disableSliders();
+      this.common.disableStart();
+      this.common.enableStop();
+      return this.common.enableReset();
     };
 
     return Init;

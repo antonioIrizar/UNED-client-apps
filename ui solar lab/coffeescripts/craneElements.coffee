@@ -30,6 +30,13 @@ class CraneElements
         auxDistance = parseInt $(".slider-distance").val()
         if auxDistance isnt 0
             @wsData.sendActuatorChange 'WeightTrip', auxDistance.toString()
-  
+
+    disable: ->
+        $ '.slider-distance'
+            .removeAttr 'disabled'
+
+    enable: ->
+        $ '.slider-distance'
+            .attr 'disabled', 'disabled'
 
 window.CraneElements = CraneElements

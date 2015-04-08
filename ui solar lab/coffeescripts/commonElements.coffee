@@ -165,5 +165,47 @@ class CommonElements
             
         $("."+ name).Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
 
+    enableStart: ->
+        $ '#startExperiment'
+            .removeAttr 'disabled'
+
+    disableStart: ->
+        $ '#startExperiment'
+            .attr 'disabled', 'disabled'
+
+    enableStop: ->
+        $ '#stop'
+            .removeAttr 'disabled'
+
+    disableStop: ->
+        $ '#stop'
+            .attr 'disabled', 'disabled'
+
+    enableReset: ->
+        $ '#reset'
+            .removeAttr 'disabled'
+
+    disableReset: ->
+        $ '#reset'
+            .attr 'disabled', 'disabled'
+
+    enableSliders: ->
+        $ '.slider-battery'
+            .removeAttr 'disabled'
+        $ '.slider-time'
+            .removeAttr 'disabled'
+
+    disableSliders: ->
+        $ '.slider-battery'
+            .attr 'disabled', 'disabled'
+        $ '.slider-time'
+            .attr 'disabled', 'disabled'
+
+    disable: -> 
+        @disableStart()
+        @disableStop()
+        @disableReset()
+        @disableSliders()
+
  
 window.CommonElements = CommonElements

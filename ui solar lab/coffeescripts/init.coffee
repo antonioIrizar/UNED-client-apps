@@ -78,6 +78,12 @@ class Init
             @wsData.sendActuatorChange 'SolarLab', "1"
         @solar = new SolarElements @wsData
         @charge = true
+        
+        @common.enableSliders()
+        @common.enableStart()
+        @common.disableStop()
+        @common.disableReset()
+        @stopTrue()
 
         document.getElementById "panelHeadingElements" 
             .innerHTML = 'Elements you can interact with: Mode charge'
@@ -99,6 +105,12 @@ class Init
         @crane = new CraneElements @wsData
         @charge = false
 
+        @common.enableSliders()
+        @common.enableStart()
+        @common.disableStop()
+        @common.disableReset()
+        @stopTrue()
+
         document.getElementById "panelHeadingElements" 
             .innerHTML = 'Elements you can interact with: Mode discharge'
         document.getElementById 'dischargeButton'
@@ -112,18 +124,19 @@ class Init
         else
             @selectCharge()
         if e.detail.role is 'observer'
-            console.log "entro por aqui y no se porque"
-            disableAll()
-            $("#stop").attr('disabled', 'disabled')
-            $("#reset").attr('disabled', 'disabled')
+            if @charge
+                @solar.disable()
+            else
+                @crane.disable()
+            @common.disable()
             document.getElementById 'dischargeButton'
                 .setAttribute 'disabled', 'disabled'
             document.getElementById 'chargeButton'
                 .setAttribute 'disabled', 'disabled'
             role.appendChild document.createTextNode 'You are mode observer'
         else
-            $("#stop").attr('disabled', 'disabled')
-            $("#reset").attr('disabled', 'disabled')
+            @common.disableStop()
+            @common.disableReset()
             role.appendChild document.createTextNode 'You are mode controller'
 
         $(".slider-battery").val battery
@@ -147,11 +160,15 @@ class Init
     stopExperiment: -> 
         @wsData.sendActuatorChange 'ESD', '0'
         @stopTrue()
-        enable()
+        @common.enableSliders()
+        @common.enableStart()
+        @common.disableStop()
+        if not @charge
+            @crane.enable()
 
     resetExperiment: ->
+
         if @charge
-            enable()
             lumens = null
             $('.slider-lumens').val 0
 
@@ -165,12 +182,18 @@ class Init
             $('.slider-time').val 0
 
             #Reset experiment
-            @stopTrue()
             @wsData.sendActuatorChange 'SolarLab', '0'
             @wsData.sendActuatorChange 'SolarLab', '1'
         else 
+            @crane.enable()
             @wsData.sendActuatorChange 'CraneLab', '0'
             @wsData.sendActuatorChange 'CraneLab', '1'
+
+        @common.enableSliders()
+        @common.enableStart()
+        @common.disableStop()
+        @common.disableReset()
+        @stopTrue()
 
     chargeStart: ->
         if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0)
@@ -217,14 +240,21 @@ class Init
                 //sendActuatorChange('ESDJ', $(".slider-battery").val());
                 //sendActuatorChange('Elapsed', $(".slider-time").val());
                 ###
-                disable()
                 @wsData.sendActuatorChange('ESD', "1")
+                @common.disableSliders()
+                @common.disableStart()
+                @common.enableStop()
+                @common.enableReset()
 
     dischargeStart: -> 
         @crane.sendDistance()
         @common.sendJoulsToUse()
         @common.sendTime()
         @wsData.sendActuatorChange('ESD', "1")
+        @common.disableSliders()
+        @common.disableStart()
+        @common.enableStop()
+        @common.enableReset()
 
 
 window.Init = Init

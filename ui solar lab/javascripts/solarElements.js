@@ -94,6 +94,20 @@
       }
     };
 
+    SolarElements.prototype.enable = function() {
+      $('.slider-lumens').removeAttr('disabled');
+      $('.slider-horizontal-axis').removeAttr('disabled');
+      $('.slider-vertical-axis').removeAttr('disabled');
+      return $('.button-accept').removeAttr('disabled');
+    };
+
+    SolarElements.prototype.disable = function() {
+      $('.slider-lumens').attr('disabled', 'disabled');
+      $('.slider-horizontal-axis').attr('disabled', 'disabled');
+      $('.slider-vertical-axis').attr('disabled', 'disabled');
+      return $('.button-accept').attr('disabled', 'disabled');
+    };
+
     return SolarElements;
 
   })();

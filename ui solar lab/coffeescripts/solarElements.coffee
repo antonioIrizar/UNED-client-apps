@@ -85,5 +85,25 @@ class SolarElements
             @wsData.sendActuatorChange 'Paneltilt', move.toString()
             myApp.showPleaseWait()
 
+    enable: ->
+        $ '.slider-lumens' 
+            .removeAttr 'disabled'
+        $ '.slider-horizontal-axis'
+            .removeAttr 'disabled'
+        $ '.slider-vertical-axis'
+            .removeAttr 'disabled'
+        $ '.button-accept'
+            .removeAttr 'disabled'
+
+    disable: ->
+        $ '.slider-lumens'
+            .attr 'disabled', 'disabled'
+        $ '.slider-horizontal-axis'
+            .attr 'disabled', 'disabled'
+        $ '.slider-vertical-axis'
+            .attr 'disabled', 'disabled'
+        $ '.button-accept'
+            .attr 'disabled', 'disabled'
+
 
 window.SolarElements = SolarElements

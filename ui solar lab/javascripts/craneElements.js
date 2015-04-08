@@ -42,6 +42,14 @@
       }
     };
 
+    CraneElements.prototype.disable = function() {
+      return $('.slider-distance').removeAttr('disabled');
+    };
+
+    CraneElements.prototype.enable = function() {
+      return $('.slider-distance').attr('disabled', 'disabled');
+    };
+
     return CraneElements;
 
   })();

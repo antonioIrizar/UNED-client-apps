@@ -177,6 +177,47 @@
       });
     };
 
+    CommonElements.prototype.enableStart = function() {
+      return $('#startExperiment').removeAttr('disabled');
+    };
+
+    CommonElements.prototype.disableStart = function() {
+      return $('#startExperiment').attr('disabled', 'disabled');
+    };
+
+    CommonElements.prototype.enableStop = function() {
+      return $('#stop').removeAttr('disabled');
+    };
+
+    CommonElements.prototype.disableStop = function() {
+      return $('#stop').attr('disabled', 'disabled');
+    };
+
+    CommonElements.prototype.enableReset = function() {
+      return $('#reset').removeAttr('disabled');
+    };
+
+    CommonElements.prototype.disableReset = function() {
+      return $('#reset').attr('disabled', 'disabled');
+    };
+
+    CommonElements.prototype.enableSliders = function() {
+      $('.slider-battery').removeAttr('disabled');
+      return $('.slider-time').removeAttr('disabled');
+    };
+
+    CommonElements.prototype.disableSliders = function() {
+      $('.slider-battery').attr('disabled', 'disabled');
+      return $('.slider-time').attr('disabled', 'disabled');
+    };
+
+    CommonElements.prototype.disable = function() {
+      this.disableStart();
+      this.disableStop();
+      this.disableReset();
+      return this.disableSliders();
+    };
+
     return CommonElements;
 
   })();
