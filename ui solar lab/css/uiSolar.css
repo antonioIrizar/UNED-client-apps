@@ -47,14 +47,6 @@
   font-weight:normal;
 }
 
-#battery-warning {
-  background: #FF4D4D;
-}
-
-#battery-ok{
-  background: #3FB8AF;
-}
-
 .popover{
   width: 150px;
 }
