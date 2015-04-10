@@ -57,7 +57,7 @@
     };
 
     WebsocketData.prototype.onmessage = function(event) {
-      var actualBattery, data, eve, horizontalAxis, lumens, msg, verticalAxis;
+      var actualBattery, data, eve, msg;
       data = event.data + "";
       console.log(data);
       msg = JSON.parse(data);
@@ -80,7 +80,9 @@
           return;
         }
         if (msg.payload.actuatorId === "SolarLab" && msg.payload.responseData.data[0] === "1") {
-          console.log("dentro del solarlab");
+          eve = document.createEvent('CustomEvent');
+          eve.initCustomEvent('switchLab', true, false, null);
+          document.dispatchEvent(eve);
           if (!this.wsDataIsReady) {
             this.role = "controller";
             eve = document.createEvent('CustomEvent');
@@ -97,7 +99,9 @@
           return;
         }
         if (msg.payload.actuatorId === "CraneLab" && msg.payload.responseData.data[0] === "1") {
-          console.log("centro del crane");
+          eve = document.createEvent('CustomEvent');
+          eve.initCustomEvent('switchLab', true, false, null);
+          document.dispatchEvent(eve);
           if (!this.wsDataIsReady) {
             this.role = "controller";
             eve = document.createEvent('CustomEvent');
@@ -126,21 +130,30 @@
         }
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "Panelrot") {
-        horizontalAxis = reciveData(parseInt(msg.payload.responseData.data[0]), horizontalAxis, ".slider-horizontal-axis", "Panelrot");
-        $(".slider-horizontal-axis").val(horizontalAxis);
-        myApp.hidePleaseWait();
+        eve = document.createEvent('CustomEvent');
+        eve.initCustomEvent('reciveData', true, false, {
+          'actuatorId': msg.payload.actuatorId,
+          'value': msg.payload.responseData.data[0]
+        });
+        document.dispatchEvent(eve);
         return;
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "Paneltilt") {
-        verticalAxis = reciveData(parseInt(msg.payload.responseData.data[0]), verticalAxis, ".slider-vertical-axis", "Paneltilt");
-        $(".slider-vertical-axis").val(verticalAxis);
-        myApp.hidePleaseWait();
+        eve = document.createEvent('CustomEvent');
+        eve.initCustomEvent('reciveData', true, false, {
+          'actuatorId': msg.payload.actuatorId,
+          'value': msg.payload.responseData.data[0]
+        });
+        document.dispatchEvent(eve);
         return;
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "Sun") {
-        lumens = reciveData(parseInt(msg.payload.responseData.data[0]), lumens, ".slider-lumens", "Sun");
-        $(".slider-lumens").val(lumens);
-        myApp.hidePleaseWait();
+        eve = document.createEvent('CustomEvent');
+        eve.initCustomEvent('reciveData', true, false, {
+          'actuatorId': msg.payload.actuatorId,
+          'value': msg.payload.responseData.data[0]
+        });
+        document.dispatchEvent(eve);
         return;
       }
       if (msg.method === "getSensorData" && msg.sensorId === "ESDval") {

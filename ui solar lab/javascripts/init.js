@@ -22,7 +22,10 @@
 
     Init.prototype.charge = null;
 
+    Init.prototype.switchLab = false;
+
     function Init(idCanvas, img) {
+      this.chargeStart = __bind(this.chargeStart, this);
       this.eventReadyAll = __bind(this.eventReadyAll, this);
       this.selectInterface = __bind(this.selectInterface, this);
       this.selectDischarge = __bind(this.selectDischarge, this);
@@ -33,6 +36,23 @@
       var token;
       document.addEventListener('selectInterface', this.selectInterface, false);
       document.addEventListener('allWsAreReady', this.eventReadyAll, false);
+      document.addEventListener('ESDOn', (function(_this) {
+        return function() {
+          if (_this.charge) {
+            _this.solar.startExperiment = false;
+          }
+          return myApp.hidePleaseWait();
+        };
+      })(this), false);
+      document.addEventListener('switchLab', (function(_this) {
+        return function() {
+          if (_this.switchLab) {
+            _this.switchLab = false;
+            return myApp.hidePleaseWait();
+          }
+        };
+      })(this), false);
+      this.change = false;
       token = Math.random();
       this.wsData = new WebsocketData(token);
       this.wsCamera = new WebSocketCamera(token);
@@ -94,6 +114,8 @@
     };
 
     Init.prototype.selectCharge = function() {
+      this.switchLab = true;
+      myApp.showPleaseWait();
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, true);
       } else {
@@ -117,6 +139,8 @@
     };
 
     Init.prototype.selectDischarge = function() {
+      this.switchLab = true;
+      myApp.showPleaseWait();
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, false);
       } else {
@@ -221,38 +245,30 @@
     };
 
     Init.prototype.chargeStart = function() {
-      var modal, startExperiment;
-      if ((lumens === null || lumens === 0) && $(".slider-lumens").val() === 0) {
+      var modal;
+      if ((this.solar.lumens !== null || this.solar.lumens === 0) && $(".slider-lumens").val() === 0) {
         return $('#myModalError').modal('show');
       } else {
         modal = false;
-        if (lumens !== null && lumens !== $(".slider-lumens").val()) {
-          console.log(lumens);
-          console.log($(".slider-lumens").val());
-          newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString(), lumens.toString(), "lumens");
+        if (this.solar.lumens !== null && this.solar.lumens !== $(".slider-lumens").val()) {
+          newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString(), this.solar.lumens.toString(), "lumens");
           modal = true;
         }
-        if (horizontalAxis !== null && horizontalAxis !== $(".slider-horizontal-axis").val()) {
-          newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString(), horizontalAxis.toString(), "horizontalAxis");
+        if (this.solar.horizontalAxis !== null && this.solar.horizontalAxis !== $(".slider-horizontal-axis").val()) {
+          newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString(), this.solar.horizontalAxis.toString(), "horizontalAxis");
           modal = true;
         }
-        if (verticalAxis !== null && verticalAxis !== $(".slider-vertical-axis").val()) {
-          newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString(), verticalAxis.toString(), "verticalAxis");
+        if (this.solar.verticalAxis !== null && this.solar.verticalAxis !== $(".slider-vertical-axis").val()) {
+          newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString(), this.solar.verticalAxis.toString(), "verticalAxis");
           modal = true;
         }
         if (modal) {
           return $('#myModalConfirm').modal('show');
         } else {
-          startExperiment = true;
-          if (lumens !== $(".slider-lumens").val()) {
-            this.solar.sendLumens();
-          }
-          if (horizontalAxis !== $(".slider-horizontal-axis").val()) {
-            this.solar.sendHorizontalAxis();
-          }
-          if (verticalAxis !== $(".slider-vertical-axis").val()) {
-            this.solar.sendVerticalAxis();
-          }
+          this.solar.startExperiment = true;
+          this.solar.sendLumens();
+          this.solar.sendHorizontalAxis();
+          this.solar.sendVerticalAxis();
           this.common.sendTime();
           this.common.sendJouls();
           this.wsData.sendActuatorChange('ESD', "1");
@@ -265,6 +281,7 @@
     };
 
     Init.prototype.dischargeStart = function() {
+      myApp.showPleaseWait();
       this.crane.sendDistance();
       this.common.sendJoulsToUse();
       this.common.sendTime();

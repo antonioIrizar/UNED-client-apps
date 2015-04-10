@@ -10,9 +10,23 @@
 
     SolarElements.prototype.wsData = null;
 
+    SolarElements.prototype.lumens = null;
+
+    SolarElements.prototype.horizontalAxis = null;
+
+    SolarElements.prototype.verticalAxis = null;
+
+    SolarElements.prototype.startExperiment = false;
+
     function SolarElements(wsData) {
       this.wsData = wsData;
+      this.reciveDataEvent = __bind(this.reciveDataEvent, this);
       this.sendLumens = __bind(this.sendLumens, this);
+      this.lumens = null;
+      this.horizontalAxis = null;
+      this.verticalAxis = null;
+      this.startExperiment = false;
+      document.addEventListener('reciveData', this.reciveDataEvent, false);
       this.solar = document.createElement("div");
       this.solar.setAttribute("id", "solarElements");
       document.getElementById(this.NAMEPARENT).appendChild(this.solar);
@@ -60,9 +74,16 @@
       return this.solar.parentNode.removeChild(this.solar);
     };
 
+    SolarElements.prototype.realValueToSend = function(oldNumber, newNumber) {
+      if (oldNumber === null) {
+        return newNumber;
+      }
+      return newNumber - oldNumber;
+    };
+
     SolarElements.prototype.sendLumens = function() {
       var auxLumens;
-      auxLumens = parseInt($(".slider-lumens").val());
+      auxLumens = parseInt($('.slider-lumens').val());
       if (auxLumens === 680) {
         auxLumens = 660;
       }
@@ -74,9 +95,11 @@
 
     SolarElements.prototype.sendHorizontalAxis = function() {
       var auxHorizontalAxis, move, oldHorizontalAxis;
-      oldHorizontalAxis = horizontalAxis;
-      auxHorizontalAxis = parseInt($(".slider-horizontal-axis").val());
-      move = realValueToSend(oldHorizontalAxis, auxHorizontalAxis);
+      oldHorizontalAxis = this.horizontalAxis;
+      console.log(this.horizontalAxis);
+      auxHorizontalAxis = parseInt($('.slider-horizontal-axis').val());
+      move = this.realValueToSend(oldHorizontalAxis, auxHorizontalAxis);
+      console.log("move " + move);
       if (move !== 0) {
         this.wsData.sendActuatorChange('Panelrot', move.toString());
         return myApp.showPleaseWait();
@@ -85,12 +108,32 @@
 
     SolarElements.prototype.sendVerticalAxis = function() {
       var auxVerticalAxis, move, oldVerticalAxis;
-      oldVerticalAxis = verticalAxis;
-      auxVerticalAxis = parseInt($(".slider-vertical-axis").val());
-      move = realValueToSend(oldVerticalAxis, auxVerticalAxis);
+      oldVerticalAxis = this.verticalAxis;
+      auxVerticalAxis = parseInt($('.slider-vertical-axis').val());
+      move = this.realValueToSend(oldVerticalAxis, auxVerticalAxis);
       if (move !== 0) {
         this.wsData.sendActuatorChange('Paneltilt', move.toString());
         return myApp.showPleaseWait();
+      }
+    };
+
+    SolarElements.prototype.reciveDataEvent = function(e) {
+      switch (e.detail.actuatorId) {
+        case 'Sun':
+          this.lumens = reciveData(parseInt(e.detail.value), this.lumens, '.slider-lumens', 'Sun');
+          $('.slider-lumens').val(this.lumens);
+          break;
+        case 'Panelrot':
+          this.horizontalAxis = reciveData(parseInt(e.detail.value), this.horizontalAxis, '.slider-horizontal-axis', 'Panelrot');
+          $('.slider-horizontal-axis').val(this.horizontalAxis);
+          break;
+        case 'Paneltilt':
+          this.verticalAxis = reciveData(parseInt(e.detail.value), this.verticalAxis, '.slider-vertical-axis', 'Paneltilt');
+          $('.slider-vertical-axis').val(this.verticalAxis);
+      }
+      if (!this.startExperiment) {
+        console.log("entro en el recive");
+        return myApp.hidePleaseWait();
       }
     };
 

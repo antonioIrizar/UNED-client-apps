@@ -2,8 +2,18 @@ class SolarElements
     solar: null
     NAMEPARENT: "noCommonElements"
     wsData: null
+    lumens: null
+    horizontalAxis: null
+    verticalAxis: null
+    startExperiment: false
+
 
     constructor: (@wsData)->
+        @lumens = null
+        @horizontalAxis = null
+        @verticalAxis = null
+        @startExperiment = false
+        document.addEventListener 'reciveData', @reciveDataEvent, false
         @solar = document.createElement "div"
         @solar.setAttribute "id", "solarElements"
         document.getElementById(@NAMEPARENT).appendChild @solar
@@ -59,31 +69,57 @@ class SolarElements
     remove: ->
         @solar.parentNode.removeChild @solar
 
+    realValueToSend: (oldNumber, newNumber) ->
+        if oldNumber is null
+            return newNumber
+        
+        return newNumber - oldNumber
+
     sendLumens: =>
-        auxLumens = parseInt $(".slider-lumens").val()
+        auxLumens = parseInt $('.slider-lumens').val()
         #block 680 for problems with it
         if auxLumens is 680
             auxLumens = 660
-        #var move =  realValueToSend(auxLumens, lumens);
+
         if auxLumens isnt 0
             @wsData.sendActuatorChange 'Sun', auxLumens.toString()
             myApp.showPleaseWait()
   
     sendHorizontalAxis: ->
-        oldHorizontalAxis = horizontalAxis
-        auxHorizontalAxis = parseInt $(".slider-horizontal-axis").val()
-        move = realValueToSend oldHorizontalAxis, auxHorizontalAxis
+        oldHorizontalAxis = @horizontalAxis
+        console.log @horizontalAxis
+        auxHorizontalAxis = parseInt $('.slider-horizontal-axis').val()
+        move = @realValueToSend oldHorizontalAxis, auxHorizontalAxis
+        console.log "move "+ move
         if move isnt 0
             @wsData.sendActuatorChange 'Panelrot', move.toString()
             myApp.showPleaseWait()
   
     sendVerticalAxis: ->
-        oldVerticalAxis = verticalAxis
-        auxVerticalAxis = parseInt $(".slider-vertical-axis").val()
-        move = realValueToSend oldVerticalAxis, auxVerticalAxis
+        oldVerticalAxis = @verticalAxis
+        auxVerticalAxis = parseInt $('.slider-vertical-axis').val()
+        move = @realValueToSend oldVerticalAxis, auxVerticalAxis
         if move isnt 0
             @wsData.sendActuatorChange 'Paneltilt', move.toString()
             myApp.showPleaseWait()
+
+    reciveDataEvent: (e) =>
+        switch e.detail.actuatorId
+            when 'Sun'
+                @lumens = reciveData parseInt(e.detail.value), @lumens, '.slider-lumens', 'Sun'
+                $ '.slider-lumens'
+                    .val @lumens
+            when 'Panelrot'
+                @horizontalAxis = reciveData parseInt(e.detail.value), @horizontalAxis, '.slider-horizontal-axis', 'Panelrot'
+                $ '.slider-horizontal-axis'
+                    .val @horizontalAxis
+            when 'Paneltilt'
+                @verticalAxis = reciveData parseInt(e.detail.value), @verticalAxis, '.slider-vertical-axis', 'Paneltilt'
+                $ '.slider-vertical-axis'
+                    .val @verticalAxis
+        if not @startExperiment
+            console.log "entro en el recive"
+            myApp.hidePleaseWait()
 
     enable: ->
         $ '.slider-lumens' 

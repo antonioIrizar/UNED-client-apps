@@ -9,11 +9,26 @@ class Init
     wsData: null
     wsCamera: null
     charge: null
+    switchLab: false
 
     constructor: (idCanvas, img)->
         #Listen for the event wsDataReady
         document.addEventListener 'selectInterface', @selectInterface, false
         document.addEventListener 'allWsAreReady', @eventReadyAll, false
+        document.addEventListener 'ESDOn', () => 
+            if @charge 
+                @solar.startExperiment = false
+            myApp.hidePleaseWait()
+        , false
+
+        document.addEventListener 'switchLab', () =>
+            if @switchLab
+                @switchLab = false
+                myApp.hidePleaseWait()
+        , false
+
+        @change = false
+        #same id for websocket data and video. It is for close correctly in backned.
         token = Math.random()
         @wsData = new WebsocketData token
         @wsCamera = new WebSocketCamera token
@@ -63,6 +78,8 @@ class Init
         @plot.stop = false
 
     selectCharge: =>
+        @switchLab = true
+        myApp.showPleaseWait()
         if @common is null
             @common = new CommonElements @wsData, true
         else
@@ -89,6 +106,8 @@ class Init
             .setAttribute 'disabled', 'disabled'
         
     selectDischarge: =>
+        @switchLab = true
+        myApp.showPleaseWait()
         if @common is null
             @common = new CommonElements @wsData, false
         else
@@ -193,35 +212,31 @@ class Init
         @common.disableReset()
         @stopTrue()
 
-    chargeStart: ->
-        if ((lumens == null || lumens == 0) && $(".slider-lumens").val() == 0)
+    chargeStart: =>
+        if ((@solar.lumens isnt null || @solar.lumens is 0) and $(".slider-lumens").val() is 0)
             $('#myModalError').modal('show')
         else
             modal = false;
-            if (lumens != null && lumens != $(".slider-lumens").val())
-                console.log(lumens)
-                console.log($(".slider-lumens").val())
-                newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , lumens.toString(), "lumens")
+            if (@solar.lumens isnt null and @solar.lumens isnt $(".slider-lumens").val())
+                newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , @solar.lumens.toString(), "lumens")
                 modal = true
 
-            if (horizontalAxis != null && horizontalAxis!= $(".slider-horizontal-axis").val())
-                newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , horizontalAxis.toString(), "horizontalAxis")
+            if (@solar.horizontalAxis isnt null and @solar.horizontalAxis isnt $(".slider-horizontal-axis").val())
+                newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , @solar.horizontalAxis.toString(), "horizontalAxis")
                 modal = true;
 
-            if (verticalAxis != null && verticalAxis != $(".slider-vertical-axis").val())
-                newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , verticalAxis.toString(), "verticalAxis")
+            if (@solar.verticalAxis isnt null and @solar.verticalAxis isnt $(".slider-vertical-axis").val())
+                newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , @solar.verticalAxis.toString(), "verticalAxis")
                 modal = true
 
             if (modal)
                 $('#myModalConfirm').modal('show')
             else
-                startExperiment = true
-                if (lumens != $(".slider-lumens").val())
-                    @solar.sendLumens();
-                if (horizontalAxis != $(".slider-horizontal-axis").val())
-                    @solar.sendHorizontalAxis()
-                if (verticalAxis != $(".slider-vertical-axis").val())
-                    @solar.sendVerticalAxis()
+                @solar.startExperiment = true
+
+                @solar.sendLumens();
+                @solar.sendHorizontalAxis()
+                @solar.sendVerticalAxis()
                 @common.sendTime()
                 @common.sendJouls()
 
@@ -233,6 +248,7 @@ class Init
                 @common.enableReset()
 
     dischargeStart: -> 
+        myApp.showPleaseWait()
         @crane.sendDistance()
         @common.sendJoulsToUse()
         @common.sendTime()

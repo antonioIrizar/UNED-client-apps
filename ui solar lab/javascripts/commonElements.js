@@ -134,12 +134,14 @@
           start: false
         });
         return this.wsData.sendActuatorChange('Elapsed', this.time.toString());
+      } else {
+        return this.wsData.sendActuatorChange('Elapsed', '0');
       }
     };
 
     CommonElements.prototype.sendJouls = function() {
       var jouls;
-      jouls = realValueToSend(this.wsData.battery, parseInt($(".slider-battery").val()));
+      jouls = realValueToSend(this.wsData.battery, parseInt($('.slider-battery').val()));
       if (jouls !== 0) {
         return this.wsData.sendActuatorChange('TOgetJ', jouls.toString());
       }
@@ -147,7 +149,7 @@
 
     CommonElements.prototype.sendJoulsToUse = function() {
       var jouls;
-      jouls = realValueToSend(this.wsData.battery, parseInt($(".slider-battery").val()));
+      jouls = realValueToSend(this.wsData.battery, parseInt($('.slider-battery').val()));
       if (jouls !== 0) {
         return this.wsData.sendActuatorChange('TOuseJ', jouls.toString());
       }
