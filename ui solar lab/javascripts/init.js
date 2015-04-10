@@ -286,6 +286,8 @@
       this.common.sendJoulsToUse();
       this.common.sendTime();
       this.wsData.sendActuatorChange('ESD', "1");
+      document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      this.crane.disable();
       this.common.disableSliders();
       this.common.disableStart();
       this.common.enableStop();

@@ -43,11 +43,11 @@
     };
 
     CraneElements.prototype.disable = function() {
-      return $('.slider-distance').removeAttr('disabled');
+      return $('.slider-distance').attr('disabled', 'disabled');
     };
 
     CraneElements.prototype.enable = function() {
-      return $('.slider-distance').attr('disabled', 'disabled');
+      return $('.slider-distance').removeAttr('disabled');
     };
 
     return CraneElements;

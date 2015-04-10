@@ -255,6 +255,9 @@ class Init
 
         @wsData.sendActuatorChange('ESD', "1")
 
+        document.getElementById 'chargeButton'
+                .setAttribute 'disabled', 'disabled'
+        @crane.disable()
         @common.disableSliders()
         @common.disableStart()
         @common.enableStop()

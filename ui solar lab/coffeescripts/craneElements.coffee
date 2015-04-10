@@ -33,10 +33,11 @@ class CraneElements
 
     disable: ->
         $ '.slider-distance'
-            .removeAttr 'disabled'
+            .attr 'disabled', 'disabled'
 
     enable: ->
         $ '.slider-distance'
-            .attr 'disabled', 'disabled'
+            .removeAttr 'disabled'
+
 
 window.CraneElements = CraneElements
