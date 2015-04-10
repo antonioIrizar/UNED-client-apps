@@ -56,7 +56,7 @@ class WebsocketData
                 eve = document.createEvent 'CustomEvent'
                 eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
                 document.dispatchEvent eve
-                if @battery <= 90
+                if @battery < 90
                     @getSensorData("Light", "observer")
                     @getSensorData("PanelRot", "observer")
                     @getSensorData("PanelTilt", "observer")
@@ -135,7 +135,7 @@ class WebsocketData
                 actualBattery = msg.responseData.data[0]
                 @firstTimeBattery = false
                 @battery = msg.responseData.data[0]
-                if @battery <= 90
+                if @battery < 90
                     @sendActuatorChange 'SolarLab', "1"
                 else
                     @sendActuatorChange 'CraneLab', "1"

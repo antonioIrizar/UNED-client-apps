@@ -134,15 +134,16 @@ class CommonElements
                 start: false
             @wsData.sendActuatorChange 'Elapsed', @time.toString()
         else
-            @wsData.sendActuatorChange 'Elapsed', '0'
+            if @solar
+                @wsData.sendActuatorChange 'Elapsed', '0'
 
     sendJouls: ->
-        jouls = realValueToSend(@wsData.battery, parseInt $('.slider-battery').val())
+        jouls = parseInt $('.slider-battery').val() - parseInt @wsData.battery
         if jouls isnt 0
             @wsData.sendActuatorChange 'TOgetJ', jouls.toString()
 
     sendJoulsToUse: ->
-        jouls = realValueToSend(@wsData.battery, parseInt $('.slider-battery').val())
+        jouls = parseInt @wsData.battery - parseInt $('.slider-battery').val() 
         if jouls isnt 0
             @wsData.sendActuatorChange 'TOuseJ', jouls.toString()
 

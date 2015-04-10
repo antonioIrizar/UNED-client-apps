@@ -72,7 +72,7 @@
             'battery': this.battery
           });
           document.dispatchEvent(eve);
-          if (this.battery <= 90) {
+          if (this.battery < 90) {
             this.getSensorData("Light", "observer");
             this.getSensorData("PanelRot", "observer");
             this.getSensorData("PanelTilt", "observer");
@@ -164,7 +164,7 @@
           actualBattery = msg.responseData.data[0];
           this.firstTimeBattery = false;
           this.battery = msg.responseData.data[0];
-          if (this.battery <= 90) {
+          if (this.battery < 90) {
             this.sendActuatorChange('SolarLab', "1");
           } else {
             this.sendActuatorChange('CraneLab', "1");
