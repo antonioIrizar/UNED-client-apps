@@ -76,6 +76,13 @@
             this.getSensorData("Light", "observer");
             this.getSensorData("PanelRot", "observer");
             this.getSensorData("PanelTilt", "observer");
+          } else {
+            if (!this.wsDataIsReady) {
+              this.wsDataIsReady = true;
+              eve = document.createEvent('Event');
+              eve.initEvent('allWsAreReady', true, false);
+              document.dispatchEvent(eve);
+            }
           }
           return;
         }

@@ -60,6 +60,12 @@ class WebsocketData
                     @getSensorData("Light", "observer")
                     @getSensorData("PanelRot", "observer")
                     @getSensorData("PanelTilt", "observer")
+                else
+                    if not @wsDataIsReady 
+                        @wsDataIsReady = true
+                        eve = document.createEvent 'Event'
+                        eve.initEvent 'allWsAreReady', true, false
+                        document.dispatchEvent eve
                 return
 
             if msg.payload.actuatorId is "SolarLab" and msg.payload.responseData.data[0] is "1"
