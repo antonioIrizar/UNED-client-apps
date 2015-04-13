@@ -133,14 +133,14 @@ class CommonElements
                 seconds: @time
                 start: false
             @wsData.sendActuatorChange 'Elapsed', @time.toString()
-        else
-            if @solar
-                @wsData.sendActuatorChange 'Elapsed', '0'
 
     sendJouls: ->
         jouls = parseInt $('.slider-battery').val() - parseInt @wsData.battery
         if jouls isnt 0
             @wsData.sendActuatorChange 'TOgetJ', jouls.toString()
+        else
+            if @time is 0
+                @wsData.sendActuatorChange 'TOgetJ','0'
 
     sendJoulsToUse: ->
         jouls = parseInt @wsData.battery - parseInt $('.slider-battery').val() 

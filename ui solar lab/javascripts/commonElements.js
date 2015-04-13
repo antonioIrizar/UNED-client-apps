@@ -134,10 +134,6 @@
           start: false
         });
         return this.wsData.sendActuatorChange('Elapsed', this.time.toString());
-      } else {
-        if (this.solar) {
-          return this.wsData.sendActuatorChange('Elapsed', '0');
-        }
       }
     };
 
@@ -146,6 +142,10 @@
       jouls = parseInt($('.slider-battery').val() - parseInt(this.wsData.battery));
       if (jouls !== 0) {
         return this.wsData.sendActuatorChange('TOgetJ', jouls.toString());
+      } else {
+        if (this.time === 0) {
+          return this.wsData.sendActuatorChange('TOgetJ', '0');
+        }
       }
     };
 
