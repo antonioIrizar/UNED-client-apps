@@ -38,7 +38,7 @@ class CommonElements
         parent = document.getElementById "elementsCommons"
         parent.appendChild battery.div
 
-        new Slider 'slider-battery', 10, 1, [10], [100], 10, 2, '%'
+        new Slider 'slider-battery', 0, 1, [0], [100], 11, 2, '%'
 
         @batteryCorrectValues()
 
@@ -226,10 +226,16 @@ class CommonElements
                     if a < @wsData.battery
                         $ '.slider-battery'
                             .val @wsData.battery
+                    if a > 98
+                        $ '.slider-battery'
+                            .val 98
                 else
                     if a > @wsData.battery
                         $ '.slider-battery'
                             .val @wsData.battery
+                    if a < 10
+                        $ '.slider-battery'
+                            .val 10
 
  
 window.CommonElements = CommonElements

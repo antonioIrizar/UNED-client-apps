@@ -47,7 +47,7 @@
       battery.specialElement([p, imgBattery], [bigElementBattery]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(battery.div);
-      new Slider('slider-battery', 10, 1, [10], [100], 10, 2, '%');
+      new Slider('slider-battery', 0, 1, [0], [100], 11, 2, '%');
       return this.batteryCorrectValues();
     };
 
@@ -233,11 +233,17 @@
           }
           if (_this.solar) {
             if (a < _this.wsData.battery) {
-              return $('.slider-battery').val(_this.wsData.battery);
+              $('.slider-battery').val(_this.wsData.battery);
+            }
+            if (a > 98) {
+              return $('.slider-battery').val(98);
             }
           } else {
             if (a > _this.wsData.battery) {
-              return $('.slider-battery').val(_this.wsData.battery);
+              $('.slider-battery').val(_this.wsData.battery);
+            }
+            if (a < 10) {
+              return $('.slider-battery').val(10);
             }
           }
         };
