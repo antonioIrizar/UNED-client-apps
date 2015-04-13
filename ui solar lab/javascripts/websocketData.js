@@ -163,9 +163,16 @@
         document.dispatchEvent(eve);
         return;
       }
+      if (msg.method === "sendActuatorData" && (msg.payload.actuatorId === "Elapsed" || msg.payload.actuatorId === 'TOuseJ' || msg.payload.actuatorId === 'TOgetJ' || msg.payload.actuatorId === 'WeightTrip')) {
+        eve = document.createEvent('CustomEvent');
+        eve.initCustomEvent('finishExperiment', true, false, null);
+        document.dispatchEvent(eve);
+        return;
+      }
       if (msg.method === "getSensorData" && msg.sensorId === "ESDval") {
         if (msg.responseData.valueNames.length === 7) {
-          varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6]);
+          this.battery = msg.responseData.data[6];
+          varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], this.battery);
         }
         if (this.firstTimeBattery) {
           actualBattery = msg.responseData.data[0];

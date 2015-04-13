@@ -15,6 +15,7 @@ class Init
         #Listen for the event wsDataReady
         document.addEventListener 'selectInterface', @selectInterface, false
         document.addEventListener 'allWsAreReady', @eventReadyAll, false
+        document.addEventListener 'finishExperiment', @finishExperiment, false
         document.addEventListener 'ESDOn', () => 
             if @charge 
                 @solar.startExperiment = false
@@ -210,6 +211,25 @@ class Init
         @common.enableStart()
         @common.disableStop()
         @common.disableReset()
+        @stopTrue()
+
+    finishExperiment: (e) =>
+        if @charge
+            $(".slider-battery").val(@wsData.battery)
+            console.log "finish solar experiment"
+            @common.disableStop()
+            @common.disableReset()
+        else
+            $(".slider-distance").val(0)
+            $(".slider-battery").val(@wsData.battery)
+            @crane.enable()
+            @common.disableStop()
+            @common.disableReset()
+            document.getElementById 'chargeButton'
+                .removeAttribute 'disabled'
+
+        @common.enableSliders()
+        @common.enableStart()
         @stopTrue()
 
     chargeStart: =>

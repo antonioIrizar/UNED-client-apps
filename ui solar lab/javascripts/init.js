@@ -26,6 +26,7 @@
 
     function Init(idCanvas, img) {
       this.chargeStart = __bind(this.chargeStart, this);
+      this.finishExperiment = __bind(this.finishExperiment, this);
       this.eventReadyAll = __bind(this.eventReadyAll, this);
       this.selectInterface = __bind(this.selectInterface, this);
       this.selectDischarge = __bind(this.selectDischarge, this);
@@ -36,6 +37,7 @@
       var token;
       document.addEventListener('selectInterface', this.selectInterface, false);
       document.addEventListener('allWsAreReady', this.eventReadyAll, false);
+      document.addEventListener('finishExperiment', this.finishExperiment, false);
       document.addEventListener('ESDOn', (function(_this) {
         return function() {
           if (_this.charge) {
@@ -241,6 +243,25 @@
       this.common.enableStart();
       this.common.disableStop();
       this.common.disableReset();
+      return this.stopTrue();
+    };
+
+    Init.prototype.finishExperiment = function(e) {
+      if (this.charge) {
+        $(".slider-battery").val(this.wsData.battery);
+        console.log("finish solar experiment");
+        this.common.disableStop();
+        this.common.disableReset();
+      } else {
+        $(".slider-distance").val(0);
+        $(".slider-battery").val(this.wsData.battery);
+        this.crane.enable();
+        this.common.disableStop();
+        this.common.disableReset();
+        document.getElementById('chargeButton').removeAttribute('disabled');
+      }
+      this.common.enableSliders();
+      this.common.enableStart();
       return this.stopTrue();
     };
 

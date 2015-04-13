@@ -132,10 +132,18 @@ class WebsocketData
 
             return
 
+        if msg.method == "sendActuatorData" && ( msg.payload.actuatorId == "Elapsed" or  msg.payload.actuatorId == 'TOuseJ' or  msg.payload.actuatorId == 'TOgetJ' or msg.payload.actuatorId == 'WeightTrip')
+            eve = document.createEvent 'CustomEvent'
+            eve.initCustomEvent 'finishExperiment', true, false, null
+            document.dispatchEvent eve
+            return
+
         if msg.method == "getSensorData" && msg.sensorId == "ESDval"
             if (msg.responseData.valueNames.length == 7)
                 #fix this
-                varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[6])
+                @battery = msg.responseData.data[6]
+                varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], @battery)
+
             if @firstTimeBattery 
                 #fix this
                 actualBattery = msg.responseData.data[0]
