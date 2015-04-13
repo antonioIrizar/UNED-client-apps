@@ -632,25 +632,6 @@ function newRadio(value, checked, newOrOld, name){
     console.log(document.getElementById("cacaVaca").offsetWidth);
   
 });
-
-  $('.slider-battery').on(
-  "set", function(event){
-
-    a = $(".slider-battery").val();
-    
-    // need this for bug in library noUIslider
-    if(a == 100){
-      a = 100;
-    }
-    if (a < actualBattery){
-      $(".slider-battery").val(actualBattery);
-    }
-
-   
-
-});
-
-  
   
     </script>
   </body>
