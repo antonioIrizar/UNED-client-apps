@@ -146,7 +146,6 @@ class WebsocketData
 
             if @firstTimeBattery 
                 #fix this
-                actualBattery = msg.responseData.data[0]
                 @firstTimeBattery = false
                 @battery = msg.responseData.data[0]
                 if @battery < 90

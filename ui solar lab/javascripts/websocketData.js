@@ -57,7 +57,7 @@
     };
 
     WebsocketData.prototype.onmessage = function(event) {
-      var actualBattery, data, eve, msg;
+      var data, eve, msg;
       data = event.data + "";
       console.log(data);
       msg = JSON.parse(data);
@@ -175,7 +175,6 @@
           varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], this.battery);
         }
         if (this.firstTimeBattery) {
-          actualBattery = msg.responseData.data[0];
           this.firstTimeBattery = false;
           this.battery = msg.responseData.data[0];
           if (this.battery < 90) {

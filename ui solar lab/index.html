@@ -299,10 +299,7 @@ myApp = myApp || (function () {
 
     <script>
     var 
-      varInit = null,
-      wsCameraIsReady = false,
-      wsIsReady = false,
-      actualBattery = null;
+      varInit = null;
       function arranque(){
   
 
@@ -351,18 +348,6 @@ function reciveData(dataRecive, dataActuator, slider, nameActuator){
 
 }
 */
-function finishInitLoading(data){
-if (!wsIsReady){
-$(".slider-battery").val(data);
-actualBattery = data;
-$("p#textBattery").text(data + "%");
-console.log(wsCameraIsReady);
-if (wsCameraIsReady){
-myApp.hidePleaseWait();
-}
-wsIsReady = true;
-}
-}
 
 
 /*
@@ -496,9 +481,6 @@ downloadLink.click();
 function destroyClickedElement(event)
 {
   document.body.removeChild(event.target);
-}
-function battery(){
-
 };
 
 function confirmAccept(){
