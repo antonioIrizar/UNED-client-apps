@@ -40,6 +40,8 @@ class CommonElements
 
         new Slider 'slider-battery', 10, 1, [10], [100], 10, 2, '%'
 
+        @batteryCorrectValues()
+
     time: ->
         #chargin mode the minimun time is 300 seconds and max 1800
         #dischragin mode the minimun time is 10 seconds and max 90
@@ -209,6 +211,25 @@ class CommonElements
         @disableStop()
         @disableReset()
         @disableSliders()
+
+    batteryCorrectValues: ->
+        $ '.slider-battery' 
+            .on 'change', (event) =>
+                a = parseInt ($ '.slider-battery'
+                    .val())
+
+                # need this for bug in library noUIslider
+                if a is 100
+                    a = 100
+
+                if @solar
+                    if a < @wsData.battery
+                        $ '.slider-battery'
+                            .val @wsData.battery
+                else
+                    if a > @wsData.battery
+                        $ '.slider-battery'
+                            .val @wsData.battery
 
  
 window.CommonElements = CommonElements

@@ -47,7 +47,8 @@
       battery.specialElement([p, imgBattery], [bigElementBattery]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(battery.div);
-      return new Slider('slider-battery', 10, 1, [10], [100], 10, 2, '%');
+      new Slider('slider-battery', 10, 1, [10], [100], 10, 2, '%');
+      return this.batteryCorrectValues();
     };
 
     CommonElements.prototype.time = function() {
@@ -220,6 +221,27 @@
       this.disableStop();
       this.disableReset();
       return this.disableSliders();
+    };
+
+    CommonElements.prototype.batteryCorrectValues = function() {
+      return $('.slider-battery').on('change', (function(_this) {
+        return function(event) {
+          var a;
+          a = parseInt($('.slider-battery').val());
+          if (a === 100) {
+            a = 100;
+          }
+          if (_this.solar) {
+            if (a < _this.wsData.battery) {
+              return $('.slider-battery').val(_this.wsData.battery);
+            }
+          } else {
+            if (a > _this.wsData.battery) {
+              return $('.slider-battery').val(_this.wsData.battery);
+            }
+          }
+        };
+      })(this));
     };
 
     return CommonElements;
