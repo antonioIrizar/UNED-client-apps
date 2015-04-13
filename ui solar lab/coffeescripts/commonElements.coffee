@@ -69,9 +69,9 @@ class CommonElements
             values = [0, 10, 30, 60, 90]
         else
             minTime = [0, 300]
-            maxTime = [1800]
+            maxTime = [1200]
             middle = 300
-            values = [0, 300, 600, 900, 1200, 1500, 1800]
+            values = [0, 300, 600, 900, 1200]
 
         @espacialSlider 'slider-time', 0, minTime, middle, maxTime, values, 3, '\'\'' 
 
@@ -115,9 +115,9 @@ class CommonElements
             values = [0, 10, 30, 60, 90]
         else
             minTime = [0, 300]
-            maxTime = [1800]
+            maxTime = [1200]
             middle = 300
-            values = [0, 300, 600, 900, 1200, 1500, 1800]
+            values = [0, 300, 600, 900, 1200]
 
         @espacialSlider 'slider-time', 0, minTime, middle, maxTime, values, 3, '\'\'' 
         
