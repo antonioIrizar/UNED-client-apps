@@ -120,20 +120,29 @@
     SolarElements.prototype.reciveDataEvent = function(e) {
       switch (e.detail.actuatorId) {
         case 'Sun':
-          this.lumens = reciveData(parseInt(e.detail.value), this.lumens, '.slider-lumens', 'Sun');
+          this.lumens = parseInt(e.detail.value);
           $('.slider-lumens').val(this.lumens);
           break;
         case 'Panelrot':
-          this.horizontalAxis = reciveData(parseInt(e.detail.value), this.horizontalAxis, '.slider-horizontal-axis', 'Panelrot');
+          this.horizontalAxis = this.resultReciveData(parseInt(e.detail.value), this.horizontalAxis);
           $('.slider-horizontal-axis').val(this.horizontalAxis);
           break;
         case 'Paneltilt':
-          this.verticalAxis = reciveData(parseInt(e.detail.value), this.verticalAxis, '.slider-vertical-axis', 'Paneltilt');
+          this.verticalAxis = this.resultReciveData(parseInt(e.detail.value), this.verticalAxis);
           $('.slider-vertical-axis').val(this.verticalAxis);
       }
       if (!this.startExperiment) {
         console.log("entro en el recive");
         return myApp.hidePleaseWait();
+      }
+    };
+
+    SolarElements.prototype.resultReciveData = function(dataRecive, dataActuator) {
+      var result;
+      if (dataActuator === null) {
+        return result = dataRecive;
+      } else {
+        return result = dataRecive + dataActuator;
       }
     };
 

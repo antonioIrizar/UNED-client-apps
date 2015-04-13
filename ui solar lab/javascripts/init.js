@@ -267,19 +267,19 @@
 
     Init.prototype.chargeStart = function() {
       var modal;
-      if ((this.solar.lumens !== null || this.solar.lumens === 0) && $(".slider-lumens").val() === 0) {
+      if ((this.solar.lumens !== null || this.solar.lumens === 0) && parseInt($(".slider-lumens").val()) === 0) {
         return $('#myModalError').modal('show');
       } else {
         modal = false;
-        if (this.solar.lumens !== null && this.solar.lumens !== $(".slider-lumens").val()) {
+        if (this.solar.lumens !== null && this.solar.lumens !== parseInt($(".slider-lumens").val())) {
           newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString(), this.solar.lumens.toString(), "lumens");
           modal = true;
         }
-        if (this.solar.horizontalAxis !== null && this.solar.horizontalAxis !== $(".slider-horizontal-axis").val()) {
+        if (this.solar.horizontalAxis !== null && this.solar.horizontalAxis !== parseInt($(".slider-horizontal-axis").val())) {
           newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString(), this.solar.horizontalAxis.toString(), "horizontalAxis");
           modal = true;
         }
-        if (this.solar.verticalAxis !== null && this.solar.verticalAxis !== $(".slider-vertical-axis").val()) {
+        if (this.solar.verticalAxis !== null && this.solar.verticalAxis !== parseInt($(".slider-vertical-axis").val())) {
           newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString(), this.solar.verticalAxis.toString(), "verticalAxis");
           modal = true;
         }

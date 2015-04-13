@@ -106,20 +106,26 @@ class SolarElements
     reciveDataEvent: (e) =>
         switch e.detail.actuatorId
             when 'Sun'
-                @lumens = reciveData parseInt(e.detail.value), @lumens, '.slider-lumens', 'Sun'
+                @lumens = parseInt(e.detail.value)
                 $ '.slider-lumens'
                     .val @lumens
             when 'Panelrot'
-                @horizontalAxis = reciveData parseInt(e.detail.value), @horizontalAxis, '.slider-horizontal-axis', 'Panelrot'
+                @horizontalAxis = @resultReciveData parseInt(e.detail.value), @horizontalAxis
                 $ '.slider-horizontal-axis'
                     .val @horizontalAxis
             when 'Paneltilt'
-                @verticalAxis = reciveData parseInt(e.detail.value), @verticalAxis, '.slider-vertical-axis', 'Paneltilt'
+                @verticalAxis = @resultReciveData parseInt(e.detail.value), @verticalAxis
                 $ '.slider-vertical-axis'
                     .val @verticalAxis
         if not @startExperiment
             console.log "entro en el recive"
             myApp.hidePleaseWait()
+
+    resultReciveData: (dataRecive, dataActuator) ->
+        if dataActuator is null
+            result = dataRecive
+        else 
+            result = dataRecive + dataActuator
 
     enable: ->
         $ '.slider-lumens' 

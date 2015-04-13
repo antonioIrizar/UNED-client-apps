@@ -233,19 +233,19 @@ class Init
         @stopTrue()
 
     chargeStart: =>
-        if ((@solar.lumens isnt null || @solar.lumens is 0) and $(".slider-lumens").val() is 0)
+        if ((@solar.lumens isnt null || @solar.lumens is 0) and parseInt($(".slider-lumens").val()) is 0)
             $('#myModalError').modal('show')
         else
             modal = false;
-            if (@solar.lumens isnt null and @solar.lumens isnt $(".slider-lumens").val())
+            if (@solar.lumens isnt null and @solar.lumens isnt  parseInt($(".slider-lumens").val()))
                 newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , @solar.lumens.toString(), "lumens")
                 modal = true
 
-            if (@solar.horizontalAxis isnt null and @solar.horizontalAxis isnt $(".slider-horizontal-axis").val())
+            if (@solar.horizontalAxis isnt null and @solar.horizontalAxis isnt parseInt($(".slider-horizontal-axis").val()))
                 newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , @solar.horizontalAxis.toString(), "horizontalAxis")
                 modal = true;
 
-            if (@solar.verticalAxis isnt null and @solar.verticalAxis isnt $(".slider-vertical-axis").val())
+            if (@solar.verticalAxis isnt null and @solar.verticalAxis isnt parseInt($(".slider-vertical-axis").val()))
                 newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , @solar.verticalAxis.toString(), "verticalAxis")
                 modal = true
 

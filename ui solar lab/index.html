@@ -324,7 +324,7 @@ myApp = myApp || (function () {
     $(".slider-time").attr('disabled', 'disabled');
     $(".slider-battery").attr('disabled', 'disabled');
   }
-
+/* deprecate
 function reciveData(dataRecive, dataActuator, slider, nameActuator){
   var result;
   if (dataActuator == null || nameActuator == "Sun")
@@ -350,7 +350,7 @@ function reciveData(dataRecive, dataActuator, slider, nameActuator){
     return result;
 
 }
-
+*/
 function finishInitLoading(data){
 if (!wsIsReady){
 $(".slider-battery").val(data);
