@@ -166,7 +166,7 @@
     };
 
     Init.prototype.selectInterface = function(e) {
-      var actualBattery, battery, role;
+      var battery, role;
       battery = e.detail.battery;
       role = document.getElementById('yourRole');
       if (battery >= 90) {
@@ -190,7 +190,6 @@
         role.appendChild(document.createTextNode('You are mode controller'));
       }
       $(".slider-battery").val(battery);
-      actualBattery = battery;
       $("p#textBattery").text(battery + "%");
       return this.plot.resize();
     };

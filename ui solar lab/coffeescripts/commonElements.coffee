@@ -1,11 +1,12 @@
-class CommonElements
-    solar:true
+class CommonElements extends Part
+   
     timeText: null
     batteryText: null
-    wsData: null
     time: 0
-
-    constructor: (@wsData, @solar) ->
+    solar:true
+    
+    constructor: (@solar) ->
+        super
         @selectNameVar()
         @battery()
         @time()
@@ -25,7 +26,7 @@ class CommonElements
         strong = new Item "strong", ["id"], ["batteryText"], @batteryText, false, null
         span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
         #data-content put any
-        a = new Item "a", ["class", "data-container", "data-toggle", "tabindex", "data-trigger", "data-content"], ["info-pop-up", "body", "popover", "0", "focus", "And here's some amazing content. It's very engaging. Right?"], null, true, [span]
+        a = new Item "a", ['href', 'onclick'], ['#', 'varInit.common.selectModalText(\'time\')'], null, true, [span]
        
         divSlider = new Item "div", ["id", "class"], ["slider-battery", "slider slider-battery"], null, false, null
         div = new Item "div", ["class"], ["slidera"], null, true, [divSlider]
@@ -51,8 +52,8 @@ class CommonElements
         strong = new Item "strong", ["id"], ["timeText"], @timeText, false, null
         span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
         #data-content put any
-        a = new Item "a", ["href", "data-toggle","data-target"], ["#", "modal", "#myModal"], null, true, [span]
-       
+        a = new Item "a", ["href", 'onclick'], ["#", 'varInit.common.selectModalText(\'time\')'], null, true, [span]
+
         divSlider = new Item "div", ["id", "class"], ["slider-time", "slider slider-time"], null, false, null
         div = new Item "div", ["class"], ["slidera"], null, true, [divSlider]
 
@@ -81,7 +82,20 @@ class CommonElements
             seconds:1,
             fontSize: 14
         })
-        
+   
+    selectModalText: (type) =>
+        if @solar
+            if type is 'time'
+                @modalText 'Decide for how long you want to charge the battery', 'The battery will charge for the selected lapse of time. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.'
+            if type is 'battery'
+                @modalText 'Decide the charge you want in the battery', 'The battery will start charging till it reaches the selected value. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.'
+        else
+            if type is 'time'
+                @modalText 'Decide for how long you want to discharge the battery', 'The battery will start discharging for the selected lapse of time. If you select both (charge and lapse of time), it will discharge till it reaches the first of both; or you click on the stop button.'
+                @modalText 'Decide the discharge you want in the battery', 'The battery will start discharging till it reaches the selected. If you select both (discharge and lapse of time), it will discharge till it reaches the first of both; or you click on the stop button.'
+        $ @INFOMODAL
+            .modal 'show'
+
     buttons: ->
         div1 = new Item "div", ["id"], ["adaptToHeight"], null, false, null
 
@@ -101,12 +115,11 @@ class CommonElements
 
     selectNameVar: ->
         if @solar
-            @timeText = "Time charging"
-            @batteryText = "How much charge do you want?"
-           
+            @timeText = "Time charging "
+            @batteryText = "How much charge do you want? "
         else
-            @timeText = "Time discharging"
-            @batteryText = "How much discharge do you want?" 
+            @timeText = "Time discharging "
+            @batteryText = "How much discharge do you want? " 
             
     mySwitch: (@solar)->
         @selectNameVar()

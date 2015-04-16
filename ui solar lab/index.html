@@ -36,6 +36,7 @@
   <script src="javascripts/esd.js"></script>
   <script src="javascripts/item.js"></script>
   <script src="javascripts/elements.js"></script>
+  <script src="javascripts/part.js"></script>
   <script src="javascripts/solarElements.js"></script>
   <script src="javascripts/commonElements.js"></script>
   <script src="javascripts/craneElements.js"></script>
@@ -45,37 +46,36 @@
   </head>
   <body onload="arranque()">
     <script type="text/javascript">
-   var myApp;
-myApp = myApp || (function () {
-    var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h1 id="titleShowModal" class="text-info">Loading...</h1></div><div id="bodyModalShow" class="modal-body"><div id="progressBarModal" class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
-    return {
-        showPleaseWait: function(text) {
-          $("#titleShowModal").removeClass("text-danger");
-          $("#titleShowModal").addClass("text-info");
-          $("#titleShowModal").html(text);
+      var myApp;
+      myApp = myApp || (function () {
+        var pleaseWaitDiv = $('<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h1 id="titleShowModal" class="text-info">Loading...</h1></div><div id="bodyModalShow" class="modal-body"><div id="progressBarModal" class="progress progress-striped active"><div class="progress-bar" style="width: 100%;"></div></div></div></div></div></div>');
+        return {
+          showPleaseWait: function(text) {
+            $("#titleShowModal").removeClass("text-danger");
+            $("#titleShowModal").addClass("text-info");
+            $("#titleShowModal").html(text);
+              pleaseWaitDiv.modal();
+          },
+          hidePleaseWait: function () {
+              pleaseWaitDiv.modal('hide');
+          },
+          showError: function(title, text){
+            $("#titleShowModal").removeClass("text-primary");
+            $("#titleShowModal").addClass("text-danger");
+            $("#titleShowModal").html(title);
+            $("#progressBarModal").remove();
+            div = document.createElement('div');
+            p = document.createElement('p');
+            ptext = document.createTextNode(text);
+            p.appendChild(ptext);
+            div.appendChild(p);
+            document.getElementById("bodyModalShow").appendChild(div);
             pleaseWaitDiv.modal();
-        },
-        hidePleaseWait: function () {
-            pleaseWaitDiv.modal('hide');
-        },
-        showError: function(title, text){
-          $("#titleShowModal").removeClass("text-primary");
-          $("#titleShowModal").addClass("text-danger");
-          $("#titleShowModal").html(title);
-          $("#progressBarModal").remove();
-          div = document.createElement('div');
-          p = document.createElement('p');
-          ptext = document.createTextNode(text);
-          p.appendChild(ptext);
-          div.appendChild(p);
-          document.getElementById("bodyModalShow").appendChild(div);
-          pleaseWaitDiv.modal();
-        },
-
-    };
-    })();
-    myApp.showPleaseWait();
-</script>
+          },
+        };
+      })();
+      myApp.showPleaseWait();
+    </script>
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-4" id="div_formula_col">
@@ -83,58 +83,9 @@ myApp = myApp || (function () {
             <div class="panel-heading">
               <h3 id="panelHeadingElements" class="panel-title"></h3>
             </div>
-            <div id="tusmuertos" class="panel-body">
-              <div id="noCommonElements"></div>
-                          
-                        <!-- Modal -->
-                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                <h4 class="modal-title">TODO</h4>
-                              </div>
-                              <div class="modal-body">
-                                <p>
-                                  You can:
-                                 </p>
-                                  <ol>
-                                    <li> Decide the charge you want in the battery. 
-                                      <p>
-                                        The battery will start charging till it reaches the selected value or you click on the stop button.
-                                      </p>
-                                    </li>
-                                    
-                                    <li>
-                                      Decide for how long you want to change the battery.
-                                      <p>
-                                        The battery will charge for the selected lapse of time or till you click on the stop button.
-                                      </p>
-                                    </li>
-                                    
-                                    <li>Decide both, the change and the lapse of time.
-                                      <p>
-                                        The battery will charge till it reaches the first of both: the selected value or the selected lapse of time; or till you clicks on the stop button.
-                                      </p>
-                                    </li>
-                                    
-                                    <li>Decide none.
-                                      <p>
-                                      The battery will charge till it reaches its maximum or till you click on the stop button.
-                                      </p>
-                                    </li>
-                                  </ol>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-            <div id="elementsCommons"></div>
-          
-
+            <div class="panel-body">
+              <div id="noCommonElements"></div>       
+              <div id="elementsCommons"></div>
             </div>
           </div>
         </div>
@@ -172,60 +123,35 @@ myApp = myApp || (function () {
                 </div>
               </div>
             </div>
-          <div class="col-lg-7" >
-            <div id="webcam" class="panel panel-success">
-              <div class="panel-heading">
-                <h3 class="panel-title">Webcam</h3>
-              </div>
-              <div id="panelGraph" class="panel-body ">
-                <!--<img src="http://62.204.201.150:31/snapshot.cgi?&user=userSolar&pwd=&t=" onload='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 1)' onerror='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 5000)' alt='' class="img-responsive"/>-->
-              <!--<img src="images/webcam.JPG" class="img-responsive">      -->
-                <img  id="imgCamera" src="" class="img-responsive center-block" alt="webcam in real time from solar lab">
-<!--
-  src="http://62.204.201.150:31/videostream.cgi?user=userSolar&amp;pwd="
-<iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
+            <div class="col-lg-7" >
+              <div id="webcam" class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Webcam</h3>
+                </div>
+                <div id="panelGraph" class="panel-body ">
+                  <!--<img src="http://62.204.201.150:31/snapshot.cgi?&user=userSolar&pwd=&t=" onload='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 1)' onerror='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 5000)' alt='' class="img-responsive"/>-->
+                  <!--<img src="images/webcam.JPG" class="img-responsive">      -->
+                  <img  id="imgCamera" src="" class="img-responsive center-block" alt="webcam in real time from solar lab">
+                  <!--
+                    src="http://62.204.201.150:31/videostream.cgi?user=userSolar&amp;pwd="
+                  <iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
+                </div>
               </div>
             </div>
           </div>
-        </div>
           <div class="panel panel-info">
             <div class="panel-heading">
               <div id="save">
                 <!-- lo he quitado por el momento porque no va<a href="#" data-toggle="modal" data-target="#myModalCSV">-->
                   <span class="glyphicon glyphicon-eye-open"></span>
-                </a>
+                <!--</a>-->
                 <!-- lo he quitado por el momento porque no va<a href="#" data-toggle="modal" data-target="#myModal2"> -->
                   <span class="glyphicon glyphicon-floppy-disk"></span>
-                </a>
+                <!--</a>-->
               </div>
               <h3 class="panel-title">
                 Data received 
               </h3>
-               
-              <!-- Modal -->
-              <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                      <h4 class="modal-title">Save data</h4>
-                    </div>
-                    <div class="modal-body">
-                      <form role="form">
-                        <div class="form-group">
-                          <label for="inputNameOfFile">Name of file</label>
-                          <input type="text" class="form-control" id="inputNameOfFile" placeholder="Name of file">
-                        </div>
-                      </form>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="submit" onclick="saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Modal -->
             </div>
             <div class="panel-body">
               <div class="row">
@@ -243,6 +169,47 @@ myApp = myApp || (function () {
         </div>
       </div>
     </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 id="infoModalTitle" class="modal-title"></h4>
+          </div>
+          <div id="infoModalBody" class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">Save data</h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="inputNameOfFile">Name of file</label>
+                <input type="text" class="form-control" id="inputNameOfFile" placeholder="Name of file">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" onclick="saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="myModalCSV" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">

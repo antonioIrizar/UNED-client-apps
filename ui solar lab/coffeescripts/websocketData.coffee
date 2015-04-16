@@ -34,7 +34,7 @@ class WebsocketData
             when 1001
                 myApp.hidePleaseWait()
                 myApp.showError "Server go to maintenance", "Sorry the connection was close because the server go to maintenance. Please try later"
-            when 1002 and 1003
+            when 1002 or 1003
                 myApp.hidePleaseWait()
                 myApp.showError "Something's not right", "Sorry a error happened."
             when 1006 

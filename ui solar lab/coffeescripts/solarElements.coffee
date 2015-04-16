@@ -1,14 +1,13 @@
-class SolarElements
+class SolarElements extends Part
     solar: null
     NAMEPARENT: "noCommonElements"
-    wsData: null
     lumens: null
     horizontalAxis: null
     verticalAxis: null
     startExperiment: false
 
-
-    constructor: (@wsData)->
+    constructor: ->
+        super 
         @lumens = null
         @horizontalAxis = null
         @verticalAxis = null
@@ -22,12 +21,16 @@ class SolarElements
 
     bulb: ->
         smallElementBulb = new Item "img", ["src", "class", "alt"], ["images/bulb.png", "img-responsive", "bulb"], null, false, null
-        strong = new Item "strong", [], [], "Lumens", false, null
+        strong = new Item "strong", [], [], "Lumens ", false, null
+        span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
+        #data-content put any
+        a = new Item "a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'lumens\')'], null, true, [span]
+
         #carefully with function onclick need put name var of init and the name of var solar 
         button = new Item "button", ["onclick", "type", "class"], ["varInit.solar.sendLumens()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
         divSlider = new Item "div", ["id", "class"], ["slider-lumens", "slider slider-lumens"], null, false, null
         div = new Item "div", ["class"], ["slidera"], null, true, [divSlider]
-        bigElementBulb = new Item "div", ["class"], ["form-group"], null, true, [strong, button, div]
+        bigElementBulb = new Item "div", ["class"], ["form-group"], null, true, [strong, a, button, div]
 
         bulb = new Element()
         bulb.specialElement [smallElementBulb], [bigElementBulb]
@@ -42,21 +45,28 @@ class SolarElements
         strong1 = new Item "strong", [], [], "Spin of the solar panel on:", false, null
         p = new Item "p", ["class"], ["text-center"], null, true, [strong1]
 
-        strong2 = new Item "strong", [], [], "Horizontal axis", false, null
+        strong2 = new Item "strong", [], [], "Horizontal axis ", false, null
+
+        span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
+        #data-content put any
+        a = new Item "a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'horizontal\')'], null, true, [span]
         #carefully with function onclick need put name var of init and the name of var solar 
         button1 = new Item "button", ["onclick", "type", "class"], ["varInit.solar.sendHorizontalAxis()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
         divSlider1 = new Item "div", ["id", "class"], ["slider-horizontal-axis", "slider slider-horizontal-axis"], null, false, null
         div1 = new Item "div", ["class"], ["slidera"], null, true, [divSlider1]
 
-        divForm1 = new Item "div", ["class"], ["form-group"], null, true, [strong1, button1, div1]
+        divForm1 = new Item "div", ["class"], ["form-group"], null, true, [strong2, a, button1, div1]
 
-        strong3 = new Item "strong", [], [], "Vertical axis", false, null
+        strong3 = new Item "strong", [], [], "Vertical axis ", false, null
+        span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
+        #data-content put any
+        a = new Item "a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'vertical\')'], null, true, [span]
         #carefully with function onclick need put name var of init and the name of var solar 
         button2 = new Item "button", ["onclick", "type", "class"], ["varInit.solar.sendVerticalAxis()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null
         divSlider2 = new Item "div", ["id", "class"], ["slider-vertical-axis", "slider slider-vertical-axis"], null, false, null
         div2 = new Item "div", ["class"], ["slidera"], null, true, [divSlider2]
 
-        divForm2 = new Item "div", ["class"], ["form-group"], null, true, [strong2, button2, div2]    
+        divForm2 = new Item "div", ["class"], ["form-group"], null, true, [strong3, a, button2, div2]    
 
         solar = new Element()
         solar.specialElement [smallElementSolar], [p, divForm1, divForm2]
@@ -66,6 +76,17 @@ class SolarElements
         new Slider 'slider-horizontal-axis', 0, 1, [-150], [150], 11, 2, 'º'
         new Slider 'slider-vertical-axis', 0, 1, [0], [60], 10, 3, 'º'
         
+    selectModalText: (type) =>
+        switch type
+            when 'lumens'
+                @modalText 'Decide the lumens you want for the bulb', 'First select how many lumens you want for the bulb and you can click in accept to turn on the bulb or you can click on start to turn on the bulb and start experiment (You can\'t have 0 lumens to start experiment). You can always change the lumens at any time, you only need select the lumens and click accept.'
+            when 'horizontal'
+                @modalText 'Decide the degree you want for the horizontal panel', 'First select how many degree you want for the horizontal panel and you can click in accept to move the horizontal panel or you can click on start to move the horizontal panel and start experiment. You can always change the degree at any time, you only need select the degree and click accept.'
+            when 'vertical'
+                @modalText 'Decide the degree you want for the vertical panel', 'First select how many degree you want for the vertical panel and you can click in accept to move the vertical panel or you can click on start to move the vertical panel and start experiment. You can always change the degree at any time, you only need select the degree and click accept.'
+             
+        $ @INFOMODAL
+            .modal 'show'
     remove: ->
         @solar.parentNode.removeChild @solar
 

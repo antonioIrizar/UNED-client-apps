@@ -47,7 +47,7 @@
         case 1001:
           myApp.hidePleaseWait();
           return myApp.showError("Server go to maintenance", "Sorry the connection was close because the server go to maintenance. Please try later");
-        case 1002 && 1003:
+        case 1002 || 1003:
           myApp.hidePleaseWait();
           return myApp.showError("Something's not right", "Sorry a error happened.");
         case 1006:

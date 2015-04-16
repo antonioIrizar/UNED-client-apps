@@ -158,7 +158,6 @@ class Init
             role.appendChild document.createTextNode 'You are mode controller'
 
         $(".slider-battery").val battery
-        actualBattery = battery
         $("p#textBattery").text battery + "%"
         @plot.resize()
 
