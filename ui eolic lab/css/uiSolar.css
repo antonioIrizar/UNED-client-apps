@@ -1,0 +1,61 @@
+.vertical-align {
+  display: flex;
+  /* only work in ie 11... */
+  align-items: center;
+  /*need a 1px in right, because the slider not see correctly*/
+  padding-right: 1px;
+}
+
+#myCanvas{
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* css for image and canvas the ESD*/
+.wrapper{
+  position: relative;
+  padding-bottom: 10px;
+}
+
+/* popover in slider */
+.tooltipe {
+  display: block;
+  position: absolute;
+  border: 1px solid #D9D9D9;
+  font: 400 12px/12px Arial;
+  border-radius: 3px;
+  background: #fff;
+  top: -28px;
+  padding: 5px;
+  left: -4px;
+  text-align: center;
+  width: 40px;
+}
+
+.tooltipe strong {
+  display: block;
+  padding: 2px;
+}
+
+.slidera {
+  padding-top: 30px;
+  height: 90px;
+}
+
+.modal-body {
+  font-weight:normal;
+}
+
+.popover{
+  width: 150px;
+}
+
+#save{
+  font-size: 160%;
+  float:right;
+}
+
+.button-accept{
+  float:right;
+}

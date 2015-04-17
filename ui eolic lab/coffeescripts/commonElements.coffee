@@ -160,7 +160,6 @@ class CommonElements extends Part
     sendJoulsToUse: ->
         jouls = parseInt @wsData.battery - parseInt $('.slider-battery').val() 
         if jouls isnt 0
-            console.log "bateriaaaaaaa"
             @wsData.sendActuatorChange 'TOuseJ', jouls.toString()
 
     espacialSlider: (name, start, min, middle, max, values, density, postfix) ->

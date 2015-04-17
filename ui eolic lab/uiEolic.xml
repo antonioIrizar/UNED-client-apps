@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="App Formula" 
+                author_email="ajirizar@ieec.uned.es" 
+                author="Antonio Jesus Irízar López" 
+                description="Ui Eolic laboratory"
+                width="900"
+                height="800"
+>
+
+<Require feature="osapi" />
+    <Require feature="dynamic-height" />
+  </ModulePrefs>
+  <Content type="html" view="default,canvas,home,profile"><![CDATA[
+
+<style type="text/css">
+iframe{
+  width: 98%;
+  height: 98%;
+}
+</style>
+
+<iframe id="iframe" src="http://weblab.ieec.uned.es/golab/ajirizar/uiSolar/">
+
+</iframe>
+
+<!-- ToDo: gadget.io requests -->
+
+  ]]></Content>
+</Module>

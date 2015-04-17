@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Antonio Jesus Iŕizar López">
+    <mete name="description" content="">
+    <title>Solar Lab</title>
+    <style>
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+    </style>
+    <link href="//weblab.ieec.uned.es/golab/ajirizar/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="//weblab.ieec.uned.es/golab/ajirizar/javascripts/head.load.min.js"></script>
+    <script>
+        head.load("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", "//d3js.org/d3.v2.js?2.9.5", "//weblab.ieec.uned.es/golab/ajirizar/javascripts/bootstrap.min.js");
+    </script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+          <div  class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Experiment real time data</h3>
+            </div>
+            <div id="panelGraph" class="panel-body ">
+              <canvas id="myCanvas" style="border:1px solid #d3d3d3;">
+              <script>
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var img = new Image();
+img.src = "images/esd.png";
+ctx.drawImage(img, 10, 10);
+
+</script>
+              <!--<img src="images/esd.png" class="img-responsive" alt="Responsive image">-->
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4"  id="div_formula_col">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Elements you can interact with</h3>
+            </div>
+            <div  id="formulas" class="panel-body">
+              <div class="row vertical-align">
+                <div class="col-md-3">
+                  <img src="images/bulb.png" class="img-responsive" alt="Responsive image">
+                </div>
+                <div class="col-md-9">
+                  <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                      <label for="" class="col-sm-7 control-label">Lumens</label>
+                      <div class="col-sm-5">
+                        <input type="text" class="form-control" id="" placeholder="0 - 700">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="row vertical-align">
+                <div class="col-md-3" >
+                  <img src="images/solar_panel.png" class="img-responsive" alt="Responsive image">
+                </div>
+                <div class="col-md-9">
+                  <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                      <label for="" class="col-sm-7 control-label">Spin of the solar panel on it's horizontal axis</label>
+                      <div class="col-sm-5">
+                        <input type="text" class="form-control" id="" placeholder="-150º - 150º">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="" class="col-sm-7 control-label">Spin of the solar panel on it's vertical axis</label>
+                      <div class="col-sm-5">
+                        <input type="text" class="form-control" id="" placeholder="-90º - 0º">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Data recieve from experiment</h3>
+            </div>
+            <div  id="formulas" class="panel-body">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5" >
+          <div  class="panel panel-success">
+            <div class="panel-heading">
+              <h3 class="panel-title">Webcam</h3>
+            </div>
+            <div id="panelGraph" class="panel-body ">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      head.ready(function () {   
+      });
+    </script>  
+  </body>
+</html>
