@@ -180,6 +180,8 @@ class Init
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()
+        @common.resetTimer()
+        $('.slider-time').val 0
         if not @charge
             @crane.enable()
 
@@ -198,6 +200,8 @@ class Init
             #$('.slider-battery').val 10
             $('.slider-time').val 0
 
+            
+
             #Reset experiment
             @wsData.sendActuatorChange 'SolarLab', '0'
             @wsData.sendActuatorChange 'SolarLab', '1'
@@ -206,6 +210,7 @@ class Init
             @wsData.sendActuatorChange 'CraneLab', '0'
             @wsData.sendActuatorChange 'CraneLab', '1'
 
+        @common.resetTimer()
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()

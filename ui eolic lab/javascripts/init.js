@@ -216,6 +216,8 @@
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
+      this.common.resetTimer();
+      $('.slider-time').val(0);
       if (!this.charge) {
         return this.noria.enable();
       }
@@ -235,6 +237,7 @@
         this.wsData.sendActuatorChange('FWheelLab', '0');
         this.wsData.sendActuatorChange('FWheelLab', '1');
       }
+      this.common.resetTimer();
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();

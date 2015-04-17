@@ -203,6 +203,13 @@
       });
     };
 
+    CommonElements.prototype.resetTimer = function() {
+      return $('#countdown').timeTo({
+        seconds: 1,
+        fontSize: 14
+      });
+    };
+
     CommonElements.prototype.enableStart = function() {
       return $('#startExperiment').removeAttr('disabled');
     };

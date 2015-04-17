@@ -183,6 +183,12 @@ class CommonElements extends Part
             
         $("."+ name).Link('lower').to("-inline-<div class=\"tooltipe\"></div>", (value) -> $(this).html "<span>" + Math.floor(value) + "</span>")
 
+    resetTimer: ->
+        $('#countdown').timeTo({
+            seconds:1,
+            fontSize: 14
+        })
+    
     enableStart: ->
         $ '#startExperiment'
             .removeAttr 'disabled'

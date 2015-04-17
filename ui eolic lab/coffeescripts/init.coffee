@@ -180,6 +180,8 @@ class Init
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()
+        @common.resetTimer()
+        $('.slider-time').val 0
         if not @charge
             @noria.enable()
 
@@ -204,6 +206,7 @@ class Init
             @wsData.sendActuatorChange 'FWheelLab', '0'
             @wsData.sendActuatorChange 'FWheelLab', '1'
 
+        @common.resetTimer()
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()

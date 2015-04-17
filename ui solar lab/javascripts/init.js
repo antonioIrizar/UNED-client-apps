@@ -216,6 +216,8 @@
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
+      this.common.resetTimer();
+      $('.slider-time').val(0);
       if (!this.charge) {
         return this.crane.enable();
       }
@@ -238,6 +240,7 @@
         this.wsData.sendActuatorChange('CraneLab', '0');
         this.wsData.sendActuatorChange('CraneLab', '1');
       }
+      this.common.resetTimer();
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();

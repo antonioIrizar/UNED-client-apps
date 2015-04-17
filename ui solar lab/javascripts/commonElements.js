@@ -175,6 +175,7 @@
       var jouls;
       jouls = parseInt(this.wsData.battery - parseInt($('.slider-battery').val()));
       if (jouls !== 0) {
+        console.log("bateriaaaaaaa");
         return this.wsData.sendActuatorChange('TOuseJ', jouls.toString());
       }
     };
@@ -200,6 +201,13 @@
       });
       return $("." + name).Link('lower').to("-inline-<div class=\"tooltipe\"></div>", function(value) {
         return $(this).html("<span>" + Math.floor(value) + "</span>");
+      });
+    };
+
+    CommonElements.prototype.resetTimer = function() {
+      return $('#countdown').timeTo({
+        seconds: 1,
+        fontSize: 14
       });
     };
 
