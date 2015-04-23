@@ -10,7 +10,6 @@
     <meta name="description" content="Solar Laboratory" />
 
 <link href="css/timeTo.css" type="text/css" rel="stylesheet"/>
-<link href="css/flipclock.css" type="text/css" rel="stylesheet"/>
 <link href="css/uiSolar.css" type="text/css" rel="stylesheet"/>
 
 
@@ -19,7 +18,6 @@
   <link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
   <script src="javascripts/bootstrap.min.js"></script>
 <script src="javascripts/jquery.timeTo.min.js"></script>
-<script src="javascripts/flipclock.min.js"></script>
 
 <link rel="stylesheet" media="screen" href="css/handsontable.full.min.css">
  <script src="javascripts/handsontable.full.min.js"></script>
@@ -66,12 +64,12 @@
             $("#titleShowModal").addClass("text-danger");
             $("#titleShowModal").html(title);
             $("#progressBarModal").remove();
-            div = document.createElement('div');
+            /*div = document.createElement('div');
             p = document.createElement('p');
             ptext = document.createTextNode(text);
             p.appendChild(ptext);
             div.appendChild(p);
-            document.getElementById("bodyModalShow").appendChild(div);
+            document.getElementById("bodyModalShow").appendChild(div);*/
             pleaseWaitDiv.modal();
           },
         };

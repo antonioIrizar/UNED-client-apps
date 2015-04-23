@@ -237,7 +237,7 @@ class Init
         @stopTrue()
 
     chargeStart: =>
-        if ((@solar.lumens isnt null || @solar.lumens is 0) and parseInt($(".slider-lumens").val()) is 0)
+        if (parseInt($(".slider-lumens").val()) is 0)
             $('#myModalError').modal('show')
         else
             modal = false;

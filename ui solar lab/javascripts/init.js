@@ -269,7 +269,7 @@
 
     Init.prototype.chargeStart = function() {
       var modal;
-      if ((this.solar.lumens !== null || this.solar.lumens === 0) && parseInt($(".slider-lumens").val()) === 0) {
+      if (parseInt($(".slider-lumens").val()) === 0) {
         return $('#myModalError').modal('show');
       } else {
         modal = false;
