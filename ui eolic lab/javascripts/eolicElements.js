@@ -37,7 +37,7 @@
     EolicElements.prototype.createWind = function() {
       var a, bigElementBulb, button, div, divSlider, smallElementBulb, span, strong, wind;
       smallElementBulb = new Item("img", ["src", "class", "alt"], ["images/wind.jpg", "img-responsive", "bulb"], null, false, null);
-      strong = new Item("strong", [], [], "Wind ", false, null);
+      strong = new Item("strong", [], [], "Fan electrical power ", false, null);
       span = new Item("span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null);
       a = new Item("a", ['href', 'onclick'], ['#', 'varInit.eolic.selectModalText(\'wind\')'], null, true, [span]);
       button = new Item("button", ["onclick", "type", "class"], ["varInit.eolic.sendWind()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null);
@@ -53,7 +53,7 @@
     EolicElements.prototype.createMillRot = function() {
       var a, bigElementBulb, button, div, divSlider, millRot, smallElementBulb, span, strong;
       smallElementBulb = new Item("img", ["src", "class", "alt"], ["images/mill.jpg", "img-responsive", "bulb"], null, false, null);
-      strong = new Item("strong", [], [], "Mill horizontal rot ", false, null);
+      strong = new Item("strong", [], [], "Windmill blades rotation ", false, null);
       span = new Item("span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null);
       a = new Item("a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'millRot\')'], null, true, [span]);
       button = new Item("button", ["onclick", "type", "class"], ["varInit.eolic.sendMillRot()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null);
@@ -69,10 +69,10 @@
     EolicElements.prototype.selectModalText = function(type) {
       switch (type) {
         case 'wind':
-          this.modalText('Decide the lumens you want for the bulb', 'First select how many lumens you want for the bulb and you can click in accept to turn on the bulb or you can click on start to turn on the bulb and start experiment (You can\'t have 0 lumens to start experiment). You can always change the lumens at any time, you only need select the lumens and click accept.');
+          this.modalText('Fan electrical power', 'The more electrical power, the faster the battery will charge. You can modify this value at any time.');
           break;
         case 'millRot':
-          this.modalText('Decide the degree you want for the horizontal panel', 'First select how many degree you want for the horizontal panel and you can click in accept to move the horizontal panel or you can click on start to move the horizontal panel and start experiment. You can always change the degree at any time, you only need select the degree and click accept.');
+          this.modalText('Windmill blades rotation', 'Allow to modify the blades position in relation to the fun, simulating the different directions of the wind in real nature.');
       }
       return $(this.INFOMODAL).modal('show');
     };

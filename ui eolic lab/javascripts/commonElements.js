@@ -89,15 +89,17 @@
     CommonElements.prototype.selectModalText = function(type) {
       if (this.solar) {
         if (type === 'time') {
-          this.modalText('Decide for how long you want to charge the battery', 'The battery will charge for the selected lapse of time. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.');
+          this.modalText('For how long do you want the battery to be charging?', 'The maximum value is 20 minutes. Keep in mind that if you select both, charge and time, the process will end when the first value is reached.');
         }
         if (type === 'battery') {
-          this.modalText('Decide the charge you want in the battery', 'The battery will start charging till it reaches the selected value. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.');
+          this.modalText('How much do you want to charge the battery?', 'Keep in mind that if you select both, charge and time, the process will end when the first value is reached.');
         }
       } else {
         if (type === 'time') {
-          this.modalText('Decide for how long you want to discharge the battery', 'The battery will start discharging for the selected lapse of time. If you select both (charge and lapse of time), it will discharge till it reaches the first of both; or you click on the stop button.');
-          this.modalText('Decide the discharge you want in the battery', 'The battery will start discharging till it reaches the selected. If you select both (discharge and lapse of time), it will discharge till it reaches the first of both; or you click on the stop button.');
+          this.modalText('For how long do you want to use the energy?', 'Keep in mind that if you select turns, charge and time, the process will end when the first value is reached.');
+        }
+        if (type === 'battery') {
+          this.modalText('Which will be the final charge for the battery?', 'Keep in mind that if you select turns, charge and time, the process will end when the first value is reached.');
         }
       }
       return $(this.INFOMODAL).modal('show');
@@ -119,11 +121,11 @@
 
     CommonElements.prototype.selectNameVar = function() {
       if (this.solar) {
-        this.timeText = "Time charging ";
-        return this.batteryText = "How much charge do you want? ";
+        this.timeText = "For how long do you want the battery to be charging? ";
+        return this.batteryText = "How much do you want to charge the battery? ";
       } else {
-        this.timeText = "Time discharging ";
-        return this.batteryText = "How much discharge do you want? ";
+        this.timeText = "For how long do you want to use the energy? ";
+        return this.batteryText = "Which will be the final charge for the battery? ";
       }
     };
 
