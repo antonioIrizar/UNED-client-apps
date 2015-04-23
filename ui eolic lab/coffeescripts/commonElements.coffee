@@ -86,13 +86,14 @@ class CommonElements extends Part
     selectModalText: (type) =>
         if @solar
             if type is 'time'
-                @modalText 'Decide for how long you want to charge the battery', 'The battery will charge for the selected lapse of time. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.'
+                @modalText 'For how long do you want the battery to be charging?', 'The maximum value is 20 minutes. Keep in mind that if you select both, charge and time, the process will end when the first value is reached.'
             if type is 'battery'
-                @modalText 'Decide the charge you want in the battery', 'The battery will start charging till it reaches the selected value. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.'
+                @modalText 'How much do you want to charge the battery?', 'Keep in mind that if you select both, charge and time, the process will end when the first value is reached.'
         else
             if type is 'time'
-                @modalText 'Decide for how long you want to discharge the battery', 'The battery will start discharging for the selected lapse of time. If you select both (charge and lapse of time), it will discharge till it reaches the first of both; or you click on the stop button.'
-                @modalText 'Decide the discharge you want in the battery', 'The battery will start discharging till it reaches the selected. If you select both (discharge and lapse of time), it will discharge till it reaches the first of both; or you click on the stop button.'
+                @modalText 'For how long do you want to use the energy?', 'Keep in mind that if you select turns, charge and time, the process will end when the first value is reached.'
+            if type is 'battery'
+                @modalText 'Which will be the final charge for the battery?', 'Keep in mind that if you select turns, charge and time, the process will end when the first value is reached.'
         $ @INFOMODAL
             .modal 'show'
 
@@ -115,11 +116,11 @@ class CommonElements extends Part
 
     selectNameVar: ->
         if @solar
-            @timeText = "Time charging "
-            @batteryText = "How much charge do you want? "
+            @timeText = "For how long do you want the battery to be charging? "
+            @batteryText = "How much do you want to charge the battery? "
         else
-            @timeText = "Time discharging "
-            @batteryText = "How much discharge do you want? " 
+            @timeText = "For how long do you want to use the energy? "
+            @batteryText = "Which will be the final charge for the battery? " 
             
     mySwitch: (@solar)->
         @selectNameVar()

@@ -151,11 +151,11 @@ class Init
                 .setAttribute 'disabled', 'disabled'
             document.getElementById 'chargeButton'
                 .setAttribute 'disabled', 'disabled'
-            role.appendChild document.createTextNode 'You are mode observer'
+            role.appendChild document.createTextNode 'You are an observer'
         else
             @common.disableStop()
             @common.disableReset()
-            role.appendChild document.createTextNode 'You are mode controller'
+            role.appendChild document.createTextNode 'You are the controller'
 
         $(".slider-battery").val battery
         $("p#textBattery").text battery + "%"

@@ -19,7 +19,7 @@ class EolicElements extends Part
 
     createWind: ->
         smallElementBulb = new Item "img", ["src", "class", "alt"], ["images/wind.jpg", "img-responsive", "bulb"], null, false, null
-        strong = new Item "strong", [], [], "Wind ", false, null
+        strong = new Item "strong", [], [], "Fan electrical power ", false, null
         span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
         #data-content put any
         a = new Item "a", ['href', 'onclick'], ['#', 'varInit.eolic.selectModalText(\'wind\')'], null, true, [span]
@@ -39,7 +39,7 @@ class EolicElements extends Part
 
     createMillRot: ->
         smallElementBulb = new Item "img", ["src", "class", "alt"], ["images/mill.jpg", "img-responsive", "bulb"], null, false, null
-        strong = new Item "strong", [], [], "Mill horizontal rot ", false, null
+        strong = new Item "strong", [], [], "Windmill blades rotation ", false, null
         span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
         #data-content put any
         a = new Item "a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'millRot\')'], null, true, [span]
@@ -60,9 +60,9 @@ class EolicElements extends Part
     selectModalText: (type) =>
         switch type
             when 'wind'
-                @modalText 'Decide the lumens you want for the bulb', 'First select how many lumens you want for the bulb and you can click in accept to turn on the bulb or you can click on start to turn on the bulb and start experiment (You can\'t have 0 lumens to start experiment). You can always change the lumens at any time, you only need select the lumens and click accept.'
+                @modalText 'Fan electrical power', 'The more electrical power, the faster the battery will charge. You can modify this value at any time.'
             when 'millRot'
-                @modalText 'Decide the degree you want for the horizontal panel', 'First select how many degree you want for the horizontal panel and you can click in accept to move the horizontal panel or you can click on start to move the horizontal panel and start experiment. You can always change the degree at any time, you only need select the degree and click accept.'
+                @modalText 'Windmill blades rotation', 'Allow to modify the blades position in relation to the fun, simulating the different directions of the wind in real nature.'
 
         $ @INFOMODAL
             .modal 'show'
