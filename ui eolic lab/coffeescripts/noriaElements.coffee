@@ -28,7 +28,7 @@ class NoriaElements extends Part
 
     selectModalText: (type) =>
         if type is 'turns'
-            @modalText 'Decide how many centimetres you want move the weight', 'First select how many centimetres you want move the weith you should click on start to move the weith and start experiment. You can always stop the experiment clicking in button stop.'
+            @modalText 'How many turns do you want?', 'Keep in mind that if you select turns, charge and time, the process will end when the first value is reached.'
                
         $ @INFOMODAL
             .modal 'show'
