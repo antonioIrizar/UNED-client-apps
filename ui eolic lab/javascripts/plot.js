@@ -314,6 +314,27 @@
        */
     };
 
+    Plot.prototype.save = function() {
+      $('#example1').handsontable({
+        data: this.data,
+        colHeaders: ["Time", "Amps", "Volts", "Jouls"],
+        maxCols: 4,
+        maxRows: 4,
+        columns: [
+          {
+            readOnly: true
+          }, {
+            readOnly: true
+          }, {
+            readOnly: true
+          }, {
+            readOnly: true
+          }
+        ]
+      });
+      return $('#myModalCSV').modal('show');
+    };
+
     return Plot;
 
   })();

@@ -205,4 +205,22 @@ class Plot
             
         , 3000)
         ###
+        
+    save: ->
+        $ '#example1' 
+            .handsontable
+                    data: @data,
+                    colHeaders: ["Time", "Amps", "Volts", "Jouls"],
+                    maxCols: 4,
+                    maxRows: 4,
+                    columns: [
+                        {readOnly: true,}
+                        {readOnly: true,}
+                        {readOnly: true,}
+                        {readOnly: true,}
+                    ],
+            
+        $ '#myModalCSV'
+            .modal 'show'
+
 window.Plot = Plot

@@ -138,12 +138,12 @@
           <div class="panel panel-info">
             <div class="panel-heading">
               <div id="save">
-                <!-- lo he quitado por el momento porque no va<a href="#" data-toggle="modal" data-target="#myModalCSV">-->
+                <a href="#" onclick="varInit.plot.save()">
                   <span class="glyphicon glyphicon-eye-open"></span>
-                <!--</a>-->
-                <!-- lo he quitado por el momento porque no va<a href="#" data-toggle="modal" data-target="#myModal2"> -->
+                </a>
+                <a href="#" data-toggle="modal" data-target="#myModal2">
                   <span class="glyphicon glyphicon-floppy-disk"></span>
-                <!--</a>-->
+                </a>
               </div>
               <h3 class="panel-title">
                 Data received 
@@ -544,39 +544,6 @@ function newRadio(value, checked, newOrOld, name){
   divRadio.appendChild(labelRadio);
   return divRadio;
 };
-
-
-
-
- var data = [
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [1, 2, 3, 4]
-  ];
-  
-  $('#example1').handsontable({
-    data: data,
-    colHeaders: ["Time", "Jouls", "Amps", "Volts"],
-    maxCols: 4,
-    maxRows: 4,
-    columns: [
-      {readOnly: true,
-      },
-      {readOnly: true,
-      },
-      {readOnly: true,
-      },
-      {readOnly: true,
-      }
-      ],
-  }
-   );
-
-  $('#myModalCSV').on('shown.bs.modal', function (e) {
-    console.log(document.getElementById("cacaVaca").offsetWidth);
-  
-});
   
     </script>
   </body>
