@@ -165,7 +165,7 @@
       }
       if (msg.method === "sendActuatorData" && (msg.payload.actuatorId === "Elapsed" || msg.payload.actuatorId === 'TOuseJ' || msg.payload.actuatorId === 'TOgetJ' || msg.payload.actuatorId === 'WeightTrip')) {
         eve = document.createEvent('CustomEvent');
-        eve.initCustomEvent('finishExperiment', true, false, null);
+        eve.initCustomEvent('finishExperiment', true, false, msg.payload.responseData);
         document.dispatchEvent(eve);
         return;
       }

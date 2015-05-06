@@ -134,7 +134,7 @@ class WebsocketData
 
         if msg.method == "sendActuatorData" && ( msg.payload.actuatorId == "Elapsed" or  msg.payload.actuatorId == 'TOuseJ' or  msg.payload.actuatorId == 'TOgetJ' or msg.payload.actuatorId == 'WeightTrip')
             eve = document.createEvent 'CustomEvent'
-            eve.initCustomEvent 'finishExperiment', true, false, null
+            eve.initCustomEvent 'finishExperiment', true, false, msg.payload.responseData
             document.dispatchEvent eve
             return
 

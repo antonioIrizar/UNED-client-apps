@@ -229,7 +229,6 @@ class Init
         if @charge
             text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
             $(".slider-battery").val(@wsData.battery)
-            console.log "finish solar experiment"
             @common.disableStop()
             @common.disableReset()
         else
@@ -244,7 +243,7 @@ class Init
 
         $ @INFOMODALBODY
             .append  '<p>'+ text + '</p>'
-        $('#infoModal').modal('show')
+        $(@INFOMODAL).modal('show')
         @common.enableSliders()
         @common.enableStart()
         @stopTrue()

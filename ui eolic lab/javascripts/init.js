@@ -261,7 +261,6 @@
       if (this.charge) {
         text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>';
         $(".slider-battery").val(this.wsData.battery);
-        console.log("finish solar experiment");
         this.common.disableStop();
         this.common.disableReset();
       } else {
@@ -274,7 +273,7 @@
         document.getElementById('chargeButton').removeAttribute('disabled');
       }
       $(this.INFOMODALBODY).append('<p>' + text + '</p>');
-      $('#infoModal').modal('show');
+      $(this.INFOMODAL).modal('show');
       this.common.enableSliders();
       this.common.enableStart();
       return this.stopTrue();

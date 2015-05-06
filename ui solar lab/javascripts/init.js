@@ -24,6 +24,12 @@
 
     Init.prototype.switchLab = false;
 
+    Init.prototype.INFOMODAL = '#infoModal';
+
+    Init.prototype.INFOMODALTITLE = '#infoModalTitle';
+
+    Init.prototype.INFOMODALBODY = '#infoModalBody';
+
     function Init(idCanvas, img) {
       this.chargeStart = __bind(this.chargeStart, this);
       this.finishExperiment = __bind(this.finishExperiment, this);
@@ -249,12 +255,17 @@
     };
 
     Init.prototype.finishExperiment = function(e) {
+      var text;
+      $(this.INFOMODALTITLE).empty();
+      $(this.INFOMODALBODY).empty();
+      $(this.INFOMODALTITLE).append('Experiment has been finished');
       if (this.charge) {
+        text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>';
         $(".slider-battery").val(this.wsData.battery);
-        console.log("finish solar experiment");
         this.common.disableStop();
         this.common.disableReset();
       } else {
+        text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>';
         $(".slider-distance").val(0);
         $(".slider-battery").val(this.wsData.battery);
         this.crane.enable();
@@ -262,6 +273,8 @@
         this.common.disableReset();
         document.getElementById('chargeButton').removeAttribute('disabled');
       }
+      $(this.INFOMODALBODY).append('<p>' + text + '</p>');
+      $(this.INFOMODAL).modal('show');
       this.common.enableSliders();
       this.common.enableStart();
       return this.stopTrue();

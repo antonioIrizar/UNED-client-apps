@@ -10,6 +10,9 @@ class Init
     wsCamera: null
     charge: null
     switchLab: false
+    INFOMODAL: '#infoModal'
+    INFOMODALTITLE: '#infoModalTitle'
+    INFOMODALBODY: '#infoModalBody'
 
     constructor: (idCanvas, img)->
         #Listen for the event wsDataReady
@@ -200,8 +203,6 @@ class Init
             #$('.slider-battery').val 10
             $('.slider-time').val 0
 
-            
-
             #Reset experiment
             @wsData.sendActuatorChange 'SolarLab', '0'
             @wsData.sendActuatorChange 'SolarLab', '1'
@@ -218,12 +219,19 @@ class Init
         @stopTrue()
 
     finishExperiment: (e) =>
+        $ @INFOMODALTITLE
+            .empty()
+        $ @INFOMODALBODY
+            .empty()
+        $ @INFOMODALTITLE 
+            .append 'Experiment has been finished'
         if @charge
+            text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
             $(".slider-battery").val(@wsData.battery)
-            console.log "finish solar experiment"
             @common.disableStop()
             @common.disableReset()
         else
+            text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>'
             $(".slider-distance").val(0)
             $(".slider-battery").val(@wsData.battery)
             @crane.enable()
@@ -232,6 +240,9 @@ class Init
             document.getElementById 'chargeButton'
                 .removeAttribute 'disabled'
 
+        $ @INFOMODALBODY
+            .append  '<p>'+ text + '</p>'
+        $(@INFOMODAL).modal('show')
         @common.enableSliders()
         @common.enableStart()
         @stopTrue()
