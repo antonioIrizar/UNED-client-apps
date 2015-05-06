@@ -18,7 +18,7 @@
     Part.prototype.modalText = function(title, body) {
       $(this.INFOMODALTITLE).empty();
       $(this.INFOMODALBODY).empty();
-      $(this.INFOMODALTITLE).append('<p>' + title + '</p>');
+      $(this.INFOMODALTITLE).append(title);
       return $(this.INFOMODALBODY).append('<p>' + body + '</p>');
     };
 

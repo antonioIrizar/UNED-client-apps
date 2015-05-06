@@ -12,7 +12,7 @@ class Part
         $ @INFOMODALBODY
             .empty()
         $ @INFOMODALTITLE 
-            .append '<p>'+ title + '</p>'
+            .append title
         $ @INFOMODALBODY
             .append  '<p>'+ body + '</p>'
 
