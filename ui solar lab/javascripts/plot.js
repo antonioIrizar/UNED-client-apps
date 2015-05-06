@@ -337,14 +337,14 @@
     Plot.prototype.saveTextAsFile = function() {
       var data, dataText, downloadLink, fileNameToSaveAs, i, ie, ie11, information, j, length, line, number, textFileAsBlob, textToWrite, _i, _j, _len, _len1, _ref, _ref1;
       length = this.experiments.length;
-      textToWrite = 'Report experiments \n\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \n';
+      textToWrite = 'Report experiments \r\n\r\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \r\n';
       _ref = this.experiments;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         information = _ref[i];
         number = i + 1;
-        textToWrite = textToWrite + '\nExperiment ' + number + ' was executed at ' + information.timeStart + ' and finish at ' + information.timeFinish + '.\n' + information.result + '\n\t* Data generate during the experiment were following:\n';
-        line = '\t\t ----------------------------------\n';
-        textToWrite = textToWrite + line + '\t\t| Time |  Amps  |  Volts  |  Jouls |\n' + line;
+        textToWrite = textToWrite + '\r\nExperiment ' + number + ' was executed at ' + information.timeStart + ' and finish at ' + information.timeFinish + '.\r\n' + information.result + '\r\n\t* Data generate during the experiment were following:\r\n';
+        line = '\t\t ----------------------------------\r\n';
+        textToWrite = textToWrite + line + '\t\t| Time |  Amps  |  Volts  |  Jouls |\r\n' + line;
         _ref1 = information.data;
         for (j = _j = 0, _len1 = _ref1.length; _j < _len1; j = ++_j) {
           data = _ref1[j];
@@ -364,13 +364,13 @@
           dataText = dataText + data[1] + ' | ' + data[2];
           switch (data[3].length) {
             case 1:
-              dataText = dataText + '  |    ' + data[3] + '   |\n';
+              dataText = dataText + '  |    ' + data[3] + '   |\r\n';
               break;
             case 2:
-              dataText = dataText + '  |   ' + data[3] + '   |\n';
+              dataText = dataText + '  |   ' + data[3] + '   |\r\n';
               break;
             case 3:
-              dataText = dataText + '  |  ' + data[3] + '   |\n';
+              dataText = dataText + '  |  ' + data[3] + '   |\r\n';
           }
           textToWrite = textToWrite + dataText + line;
         }

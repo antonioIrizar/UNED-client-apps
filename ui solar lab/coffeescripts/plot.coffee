@@ -217,12 +217,12 @@ class Plot
 
     saveTextAsFile: ->
         length = @experiments.length
-        textToWrite = 'Report experiments \n\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \n'
+        textToWrite = 'Report experiments \r\n\r\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \r\n'
         for information, i in @experiments
             number = i+1
-            textToWrite = textToWrite + '\nExperiment ' + number + ' was executed at ' + information.timeStart + ' and finish at ' + information.timeFinish + '.\n' + information.result + '\n\t* Data generate during the experiment were following:\n'
-            line = '\t\t ----------------------------------\n'
-            textToWrite = textToWrite + line + '\t\t| Time |  Amps  |  Volts  |  Jouls |\n' + line
+            textToWrite = textToWrite + '\r\nExperiment ' + number + ' was executed at ' + information.timeStart + ' and finish at ' + information.timeFinish + '.\r\n' + information.result + '\r\n\t* Data generate during the experiment were following:\r\n'
+            line = '\t\t ----------------------------------\r\n'
+            textToWrite = textToWrite + line + '\t\t| Time |  Amps  |  Volts  |  Jouls |\r\n' + line
             for data, j in information.data
                 switch data[0].length
                     when 1
@@ -238,11 +238,11 @@ class Plot
 
                 switch data[3].length
                     when 1
-                        dataText = dataText + '  |    ' + data[3] + '   |\n'
+                        dataText = dataText + '  |    ' + data[3] + '   |\r\n'
                     when 2
-                        dataText = dataText + '  |   ' + data[3] + '   |\n'
+                        dataText = dataText + '  |   ' + data[3] + '   |\r\n'
                     when 3
-                        dataText = dataText + '  |  ' + data[3] + '   |\n'
+                        dataText = dataText + '  |  ' + data[3] + '   |\r\n'
 
                 textToWrite = textToWrite + dataText + line
         

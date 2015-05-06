@@ -226,13 +226,13 @@ class Init
         $ @INFOMODALTITLE 
             .append 'Experiment has been finished'
         if @charge
-            textToSend = 'You get the results followings, for charging the battery with the windmill:\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J'
+            textToSend = 'You get the results followings, for charging the battery with the windmill:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J'
             text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
             $(".slider-battery").val(@wsData.battery)
             @common.disableStop()
             @common.disableReset()
         else
-            textToSend = 'You get the results followings, for discharging the battery with the noria:\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J\n\t* Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm'
+            textToSend = 'You get the results followings, for discharging the battery with the noria:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J\r\n\t* Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm'
             text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>'
             $(".slider-distance").val(0)
             $(".slider-battery").val(@wsData.battery)
