@@ -10,6 +10,9 @@ class Init
     wsCamera: null
     charge: null
     switchLab: false
+    INFOMODAL: '#infoModal'
+    INFOMODALTITLE: '#infoModalTitle'
+    INFOMODALBODY: '#infoModalBody'
 
     constructor: (idCanvas, img)->
         #Listen for the event wsDataReady
@@ -30,7 +33,8 @@ class Init
 
         @change = false
         #same id for websocket data and video. It is for close correctly in backned.
-        token = Math.random()
+        #token = Math.random()
+        token = 1001
         @wsData = new WebsocketData token
         @wsCamera = new WebSocketCamera token
         @plot = new Plot()
@@ -92,6 +96,7 @@ class Init
             @noria = null
             @common.mySwitch true
             @wsData.sendActuatorChange 'WindLab', "1"
+            @plot.reset()
         @eolic = new EolicElements @wsData
         @charge = true
 
@@ -120,6 +125,7 @@ class Init
             @eolic = null
             @common.mySwitch false
             @wsData.sendActuatorChange 'FWheelLab', "1"
+            @plot.reset()
         @noria = new NoriaElements @wsData
         @charge = false
 
@@ -214,12 +220,20 @@ class Init
         @stopTrue()
 
     finishExperiment: (e) =>
+        $ @INFOMODALTITLE
+            .empty()
+        $ @INFOMODALBODY
+            .empty()
+        $ @INFOMODALTITLE 
+            .append 'Experiment has been finished'
         if @charge
+            text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
             $(".slider-battery").val(@wsData.battery)
             console.log "finish solar experiment"
             @common.disableStop()
             @common.disableReset()
         else
+            text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>'
             $(".slider-turns").val(0)
             $(".slider-battery").val(@wsData.battery)
             @noria.enable()
@@ -228,6 +242,9 @@ class Init
             document.getElementById 'chargeButton'
                 .removeAttribute 'disabled'
 
+        $ @INFOMODALBODY
+            .append  '<p>'+ text + '</p>'
+        $('#infoModal').modal('show')
         @common.enableSliders()
         @common.enableStart()
         @stopTrue()

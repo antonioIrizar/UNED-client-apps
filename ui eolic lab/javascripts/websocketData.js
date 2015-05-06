@@ -6,7 +6,7 @@
   WebsocketData = (function() {
     WebsocketData.prototype.wsData = null;
 
-    WebsocketData.prototype.URLWS = "ws://62.204.201.218:8081";
+    WebsocketData.prototype.URLWS = "ws://62.204.201.218:8082";
 
     WebsocketData.prototype.firstTimeBattery = true;
 
@@ -155,7 +155,7 @@
       }
       if (msg.method === "sendActuatorData" && (msg.payload.actuatorId === "Elapsed" || msg.payload.actuatorId === 'TOuseJ' || msg.payload.actuatorId === 'TOgetJ' || msg.payload.actuatorId === 'Turns')) {
         eve = document.createEvent('CustomEvent');
-        eve.initCustomEvent('finishExperiment', true, false, null);
+        eve.initCustomEvent('finishExperiment', true, false, msg.payload.responseData);
         document.dispatchEvent(eve);
         return;
       }

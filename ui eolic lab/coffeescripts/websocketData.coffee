@@ -1,6 +1,6 @@
 class WebsocketData
     wsData: null
-    URLWS: "ws://62.204.201.218:8081"
+    URLWS: "ws://62.204.201.218:8082"
     firstTimeBattery: true
     wsDataIsReady: false
     role: "observer"
@@ -115,7 +115,6 @@ class WebsocketData
 
             return
 
-
         if msg.method == "sendActuatorData" && msg.payload.actuatorId == "Wind"
             eve = document.createEvent 'CustomEvent'
             eve.initCustomEvent 'reciveData', true, false, {'actuatorId' : msg.payload.actuatorId, 'value' : msg.payload.responseData.data[0]}
@@ -125,7 +124,7 @@ class WebsocketData
 
         if msg.method == "sendActuatorData" && ( msg.payload.actuatorId == "Elapsed" or  msg.payload.actuatorId == 'TOuseJ' or  msg.payload.actuatorId == 'TOgetJ' or msg.payload.actuatorId == 'Turns')
             eve = document.createEvent 'CustomEvent'
-            eve.initCustomEvent 'finishExperiment', true, false, null
+            eve.initCustomEvent 'finishExperiment', true, false, msg.payload.responseData
             document.dispatchEvent eve
             return
 

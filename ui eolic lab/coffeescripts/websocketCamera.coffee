@@ -1,6 +1,6 @@
 class WebSocketCamera
   wsCamera: null
-  URLWS: "ws://62.204.201.218:8081"
+  URLWS: "ws://62.204.201.218:8082"
   wsCameraIsReady: false
   token: null
 

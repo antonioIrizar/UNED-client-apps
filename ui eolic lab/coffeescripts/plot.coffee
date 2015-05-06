@@ -5,18 +5,18 @@ class Plot
     options: null
     chart: null
     time: 0
-    alarma: null
     options1: null
     initChart: false
     data:[[]]
     realTime: null
-    #esd: null
     inputCurrent: null
     inputVoltage: null 
     workToDo: null
     stop: true
+    experiments: null
 
     constructor:  ->
+        @experiments = []
         @data = [[]]
         #@esd = new Esd idCanvas, img
         @chart = new google.visualization.LineChart(document.getElementById('chart_div'));
@@ -71,6 +71,7 @@ class Plot
         @chart.draw(@dataPlot, @options)
 
     resizeEvent: (esd) ->
+        #fixme
         esd.drawImageInCanvas()
         @resize()
         if @initChart 
@@ -113,8 +114,7 @@ class Plot
                         2: { color: "blue"},
                     }    
                 }
-            @chart.draw(@dataPlot, @options1)
-                
+            @chart.draw(@dataPlot, @options1)   
 
     drawChart: ->
         @dataPlot = google.visualization.arrayToDataTable([
@@ -133,7 +133,6 @@ class Plot
                 }    
         }
         @chart.draw(@dataPlot, @options)
-
 
         #@chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         google.visualization.events.addListener @chart, 'animationfinish', => 
@@ -161,6 +160,7 @@ class Plot
             #@esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)     
 
     init: ->
+        @timeStart = new Date().toUTCString()
         @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
         @dataPlot.addRow @data[@time]
         @time++
@@ -178,34 +178,23 @@ class Plot
                 }    
             }
         @chart.draw(@dataPlot, @options1)
-        ###
-        @alarma = setTimeout(=>
-            @init = true
-        
-            @options1 = {
-                chartArea:{left:40,top:20,height: "80%", width:"85%"},
-                legend: {position: 'none'},
-                
-                animation:{
-                    duration: 5000,
-                    easing: 'linear',
-                }
-            
-            }
-            
-            @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
-            console.log @data[@time]
-            @dataPlot.addRow @data[@time]
-            @time++
-            d = new Date()
-            @realTime = d.getTime()
-            @chart.draw(@dataPlot, @options1)
-            @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
-            @time++
-            
-        , 3000)
-        ###
-        
+    
+    reset: ->
+        @saveArrayData()
+        @time = 0
+        @data = [[]]
+        @chart.clearChart()
+        google.setOnLoadCallback @drawChart()
+
+    saveArrayData: ->
+        aux = 
+            timeStart: @timeStart
+            timeFinish: new Date().toUTCString()
+            data: @data
+
+        @experiments.push aux
+        console.log @experiments[0].timeFinish
+
     save: ->
         $ '#example1' 
             .handsontable
@@ -222,5 +211,34 @@ class Plot
             
         $ '#myModalCSV'
             .modal 'show'
+
+    saveTextAsFile: ->
+        textToWrite = "We don't have real data at this time :(. It's comming soon :)\n caca"
+        textToWrite = 'Experiment at'
+        textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
+        fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt"
+        browserName = navigator.appName
+        if browserName == "Microsoft Internet Explorer"
+            window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs )
+        else
+            downloadLink = document.createElement("a")
+            downloadLink.download = fileNameToSaveAs
+            downloadLink.innerHTML = "Download File"
+        if window.webkitURL isnt undefined
+            #Chrome allows the link to be clicked
+            #without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob)
+        else
+            #Firefox requires the link to be added to the DOM
+            #before it can be clicked.
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
+            downloadLink.onclick = @destroyClickedElement
+            downloadLink.style.display = "none"
+            document.body.appendChild(downloadLink)
+
+        downloadLink.click()
+
+    destroyClickedElement: (event) ->
+        document.body.removeChild(event.target)
 
 window.Plot = Plot

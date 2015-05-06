@@ -6,7 +6,7 @@
   WebSocketCamera = (function() {
     WebSocketCamera.prototype.wsCamera = null;
 
-    WebSocketCamera.prototype.URLWS = "ws://62.204.201.218:8081";
+    WebSocketCamera.prototype.URLWS = "ws://62.204.201.218:8082";
 
     WebSocketCamera.prototype.wsCameraIsReady = false;
 

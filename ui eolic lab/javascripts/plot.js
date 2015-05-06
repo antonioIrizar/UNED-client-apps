@@ -13,8 +13,6 @@
 
     Plot.prototype.time = 0;
 
-    Plot.prototype.alarma = null;
-
     Plot.prototype.options1 = null;
 
     Plot.prototype.initChart = false;
@@ -31,7 +29,10 @@
 
     Plot.prototype.stop = true;
 
+    Plot.prototype.experiments = null;
+
     function Plot() {
+      this.experiments = [];
       this.data = [[]];
       this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       this.stop = true;
@@ -254,6 +255,7 @@
     };
 
     Plot.prototype.init = function() {
+      this.timeStart = new Date().toUTCString();
       this.data[this.time] = ['' + this.time, parseFloat(this.inputCurrent), parseFloat(this.inputVoltage), parseFloat(this.workToDo)];
       this.dataPlot.addRow(this.data[this.time]);
       this.time++;
@@ -284,34 +286,25 @@
         }
       };
       return this.chart.draw(this.dataPlot, this.options1);
+    };
 
-      /*
-      @alarma = setTimeout(=>
-          @init = true
-      
-          @options1 = {
-              chartArea:{left:40,top:20,height: "80%", width:"85%"},
-              legend: {position: 'none'},
-              
-              animation:{
-                  duration: 5000,
-                  easing: 'linear',
-              }
-          
-          }
-          
-          @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
-          console.log @data[@time]
-          @dataPlot.addRow @data[@time]
-          @time++
-          d = new Date()
-          @realTime = d.getTime()
-          @chart.draw(@dataPlot, @options1)
-          @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
-          @time++
-          
-      , 3000)
-       */
+    Plot.prototype.reset = function() {
+      this.saveArrayData();
+      this.time = 0;
+      this.data = [[]];
+      this.chart.clearChart();
+      return google.setOnLoadCallback(this.drawChart());
+    };
+
+    Plot.prototype.saveArrayData = function() {
+      var aux;
+      aux = {
+        timeStart: this.timeStart,
+        timeFinish: new Date().toUTCString(),
+        data: this.data
+      };
+      this.experiments.push(aux);
+      return console.log(this.experiments[0].timeFinish);
     };
 
     Plot.prototype.save = function() {
@@ -333,6 +326,37 @@
         ]
       });
       return $('#myModalCSV').modal('show');
+    };
+
+    Plot.prototype.saveTextAsFile = function() {
+      var browserName, downloadLink, fileNameToSaveAs, textFileAsBlob, textToWrite;
+      textToWrite = "We don't have real data at this time :(. It's comming soon :)\n caca";
+      textToWrite = 'Experiment at';
+      textFileAsBlob = new Blob([textToWrite], {
+        type: 'text/plain'
+      });
+      fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt";
+      browserName = navigator.appName;
+      if (browserName === "Microsoft Internet Explorer") {
+        window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs);
+      } else {
+        downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+      }
+      if (window.webkitURL !== void 0) {
+        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+      } else {
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.onclick = this.destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+      }
+      return downloadLink.click();
+    };
+
+    Plot.prototype.destroyClickedElement = function(event) {
+      return document.body.removeChild(event.target);
     };
 
     return Plot;

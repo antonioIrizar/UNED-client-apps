@@ -24,6 +24,12 @@
 
     Init.prototype.switchLab = false;
 
+    Init.prototype.INFOMODAL = '#infoModal';
+
+    Init.prototype.INFOMODALTITLE = '#infoModalTitle';
+
+    Init.prototype.INFOMODALBODY = '#infoModalBody';
+
     function Init(idCanvas, img) {
       this.chargeStart = __bind(this.chargeStart, this);
       this.finishExperiment = __bind(this.finishExperiment, this);
@@ -55,7 +61,7 @@
         };
       })(this), false);
       this.change = false;
-      token = Math.random();
+      token = 1001;
       this.wsData = new WebsocketData(token);
       this.wsCamera = new WebSocketCamera(token);
       this.plot = new Plot();
@@ -128,6 +134,7 @@
         this.noria = null;
         this.common.mySwitch(true);
         this.wsData.sendActuatorChange('WindLab', "1");
+        this.plot.reset();
       }
       this.eolic = new EolicElements(this.wsData);
       this.charge = true;
@@ -153,6 +160,7 @@
         this.eolic = null;
         this.common.mySwitch(false);
         this.wsData.sendActuatorChange('FWheelLab', "1");
+        this.plot.reset();
       }
       this.noria = new NoriaElements(this.wsData);
       this.charge = false;
@@ -246,12 +254,18 @@
     };
 
     Init.prototype.finishExperiment = function(e) {
+      var text;
+      $(this.INFOMODALTITLE).empty();
+      $(this.INFOMODALBODY).empty();
+      $(this.INFOMODALTITLE).append('Experiment has been finished');
       if (this.charge) {
+        text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>';
         $(".slider-battery").val(this.wsData.battery);
         console.log("finish solar experiment");
         this.common.disableStop();
         this.common.disableReset();
       } else {
+        text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>';
         $(".slider-turns").val(0);
         $(".slider-battery").val(this.wsData.battery);
         this.noria.enable();
@@ -259,6 +273,8 @@
         this.common.disableReset();
         document.getElementById('chargeButton').removeAttribute('disabled');
       }
+      $(this.INFOMODALBODY).append('<p>' + text + '</p>');
+      $('#infoModal').modal('show');
       this.common.enableSliders();
       this.common.enableStart();
       return this.stopTrue();
