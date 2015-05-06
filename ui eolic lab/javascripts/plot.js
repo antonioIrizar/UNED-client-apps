@@ -32,6 +32,8 @@
 
     Plot.prototype.experiments = null;
 
+    Plot.prototype.timeStart = null;
+
     function Plot() {
       this.saveArrayData = __bind(this.saveArrayData, this);
       this.experiments = [];

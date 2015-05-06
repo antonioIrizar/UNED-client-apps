@@ -203,7 +203,7 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="submit" onclick="saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
+            <button type="submit" onclick="varInit.plot.saveTextAsFile()" data-dismiss="modal" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -411,44 +411,6 @@ function initSliderBattery (){
 initSliderBattery();
 */
 
-function saveTextAsFile()
-{
-var textToWrite = "We don't have real data at this time :(. It's comming soon :)";
-var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-var fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt";
-var browserName=navigator.appName;
-if (browserName == "Microsoft Internet Explorer")
-{
-window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs );
-}
-else
-{
-var downloadLink = document.createElement("a");
-downloadLink.download = fileNameToSaveAs;
-downloadLink.innerHTML = "Download File";
-if (window.webkitURL != null)
-{
-// Chrome allows the link to be clicked
-// without actually adding it to the DOM.
-downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-}
-else
-{
-// Firefox requires the link to be added to the DOM
-// before it can be clicked.
-downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-downloadLink.onclick = destroyClickedElement;
-downloadLink.style.display = "none";
-document.body.appendChild(downloadLink);
-}
-
-downloadLink.click();
-}
-}
-function destroyClickedElement(event)
-{
-  document.body.removeChild(event.target);
-};
 
 function confirmAccept(){
   var auxLumens, auxHorizontalAxis, auxVerticalAxis;

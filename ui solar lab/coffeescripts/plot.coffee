@@ -10,13 +10,15 @@ class Plot
     initChart: false
     data:[[]]
     realTime: null
-    #esd: null
     inputCurrent: null
     inputVoltage: null 
     workToDo: null
     stop: true
+    experiments: []
+    timeStart: null
 
     constructor:  ->
+        @experiments = []
         @data = [[]]
         #@esd = new Esd idCanvas, img
         @chart = new google.visualization.LineChart(document.getElementById('chart_div'));
@@ -80,7 +82,7 @@ class Plot
                 @dataPlot.removeRow @time-2
             @chart.draw(@dataPlot, @options)
     
-            @dataPlot.addRow @data[@time-2]
+            @dataPlot.addRow [@data[@time-2][0], parseFloat(@data[@time-2][1]), parseFloat(@data[@time-2][2]), parseFloat(@data[@time-2][3])]
             d = new Date()
             b = d.getTime()
             a = @realTime+(1000*(@time-2)*5) - b
@@ -121,7 +123,7 @@ class Plot
               ['Time', 'Amps', 'Volts', 'Joules'],
               ['0', 0.000, 0.000, 0.000]
             ])
-        @data[@time] = ['0', 0.000, 0.000, 0.000]
+        @data[@time] = ['0', '0.0000', '0.0000', '0']
         @time++
         @options = {
             chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -141,8 +143,8 @@ class Plot
             if not @stop
                 if @time > 18
                     @dataPlot.removeRow 0
-                @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
-                @dataPlot.addRow @data[@time]
+                @data[@time] = [''+(@time), @inputCurrent, @inputVoltage, @workToDo]
+                @dataPlot.addRow [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
                 @time++
                 @options1 = {
                     chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -161,8 +163,9 @@ class Plot
             #@esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)     
 
     init: ->
-        @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
-        @dataPlot.addRow @data[@time]
+        @timeStart = new Date().toUTCString()
+        @data[@time] = [''+(@time), @inputCurrent, @inputVoltage, @workToDo]
+        @dataPlot.addRow [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
         @time++
         @options1 = {
                 chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -178,33 +181,25 @@ class Plot
                 }    
             }
         @chart.draw(@dataPlot, @options1)
-        ###
-        @alarma = setTimeout(=>
-            @init = true
-        
-            @options1 = {
-                chartArea:{left:40,top:20,height: "80%", width:"85%"},
-                legend: {position: 'none'},
-                
-                animation:{
-                    duration: 5000,
-                    easing: 'linear',
-                }
-            
-            }
-            
-            @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
-            console.log @data[@time]
-            @dataPlot.addRow @data[@time]
-            @time++
-            d = new Date()
-            @realTime = d.getTime()
-            @chart.draw(@dataPlot, @options1)
-            @data[@time] = [''+(@time*5), parseFloat((10*Math.random()).toFixed(2)) ,parseFloat((10*Math.random()).toFixed(2))]
-            @time++
-            
-        , 3000)
-        ###
+
+    reset: (chargeOrNot, text)->
+        @saveArrayData chargeOrNot, text
+        @time = 0
+        @data = [[]]
+        @chart.clearChart()
+        google.setOnLoadCallback @drawChart()
+
+    saveArrayData: (chargeOrNot, text) =>
+        aux = 
+            charge: chargeOrNot
+            timeStart: @timeStart
+            timeFinish: new Date().toUTCString()
+            data: @data
+            result: text
+
+        @experiments.push aux
+        console.log @experiments
+        console.log  @experiments[0].result
 
     save: ->
         $ '#example1' 
@@ -222,4 +217,64 @@ class Plot
             
         $ '#myModalCSV'
             .modal 'show'
+
+    saveTextAsFile: ->
+        length = @experiments.length
+        textToWrite = 'Report experiments \n\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \n'
+        for information, i in @experiments
+            number = i+1
+            textToWrite = textToWrite + '\nExperiment ' + number + ' was executed at ' + information.timeStart + ' and finish at ' + information.timeFinish + '.\n' + information.result + '\n\t* Data generate during the experiment were following:\n'
+            line = '\t\t ----------------------------------\n'
+            textToWrite = textToWrite + line + '\t\t| Time |  Amps  |  Volts  |  Jouls |\n' + line
+            for data, j in information.data
+                switch data[0].length
+                    when 1
+                        dataText = '\t\t|   ' + j + '  | '
+                    when 2
+                        dataText = '\t\t|  ' + j + '  | '
+                    when 3
+                        dataText = '\t\t| ' + j + '  | '
+                    when 4
+                        dataText = '\t\t| ' + j + ' | '
+
+                dataText = dataText + data[1] + ' | ' + data[2]
+
+                switch data[3].length
+                    when 1
+                        dataText = dataText + '  |    ' + data[3] + '   |\n'
+                    when 2
+                        dataText = dataText + '  |   ' + data[3] + '   |\n'
+                    when 3
+                        dataText = dataText + '  |  ' + data[3] + '   |\n'
+
+                textToWrite = textToWrite + dataText + line
+            
+        console.log textToWrite
+        textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
+        fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt"
+        browserName = navigator.appName
+        if browserName == "Microsoft Internet Explorer"
+            window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs )
+        else
+            downloadLink = document.createElement("a")
+            downloadLink.download = fileNameToSaveAs
+            downloadLink.innerHTML = "Download File"
+        if window.webkitURL isnt undefined
+            #Chrome allows the link to be clicked
+            #without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob)
+        else
+            #Firefox requires the link to be added to the DOM
+            #before it can be clicked.
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
+            downloadLink.onclick = @destroyClickedElement
+            downloadLink.style.display = "none"
+            document.body.appendChild(downloadLink)
+
+        downloadLink.click()
+
+    destroyClickedElement: (event) ->
+        document.body.removeChild(event.target)
+
+
 window.Plot = Plot

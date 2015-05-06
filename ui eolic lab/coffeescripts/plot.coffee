@@ -14,6 +14,7 @@ class Plot
     workToDo: null
     stop: true
     experiments: null
+    timeStart: null
 
     constructor:  ->
         @experiments = []
