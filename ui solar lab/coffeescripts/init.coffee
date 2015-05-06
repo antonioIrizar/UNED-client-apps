@@ -248,7 +248,7 @@ class Init
         @common.enableSliders()
         @common.enableStart()
         @stopTrue()
-        @plot.reset @charge, textToSend
+        @plot.reset textToSend
 
     chargeStart: =>
         if (parseInt($(".slider-lumens").val()) is 0)

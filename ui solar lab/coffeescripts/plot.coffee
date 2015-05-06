@@ -182,24 +182,21 @@ class Plot
             }
         @chart.draw(@dataPlot, @options1)
 
-    reset: (chargeOrNot, text)->
-        @saveArrayData chargeOrNot, text
+    reset: (text)->
+        @saveArrayData text
         @time = 0
         @data = [[]]
         @chart.clearChart()
         google.setOnLoadCallback @drawChart()
 
-    saveArrayData: (chargeOrNot, text) =>
+    saveArrayData: (text) =>
         aux = 
-            charge: chargeOrNot
             timeStart: @timeStart
             timeFinish: new Date().toUTCString()
             data: @data
             result: text
 
         @experiments.push aux
-        console.log @experiments
-        console.log  @experiments[0].result
 
     save: ->
         $ '#example1' 
@@ -249,7 +246,6 @@ class Plot
 
                 textToWrite = textToWrite + dataText + line
             
-        console.log textToWrite
         textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
         fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt"
         browserName = navigator.appName

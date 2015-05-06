@@ -247,7 +247,7 @@ class Init
         @common.enableSliders()
         @common.enableStart()
         @stopTrue()
-        @plot.reset @charge, textToSend
+        @plot.reset textToSend
 
     chargeStart: =>
         if ((@eolic.wind isnt null || @eolic.wind is 0) and parseInt($(".slider-wind").val()) is 0)

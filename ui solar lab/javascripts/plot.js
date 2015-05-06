@@ -294,26 +294,23 @@
       return this.chart.draw(this.dataPlot, this.options1);
     };
 
-    Plot.prototype.reset = function(chargeOrNot, text) {
-      this.saveArrayData(chargeOrNot, text);
+    Plot.prototype.reset = function(text) {
+      this.saveArrayData(text);
       this.time = 0;
       this.data = [[]];
       this.chart.clearChart();
       return google.setOnLoadCallback(this.drawChart());
     };
 
-    Plot.prototype.saveArrayData = function(chargeOrNot, text) {
+    Plot.prototype.saveArrayData = function(text) {
       var aux;
       aux = {
-        charge: chargeOrNot,
         timeStart: this.timeStart,
         timeFinish: new Date().toUTCString(),
         data: this.data,
         result: text
       };
-      this.experiments.push(aux);
-      console.log(this.experiments);
-      return console.log(this.experiments[0].result);
+      return this.experiments.push(aux);
     };
 
     Plot.prototype.save = function() {
@@ -378,7 +375,6 @@
           textToWrite = textToWrite + dataText + line;
         }
       }
-      console.log(textToWrite);
       textFileAsBlob = new Blob([textToWrite], {
         type: 'text/plain'
       });

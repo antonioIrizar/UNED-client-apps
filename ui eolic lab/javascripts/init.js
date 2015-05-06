@@ -277,7 +277,7 @@
       this.common.enableSliders();
       this.common.enableStart();
       this.stopTrue();
-      return this.plot.reset(this.charge, textToSend);
+      return this.plot.reset(textToSend);
     };
 
     Init.prototype.chargeStart = function() {
