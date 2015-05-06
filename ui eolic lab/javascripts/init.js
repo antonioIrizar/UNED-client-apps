@@ -134,7 +134,6 @@
         this.noria = null;
         this.common.mySwitch(true);
         this.wsData.sendActuatorChange('WindLab', "1");
-        this.plot.reset();
       }
       this.eolic = new EolicElements(this.wsData);
       this.charge = true;
@@ -160,7 +159,6 @@
         this.eolic = null;
         this.common.mySwitch(false);
         this.wsData.sendActuatorChange('FWheelLab', "1");
-        this.plot.reset();
       }
       this.noria = new NoriaElements(this.wsData);
       this.charge = false;
@@ -254,16 +252,18 @@
     };
 
     Init.prototype.finishExperiment = function(e) {
-      var text;
+      var text, textToSend;
       $(this.INFOMODALTITLE).empty();
       $(this.INFOMODALBODY).empty();
       $(this.INFOMODALTITLE).append('Experiment has been finished');
       if (this.charge) {
+        textToSend = 'You get the results followings, for charging the battery with the windmill: \n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J';
         text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>';
         $(".slider-battery").val(this.wsData.battery);
         this.common.disableStop();
         this.common.disableReset();
       } else {
+        textToSend = 'You get the results followings, for discharging the battery with the noria: \n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J \n\t* Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns';
         text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>';
         $(".slider-turns").val(0);
         $(".slider-battery").val(this.wsData.battery);
@@ -276,7 +276,8 @@
       $(this.INFOMODAL).modal('show');
       this.common.enableSliders();
       this.common.enableStart();
-      return this.stopTrue();
+      this.stopTrue();
+      return this.plot.reset(this.charge, textToSend);
     };
 
     Init.prototype.chargeStart = function() {

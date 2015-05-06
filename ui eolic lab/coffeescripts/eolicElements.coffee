@@ -42,7 +42,7 @@ class EolicElements extends Part
         strong = new Item "strong", [], [], "Windmill blades rotation ", false, null
         span = new Item "span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null
         #data-content put any
-        a = new Item "a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'millRot\')'], null, true, [span]
+        a = new Item "a", ['href', 'onclick'], ['#', 'varInit.eolic.selectModalText(\'millRot\')'], null, true, [span]
 
         #carefully with function onclick need put name var of init and the name of var solar 
         button = new Item "button", ["onclick", "type", "class"], ["varInit.eolic.sendMillRot()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null

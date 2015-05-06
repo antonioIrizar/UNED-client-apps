@@ -81,7 +81,7 @@ class Plot
                 @dataPlot.removeRow @time-2
             @chart.draw(@dataPlot, @options)
     
-            @dataPlot.addRow @data[@time-2]
+            @dataPlot.addRow [@data[@time-2][0], parseFloat(@data[@time-2][1]), parseFloat(@data[@time-2][2]), parseFloat(@data[@time-2][3])]
             d = new Date()
             b = d.getTime()
             a = @realTime+(1000*(@time-2)*5) - b
@@ -121,7 +121,7 @@ class Plot
               ['Time', 'Amps', 'Volts', 'Joules'],
               ['0', 0.000, 0.000, 0.000]
             ])
-        @data[@time] = ['0', 0.000, 0.000, 0.000]
+        @data[@time] = ['0', '0.0000', '0.0000', '0']
         @time++
         @options = {
             chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -140,8 +140,8 @@ class Plot
             if not @stop
                 if @time > 18
                     @dataPlot.removeRow 0
-                @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
-                @dataPlot.addRow @data[@time]
+                @data[@time] = [''+(@time), @inputCurrent, @inputVoltage, @workToDo]
+                @dataPlot.addRow [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
                 @time++
                 @options1 = {
                     chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -161,8 +161,8 @@ class Plot
 
     init: ->
         @timeStart = new Date().toUTCString()
-        @data[@time] = [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
-        @dataPlot.addRow @data[@time]
+        @data[@time] = [''+(@time), @inputCurrent, @inputVoltage, @workToDo]
+        @dataPlot.addRow [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
         @time++
         @options1 = {
                 chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -179,21 +179,24 @@ class Plot
             }
         @chart.draw(@dataPlot, @options1)
     
-    reset: ->
-        @saveArrayData()
+    reset: (chargeOrNot, text)->
+        @saveArrayData chargeOrNot, text
         @time = 0
         @data = [[]]
         @chart.clearChart()
         google.setOnLoadCallback @drawChart()
 
-    saveArrayData: ->
+    saveArrayData: (chargeOrNot, text) =>
         aux = 
+            charge: chargeOrNot
             timeStart: @timeStart
             timeFinish: new Date().toUTCString()
             data: @data
+            result: text
 
         @experiments.push aux
-        console.log @experiments[0].timeFinish
+        console.log @experiments
+        console.log  @experiments[0].result
 
     save: ->
         $ '#example1' 
@@ -213,8 +216,37 @@ class Plot
             .modal 'show'
 
     saveTextAsFile: ->
-        textToWrite = "We don't have real data at this time :(. It's comming soon :)\n caca"
-        textToWrite = 'Experiment at'
+        length = @experiments.length
+        textToWrite = 'Report experiments \n\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \n'
+        for information, i in @experiments
+            number = i+1
+            textToWrite = textToWrite + '\nExperiment ' + number + ' was executed at ' + information.timeStart + ' and finish at ' + information.timeFinish + '.\n' + information.result + '\n\t* Data generate during the experiment were following:\n'
+            line = '\t\t ----------------------------------\n'
+            textToWrite = textToWrite + line + '\t\t| Time |  Amps  |  Volts  |  Jouls |\n' + line
+            for data, j in information.data
+                switch data[0].length
+                    when 1
+                        dataText = '\t\t|   ' + j + '  | '
+                    when 2
+                        dataText = '\t\t|  ' + j + '  | '
+                    when 3
+                        dataText = '\t\t| ' + j + '  | '
+                    when 4
+                        dataText = '\t\t| ' + j + ' | '
+
+                dataText = dataText + data[1] + ' | ' + data[2]
+
+                switch data[3].length
+                    when 1
+                        dataText = dataText + '  |    ' + data[3] + '   |\n'
+                    when 2
+                        dataText = dataText + '  |   ' + data[3] + '   |\n'
+                    when 3
+                        dataText = dataText + '  |  ' + data[3] + '   |\n'
+
+                textToWrite = textToWrite + dataText + line
+            
+        console.log textToWrite
         textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
         fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt"
         browserName = navigator.appName

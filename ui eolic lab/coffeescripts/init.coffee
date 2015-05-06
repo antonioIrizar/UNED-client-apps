@@ -96,7 +96,6 @@ class Init
             @noria = null
             @common.mySwitch true
             @wsData.sendActuatorChange 'WindLab', "1"
-            @plot.reset()
         @eolic = new EolicElements @wsData
         @charge = true
 
@@ -125,7 +124,6 @@ class Init
             @eolic = null
             @common.mySwitch false
             @wsData.sendActuatorChange 'FWheelLab', "1"
-            @plot.reset()
         @noria = new NoriaElements @wsData
         @charge = false
 
@@ -227,11 +225,13 @@ class Init
         $ @INFOMODALTITLE 
             .append 'Experiment has been finished'
         if @charge
+            textToSend = 'You get the results followings, for charging the battery with the windmill: \n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J'
             text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
             $(".slider-battery").val(@wsData.battery)
             @common.disableStop()
             @common.disableReset()
         else
+            textToSend = 'You get the results followings, for discharging the battery with the noria: \n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J \n\t* Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns'
             text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>'
             $(".slider-turns").val(0)
             $(".slider-battery").val(@wsData.battery)
@@ -247,6 +247,7 @@ class Init
         @common.enableSliders()
         @common.enableStart()
         @stopTrue()
+        @plot.reset @charge, textToSend
 
     chargeStart: =>
         if ((@eolic.wind isnt null || @eolic.wind is 0) and parseInt($(".slider-wind").val()) is 0)

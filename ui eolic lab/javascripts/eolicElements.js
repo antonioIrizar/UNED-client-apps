@@ -55,7 +55,7 @@
       smallElementBulb = new Item("img", ["src", "class", "alt"], ["images/mill.jpg", "img-responsive", "bulb"], null, false, null);
       strong = new Item("strong", [], [], "Windmill blades rotation ", false, null);
       span = new Item("span", ["class"], ["glyphicon glyphicon-info-sign"], null, false, null);
-      a = new Item("a", ['href', 'onclick'], ['#', 'varInit.solar.selectModalText(\'millRot\')'], null, true, [span]);
+      a = new Item("a", ['href', 'onclick'], ['#', 'varInit.eolic.selectModalText(\'millRot\')'], null, true, [span]);
       button = new Item("button", ["onclick", "type", "class"], ["varInit.eolic.sendMillRot()", "button", "btn btn-info btn-xs button-accept"], "Accept", false, null);
       divSlider = new Item("div", ["id", "class"], ["slider-eolic-rot", "slider slider-eolic-rot"], null, false, null);
       div = new Item("div", ["class"], ["slidera"], null, true, [divSlider]);
