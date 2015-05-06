@@ -248,26 +248,27 @@ class Plot
         
         textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
         fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt"
-        browserName = navigator.appName
-        if browserName == "Microsoft Internet Explorer"
-            window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs )
+        ie = navigator.userAgent.match(/MSIE\s([\d.]+)/)
+        ie11 = navigator.userAgent.match(/Trident\/7.0/) and navigator.userAgent.match(/rv:11/)
+        if ie or ie11
+            window.navigator.msSaveBlob textFileAsBlob, fileNameToSaveAs 
         else
-            downloadLink = document.createElement("a")
+            downloadLink = document.createElement "a"
             downloadLink.download = fileNameToSaveAs
             downloadLink.innerHTML = "Download File"
-        if window.webkitURL isnt undefined
-            #Chrome allows the link to be clicked
-            #without actually adding it to the DOM.
-            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob)
-        else
-            #Firefox requires the link to be added to the DOM
-            #before it can be clicked.
-            downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
-            downloadLink.onclick = @destroyClickedElement
-            downloadLink.style.display = "none"
-            document.body.appendChild(downloadLink)
+            if window.webkitURL isnt undefined
+                #Chrome allows the link to be clicked
+                #without actually adding it to the DOM.
+                downloadLink.href = window.webkitURL.createObjectURL textFileAsBlob
+            else
+                #Firefox requires the link to be added to the DOM
+                #before it can be clicked.
+                downloadLink.href = window.URL.createObjectURL textFileAsBlob
+                downloadLink.onclick = @destroyClickedElement
+                downloadLink.style.display = "none"
+                document.body.appendChild downloadLink
 
-        downloadLink.click()
+            downloadLink.click()
 
     destroyClickedElement: (event) ->
         document.body.removeChild(event.target)

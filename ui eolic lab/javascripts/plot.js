@@ -335,7 +335,7 @@
     };
 
     Plot.prototype.saveTextAsFile = function() {
-      var browserName, data, dataText, downloadLink, fileNameToSaveAs, i, information, j, length, line, number, textFileAsBlob, textToWrite, _i, _j, _len, _len1, _ref, _ref1;
+      var data, dataText, downloadLink, fileNameToSaveAs, i, ie, ie11, information, j, length, line, number, textFileAsBlob, textToWrite, _i, _j, _len, _len1, _ref, _ref1;
       length = this.experiments.length;
       textToWrite = 'Report experiments \n\nYou have made ' + length + ' experiments. You can see the results for each of them in this document. \n';
       _ref = this.experiments;
@@ -379,23 +379,24 @@
         type: 'text/plain'
       });
       fileNameToSaveAs = document.getElementById("inputNameOfFile").value + ".txt";
-      browserName = navigator.appName;
-      if (browserName === "Microsoft Internet Explorer") {
-        window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs);
+      ie = navigator.userAgent.match(/MSIE\s([\d.]+)/);
+      ie11 = navigator.userAgent.match(/Trident\/7.0/) && navigator.userAgent.match(/rv:11/);
+      if (ie || ie11) {
+        return window.navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs);
       } else {
         downloadLink = document.createElement("a");
         downloadLink.download = fileNameToSaveAs;
         downloadLink.innerHTML = "Download File";
+        if (window.webkitURL !== void 0) {
+          downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+        } else {
+          downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+          downloadLink.onclick = this.destroyClickedElement;
+          downloadLink.style.display = "none";
+          document.body.appendChild(downloadLink);
+        }
+        return downloadLink.click();
       }
-      if (window.webkitURL !== void 0) {
-        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-      } else {
-        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-        downloadLink.onclick = this.destroyClickedElement;
-        downloadLink.style.display = "none";
-        document.body.appendChild(downloadLink);
-      }
-      return downloadLink.click();
     };
 
     Plot.prototype.destroyClickedElement = function(event) {
