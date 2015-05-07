@@ -256,15 +256,15 @@ class Init
         else
             modal = false;
             if (@solar.lumens isnt null and @solar.lumens isnt  parseInt($(".slider-lumens").val()))
-                newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , @solar.lumens.toString(), "lumens")
+                @newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString() , @solar.lumens.toString(), "lumens")
                 modal = true
 
             if (@solar.horizontalAxis isnt null and @solar.horizontalAxis isnt parseInt($(".slider-horizontal-axis").val()))
-                newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , @solar.horizontalAxis.toString(), "horizontalAxis")
+                @newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString() , @solar.horizontalAxis.toString(), "horizontalAxis")
                 modal = true;
 
             if (@solar.verticalAxis isnt null and @solar.verticalAxis isnt parseInt($(".slider-vertical-axis").val()))
-                newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , @solar.verticalAxis.toString(), "verticalAxis")
+                @newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString() , @solar.verticalAxis.toString(), "verticalAxis")
                 modal = true
 
             if (modal)
@@ -272,7 +272,7 @@ class Init
             else
                 @solar.startExperiment = true
 
-                @solar.sendLumens();
+                @solar.sendLumens()
                 @solar.sendHorizontalAxis()
                 @solar.sendVerticalAxis()
                 @common.sendTime()
@@ -300,6 +300,91 @@ class Init
         @common.disableStart()
         @common.enableStop()
         @common.enableReset()
+
+    confirmAccept: ->
+        auxLumens = @getValueRadius 'Lumens'
+        auxHorizontalAxis = @getValueRadius 'Horizontal axis'
+        auxVerticalAxis = @getValueRadius 'Vertical axis'
+
+        if auxLumens isnt null and @solar.lumens isnt auxLumens
+            @solar.sendLumens()
+        else
+            $ '.slider-lumens'
+                .val @solar.lumens
+
+        if auxHorizontalAxis isnt null and @solar.horizontalAxis isnt auxHorizontalAxis
+            @solar.sendHorizontalAxis()
+        else
+            $ '.slider-horizontal-axis'
+                .val @solar.horizontalAxis
+
+        if auxVerticalAxis isnt null and @solar.verticalAxis isnt auxVerticalAxis
+            @solar.sendVerticalAxis()
+        else
+            $ '.slider-vertical-axis'
+                .val @solar.verticalAxis
+
+        @solar.startExperiment = true
+
+        @common.sendTime()
+        @common.sendJouls()
+
+        @wsData.sendActuatorChange 'ESD', '1'
+
+        @common.disableSliders()
+        @common.disableStart()
+        @common.enableStop()
+        @common.enableReset()
+
+        @cleanForm()
+
+    getValueRadius: (name) ->
+        rads = document.getElementsByName name
+
+        i = 0
+        while i < rads.length
+            if rads[i].checked 
+                return rads[i].value
+            i++
+        
+    cleanForm: ->
+        form = document.getElementById 'form-confirm-changes'
+        form.removeChild(document.getElementById('div-confirm-changes'))
+        divForm = document.createElement 'div'
+        divForm.setAttribute 'id', 'div-confirm-changes'
+        form.appendChild divForm
+
+    newForm: (id, labelText, newValue, oldValue, name) ->
+        divPrincipal = document.getElementById 'div-confirm-changes'
+        divForm = document.createElement 'form'
+        divForm.setAttribute 'id', id
+        divForm.setAttribute 'class', 'form-group'
+        labelForm = document.createElement 'label'
+        text = document.createTextNode labelText
+        labelForm.appendChild text
+        divForm.appendChild labelForm
+        divForm.appendChild @newRadio(newValue, true, " (New)", name)
+        divForm.appendChild @newRadio(oldValue, false, " (Old)", name)
+        divPrincipal.appendChild divForm
+
+    newRadio: (value, checked, newOrOld, name) ->
+        divRadio = document.createElement 'div'
+        divRadio.setAttribute 'class', 'radio'
+        labelRadio = document.createElement 'label'
+        input = document.createElement 'input'
+        input.setAttribute 'type', 'radio'
+        input.setAttribute 'name', name
+        input.setAttribute 'value', value
+
+        if checked
+            input.setAttribute 'checked', true
+        
+        labelRadio.appendChild input
+        text = document.createTextNode value + newOrOld
+        labelRadio.appendChild text
+        divRadio.appendChild labelRadio
+        
+        divRadio 
 
 
 window.Init = Init

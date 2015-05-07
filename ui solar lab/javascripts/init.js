@@ -290,15 +290,15 @@
       } else {
         modal = false;
         if (this.solar.lumens !== null && this.solar.lumens !== parseInt($(".slider-lumens").val())) {
-          newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString(), this.solar.lumens.toString(), "lumens");
+          this.newForm("lumens-axis-form-confirm", "Lumens", $(".slider-lumens").val().toString(), this.solar.lumens.toString(), "lumens");
           modal = true;
         }
         if (this.solar.horizontalAxis !== null && this.solar.horizontalAxis !== parseInt($(".slider-horizontal-axis").val())) {
-          newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString(), this.solar.horizontalAxis.toString(), "horizontalAxis");
+          this.newForm("horizontal-axis-form-confirm", "Horizontal axis", $(".slider-horizontal-axis").val().toString(), this.solar.horizontalAxis.toString(), "horizontalAxis");
           modal = true;
         }
         if (this.solar.verticalAxis !== null && this.solar.verticalAxis !== parseInt($(".slider-vertical-axis").val())) {
-          newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString(), this.solar.verticalAxis.toString(), "verticalAxis");
+          this.newForm("vertical-axis-form-confirm", "Vertical axis", $(".slider-vertical-axis").val().toString(), this.solar.verticalAxis.toString(), "verticalAxis");
           modal = true;
         }
         if (modal) {
@@ -331,6 +331,92 @@
       this.common.disableStart();
       this.common.enableStop();
       return this.common.enableReset();
+    };
+
+    Init.prototype.confirmAccept = function() {
+      var auxHorizontalAxis, auxLumens, auxVerticalAxis;
+      auxLumens = this.getValueRadius('Lumens');
+      auxHorizontalAxis = this.getValueRadius('Horizontal axis');
+      auxVerticalAxis = this.getValueRadius('Vertical axis');
+      if (auxLumens !== null && this.solar.lumens !== auxLumens) {
+        this.solar.sendLumens();
+      } else {
+        $('.slider-lumens').val(this.solar.lumens);
+      }
+      if (auxHorizontalAxis !== null && this.solar.horizontalAxis !== auxHorizontalAxis) {
+        this.solar.sendHorizontalAxis();
+      } else {
+        $('.slider-horizontal-axis').val(this.solar.horizontalAxis);
+      }
+      if (auxVerticalAxis !== null && this.solar.verticalAxis !== auxVerticalAxis) {
+        this.solar.sendVerticalAxis();
+      } else {
+        $('.slider-vertical-axis').val(this.solar.verticalAxis);
+      }
+      this.solar.startExperiment = true;
+      this.common.sendTime();
+      this.common.sendJouls();
+      this.wsData.sendActuatorChange('ESD', '1');
+      this.common.disableSliders();
+      this.common.disableStart();
+      this.common.enableStop();
+      this.common.enableReset();
+      return this.cleanForm();
+    };
+
+    Init.prototype.getValueRadius = function(name) {
+      var i, rads;
+      rads = document.getElementsByName(name);
+      i = 0;
+      while (i < rads.length) {
+        if (rads[i].checked) {
+          return rads[i].value;
+        }
+        i++;
+      }
+    };
+
+    Init.prototype.cleanForm = function() {
+      var divForm, form;
+      form = document.getElementById('form-confirm-changes');
+      form.removeChild(document.getElementById('div-confirm-changes'));
+      divForm = document.createElement('div');
+      divForm.setAttribute('id', 'div-confirm-changes');
+      return form.appendChild(divForm);
+    };
+
+    Init.prototype.newForm = function(id, labelText, newValue, oldValue, name) {
+      var divForm, divPrincipal, labelForm, text;
+      divPrincipal = document.getElementById('div-confirm-changes');
+      divForm = document.createElement('form');
+      divForm.setAttribute('id', id);
+      divForm.setAttribute('class', 'form-group');
+      labelForm = document.createElement('label');
+      text = document.createTextNode(labelText);
+      labelForm.appendChild(text);
+      divForm.appendChild(labelForm);
+      divForm.appendChild(this.newRadio(newValue, true, " (New)", name));
+      divForm.appendChild(this.newRadio(oldValue, false, " (Old)", name));
+      return divPrincipal.appendChild(divForm);
+    };
+
+    Init.prototype.newRadio = function(value, checked, newOrOld, name) {
+      var divRadio, input, labelRadio, text;
+      divRadio = document.createElement('div');
+      divRadio.setAttribute('class', 'radio');
+      labelRadio = document.createElement('label');
+      input = document.createElement('input');
+      input.setAttribute('type', 'radio');
+      input.setAttribute('name', name);
+      input.setAttribute('value', value);
+      if (checked) {
+        input.setAttribute('checked', true);
+      }
+      labelRadio.appendChild(input);
+      text = document.createTextNode(value + newOrOld);
+      labelRadio.appendChild(text);
+      divRadio.appendChild(labelRadio);
+      return divRadio;
     };
 
     return Init;

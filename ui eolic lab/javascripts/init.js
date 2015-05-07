@@ -287,11 +287,11 @@
       } else {
         modal = false;
         if (this.eolic.wind !== null && this.eolic.wind !== parseInt($(".slider-wind").val())) {
-          newForm("wind-form-confirm", "Wind", $(".slider-wind").val().toString(), this.eolic.wind.toString(), "wind");
+          this.newForm("wind-form-confirm", "Wind", $(".slider-wind").val().toString(), this.eolic.wind.toString(), "wind");
           modal = true;
         }
         if (this.eolic.millRot !== null && this.eolic.millRot !== parseInt($(".slider-eolic-rot").val())) {
-          newForm("mill-rot-form-confirm", "Mill horizontal rot", $(".slider-eolic-rot").val().toString(), this.eolic.millRot.toString(), "millRot");
+          this.newForm("mill-rot-form-confirm", "Mill horizontal rot", $(".slider-eolic-rot").val().toString(), this.eolic.millRot.toString(), "millRot");
           modal = true;
         }
         if (modal) {
@@ -302,7 +302,7 @@
           this.eolic.sendMillRot();
           this.common.sendTime();
           this.common.sendJouls();
-          this.wsData.sendActuatorChange('ESD', "1");
+          this.wsData.sendActuatorChange('ESD', '1');
           this.common.disableSliders();
           this.common.disableStart();
           this.common.enableStop();
@@ -316,13 +316,93 @@
       this.noria.sendTurns();
       this.common.sendJoulsToUse();
       this.common.sendTime();
-      this.wsData.sendActuatorChange('ESD', "1");
+      this.wsData.sendActuatorChange('ESD', '1');
       document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
       this.noria.disable();
       this.common.disableSliders();
       this.common.disableStart();
       this.common.enableStop();
       return this.common.enableReset();
+    };
+
+    Init.prototype.confirmAccept = function() {
+      var auxMillRot, auxWind;
+      auxWind = this.getValueRadius('Wind');
+      auxMillRot = this.getValueRadius('Mill horizontal rot');
+      if (auxWind !== null && this.eolic.wind !== auxWind) {
+        this.eolic.sendWind();
+      } else {
+        $('.slider-wind').val(this.eolic.wind);
+      }
+      if (auxMillRot !== null && this.eolic.millRot !== auxMillRot) {
+        this.eolic.sendMillRot();
+      } else {
+        $('.slider-eolic-rot').val(this.eolic.millRot);
+      }
+      this.eolic.startExperiment = true;
+      this.common.sendTime();
+      this.common.sendJouls();
+      this.wsData.sendActuatorChange('ESD', '1');
+      this.common.disableSliders();
+      this.common.disableStart();
+      this.common.enableStop();
+      this.common.enableReset();
+      return this.cleanForm();
+    };
+
+    Init.prototype.getValueRadius = function(name) {
+      var i, rads;
+      rads = document.getElementsByName(name);
+      i = 0;
+      while (i < rads.length) {
+        if (rads[i].checked) {
+          return rads[i].value;
+        }
+        i++;
+      }
+    };
+
+    Init.prototype.cleanForm = function() {
+      var divForm, form;
+      form = document.getElementById('form-confirm-changes');
+      form.removeChild(document.getElementById('div-confirm-changes'));
+      divForm = document.createElement('div');
+      divForm.setAttribute('id', 'div-confirm-changes');
+      return form.appendChild(divForm);
+    };
+
+    Init.prototype.newForm = function(id, labelText, newValue, oldValue, name) {
+      var divForm, divPrincipal, labelForm, text;
+      divPrincipal = document.getElementById('div-confirm-changes');
+      divForm = document.createElement('form');
+      divForm.setAttribute('id', id);
+      divForm.setAttribute('class', 'form-group');
+      labelForm = document.createElement('label');
+      text = document.createTextNode(labelText);
+      labelForm.appendChild(text);
+      divForm.appendChild(labelForm);
+      divForm.appendChild(this.newRadio(newValue, true, " (New)", name));
+      divForm.appendChild(this.newRadio(oldValue, false, " (Old)", name));
+      return divPrincipal.appendChild(divForm);
+    };
+
+    Init.prototype.newRadio = function(value, checked, newOrOld, name) {
+      var divRadio, input, labelRadio, text;
+      divRadio = document.createElement('div');
+      divRadio.setAttribute('class', 'radio');
+      labelRadio = document.createElement('label');
+      input = document.createElement('input');
+      input.setAttribute('type', 'radio');
+      input.setAttribute('name', name);
+      input.setAttribute('value', value);
+      if (checked) {
+        input.setAttribute('checked', true);
+      }
+      labelRadio.appendChild(input);
+      text = document.createTextNode(value + newOrOld);
+      labelRadio.appendChild(text);
+      divRadio.appendChild(labelRadio);
+      return divRadio;
     };
 
     return Init;

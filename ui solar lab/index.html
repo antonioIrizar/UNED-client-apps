@@ -257,8 +257,8 @@
             </form>
         </div>
         <div class="modal-footer">
-          <button type="submit" onclick="confirmAccept()" data-dismiss="modal" class="btn btn-info">Accept</button>
-          <button type="button" onclick="cleanForm()" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" onclick="varInit.confirmAccept()" data-dismiss="modal" class="btn btn-info">Accept</button>
+          <button type="button" onclick="varInit.cleanForm()" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -282,12 +282,6 @@
       */
     };
 
-//TODO this disable use in modal to confirm
-  function disable(){
-    $("#startExperiment").attr('disabled', 'disabled');
-    $(".slider-time").attr('disabled', 'disabled');
-    $(".slider-battery").attr('disabled', 'disabled');
-  }
 /* deprecate
 function reciveData(dataRecive, dataActuator, slider, nameActuator){
   var result;
@@ -411,106 +405,10 @@ function initSliderBattery (){
 initSliderBattery();
 */
 
-
-function confirmAccept(){
-  var auxLumens, auxHorizontalAxis, auxVerticalAxis;
-  auxLumens = getValueRadius("lumens");
-  auxVerticalAxis = getValueRadius("verticalAxis");
-  auxHorizontalAxis = getValueRadius("horizontalAxis");
-
-  if (auxLumens != null && lumens != auxLumens) 
-    sendLumens();
-  else
-    $(".slider-lumens").val(lumens);
-
-  if (auxVerticalAxis!=null && verticalAxis != auxVerticalAxis) 
-    sendVerticalAxis();
-  else
-    $(".slider-vertical-axis").val(verticalAxis);
-
-  if (auxHorizontalAxis!=null && horizontalAxis != auxHorizontalAxis) 
-    sendHorizontalAxis();
-  else
-    $(".slider-horizontal-axis").val(horizontalAxis);
-
-  sendTime();
-  sendJouls();
-
-  sendActuatorChange('ESD', "1");
-  cleanForm();
-  disable();
-};
-
-function getValueRadius(name){
-  rads = document.getElementsByName(name);
-
-  var i = 0;
-  while (i < rads.length){
-      if (rads[i].checked) {
-          return rads[i].value;
-        }
-      i++;
-  }
-};
-
-function cleanForm(){
-  form = document.getElementById('form-confirm-changes');
-  form.removeChild(document.getElementById('div-confirm-changes'));
-  divForm = document.createElement('div');
-  divForm.setAttribute('id', 'div-confirm-changes');
-  form.appendChild(divForm);
-};
-
-
-
 function errorLumens(){
   $('#myModalError').modal('show');
 };
-
-
-
-
-function realValueToSend(oldNumber, newNumber){
-  if (oldNumber==null){
-    return newNumber;
-  }
-  return newNumber - oldNumber;
-};
-
-function newForm(id, labelText, newValue, oldValue, name){
-  divPrincipal = document.getElementById('div-confirm-changes');
-  divForm = document.createElement('form');
-  divForm.setAttribute('id', id);
-  divForm.setAttribute('class', 'form-group');
-  labelForm = document.createElement('label');
-  text = document.createTextNode(labelText);
-  labelForm.appendChild(text);
-  divForm.appendChild(labelForm);
-  divForm.appendChild(newRadio(newValue, true, " (New)", name));
-  divForm.appendChild(newRadio(oldValue, false, " (Old)", name));
-  divPrincipal.appendChild(divForm);
-};
-
-function newRadio(value, checked, newOrOld, name){
-  divRadio = document.createElement('div');
-  divRadio.setAttribute('class', 'radio');
-  labelRadio = document.createElement('label');
-  input = document.createElement('input');
-  input.setAttribute('type', 'radio');
-  input.setAttribute('name', name);
-  input.setAttribute('value', value);
-  
-  if (checked){
-    input.setAttribute('checked', true);
-  }
-
-  labelRadio.appendChild(input);
-  text = document.createTextNode(value + newOrOld);
-  labelRadio.appendChild(text);
-  divRadio.appendChild(labelRadio);
-  return divRadio;
-};
-  
+ 
     </script>
   </body>
 </html>

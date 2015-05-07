@@ -255,11 +255,11 @@ class Init
         else
             modal = false;
             if (@eolic.wind isnt null and @eolic.wind isnt  parseInt($(".slider-wind").val()))
-                newForm("wind-form-confirm", "Wind", $(".slider-wind").val().toString() , @eolic.wind.toString(), "wind")
+                @newForm("wind-form-confirm", "Wind", $(".slider-wind").val().toString() , @eolic.wind.toString(), "wind")
                 modal = true
 
             if (@eolic.millRot isnt null and @eolic.millRot isnt parseInt($(".slider-eolic-rot").val()))
-                newForm("mill-rot-form-confirm", "Mill horizontal rot", $(".slider-eolic-rot").val().toString() , @eolic.millRot.toString(), "millRot")
+                @newForm("mill-rot-form-confirm", "Mill horizontal rot", $(".slider-eolic-rot").val().toString() , @eolic.millRot.toString(), "millRot")
                 modal = true;
 
             if (modal)
@@ -267,12 +267,12 @@ class Init
             else
                 @eolic.startExperiment = true
 
-                @eolic.sendWind();
+                @eolic.sendWind()
                 @eolic.sendMillRot()
                 @common.sendTime()
                 @common.sendJouls()
 
-                @wsData.sendActuatorChange('ESD', "1")
+                @wsData.sendActuatorChange 'ESD', '1'
 
                 @common.disableSliders()
                 @common.disableStart()
@@ -285,7 +285,7 @@ class Init
         @common.sendJoulsToUse()
         @common.sendTime()
 
-        @wsData.sendActuatorChange('ESD', "1")
+        @wsData.sendActuatorChange 'ESD', '1'
 
         document.getElementById 'chargeButton'
                 .setAttribute 'disabled', 'disabled'
@@ -295,5 +295,81 @@ class Init
         @common.enableStop()
         @common.enableReset()
 
+    confirmAccept: ->
+        auxWind = @getValueRadius 'Wind'
+        auxMillRot = @getValueRadius 'Mill horizontal rot'
+
+        if auxWind isnt null and @eolic.wind isnt auxWind
+            @eolic.sendWind()
+        else
+            $ '.slider-wind'
+                .val @eolic.wind
+
+        if auxMillRot isnt null and @eolic.millRot isnt auxMillRot
+            @eolic.sendMillRot()
+        else
+            $ '.slider-eolic-rot'
+                .val @eolic.millRot
+
+        @eolic.startExperiment = true
+        @common.sendTime()
+        @common.sendJouls()
+
+        @wsData.sendActuatorChange 'ESD', '1'
+
+        @common.disableSliders()
+        @common.disableStart()
+        @common.enableStop()
+        @common.enableReset()
+
+        @cleanForm()
+
+    getValueRadius: (name) ->
+        rads = document.getElementsByName name
+
+        i = 0
+        while i < rads.length
+            if rads[i].checked 
+                return rads[i].value
+            i++
+        
+    cleanForm: ->
+        form = document.getElementById 'form-confirm-changes'
+        form.removeChild(document.getElementById('div-confirm-changes'))
+        divForm = document.createElement 'div'
+        divForm.setAttribute 'id', 'div-confirm-changes'
+        form.appendChild divForm
+
+    newForm: (id, labelText, newValue, oldValue, name) ->
+        divPrincipal = document.getElementById 'div-confirm-changes'
+        divForm = document.createElement 'form'
+        divForm.setAttribute 'id', id
+        divForm.setAttribute 'class', 'form-group'
+        labelForm = document.createElement 'label'
+        text = document.createTextNode labelText
+        labelForm.appendChild text
+        divForm.appendChild labelForm
+        divForm.appendChild @newRadio(newValue, true, " (New)", name)
+        divForm.appendChild @newRadio(oldValue, false, " (Old)", name)
+        divPrincipal.appendChild divForm
+
+    newRadio: (value, checked, newOrOld, name) ->
+        divRadio = document.createElement 'div'
+        divRadio.setAttribute 'class', 'radio'
+        labelRadio = document.createElement 'label'
+        input = document.createElement 'input'
+        input.setAttribute 'type', 'radio'
+        input.setAttribute 'name', name
+        input.setAttribute 'value', value
+
+        if checked
+            input.setAttribute 'checked', true
+        
+        labelRadio.appendChild input
+        text = document.createTextNode value + newOrOld
+        labelRadio.appendChild text
+        divRadio.appendChild labelRadio
+        
+        divRadio 
 
 window.Init = Init
