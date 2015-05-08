@@ -40,17 +40,8 @@ class Init
         @plot = new Plot()
         @esd = new Esd idCanvas, img
         
-        ### stop working in firefox
-        window.addEventListener "resize", => 
-            console.log "mierda puta"
-            if @resizeActive 
-                clearTimeout(@resizeActive)
-            @resizeActive = setTimeout( =>
-                @plot.resizeEvent(@esd)
-                console.log "resize"
-            , 250)
-        ###
         window.onresize = @resize
+
     changeNumbers: (inputCurrent, inputVoltage, workToDo) ->
         @esd.drawText inputCurrent, inputVoltage, workToDo
         @plot.inputCurrent = inputCurrent
@@ -167,6 +158,7 @@ class Init
 
     eventReadyAll: (e) =>
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady
+            @resize()
             myApp.hidePleaseWait()
 
     startExperiments: ->
@@ -245,7 +237,7 @@ class Init
         $ @INFOMODALBODY
             .append  '<p>'+ text + '</p>'
         $(@INFOMODAL).modal('show')
-        
+
         if not @interruptExperiment
             $(".slider-battery").val(@wsData.battery)
             @common.disableStop()

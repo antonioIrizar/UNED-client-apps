@@ -68,17 +68,6 @@
       this.wsCamera = new WebSocketCamera(token);
       this.plot = new Plot();
       this.esd = new Esd(idCanvas, img);
-
-      /* stop working in firefox
-      window.addEventListener "resize", => 
-          console.log "mierda puta"
-          if @resizeActive 
-              clearTimeout(@resizeActive)
-          @resizeActive = setTimeout( =>
-              @plot.resizeEvent(@esd)
-              console.log "resize"
-          , 250)
-       */
       window.onresize = this.resize;
     }
 
@@ -204,6 +193,7 @@
 
     Init.prototype.eventReadyAll = function(e) {
       if (this.wsData.wsDataIsReady && this.wsCamera.wsCameraIsReady) {
+        this.resize();
         return myApp.hidePleaseWait();
       }
     };
