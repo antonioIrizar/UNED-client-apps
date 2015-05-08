@@ -68,17 +68,6 @@
       this.wsCamera = new WebSocketCamera(token);
       this.plot = new Plot();
       this.esd = new Esd(idCanvas, img);
-
-      /* stop working in firefox
-      window.addEventListener "resize", => 
-          console.log "mierda puta"
-          if @resizeActive 
-              clearTimeout(@resizeActive)
-          @resizeActive = setTimeout( =>
-              @plot.resizeEvent(@esd)
-              console.log "resize"
-          , 250)
-       */
       window.onresize = this.resize;
     }
 
@@ -106,6 +95,8 @@
           var adapt, height;
           adapt = document.getElementById("adaptToHeight");
           if (adapt !== null) {
+            console.log(window.innerHeight);
+            adapt.setAttribute("style", "height: 0px");
             height = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
             height = height - 20;
             adapt.setAttribute("style", "height:" + height + "px");
@@ -145,7 +136,8 @@
       this.common.disableReset();
       this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
-      return document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      return this.resize();
     };
 
     Init.prototype.selectDischarge = function() {
@@ -170,7 +162,8 @@
       this.common.disableReset();
       this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
-      return document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      return this.resize();
     };
 
     Init.prototype.selectInterface = function(e) {
@@ -198,8 +191,7 @@
         role.appendChild(document.createTextNode('You are the controller'));
       }
       $(".slider-battery").val(battery);
-      $("p#textBattery").text(battery + "%");
-      return this.plot.resize();
+      return $("p#textBattery").text(battery + "%");
     };
 
     Init.prototype.eventReadyAll = function(e) {

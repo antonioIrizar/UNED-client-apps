@@ -41,17 +41,8 @@ class Init
         @plot = new Plot()
         @esd = new Esd idCanvas, img
         
-        ### stop working in firefox
-        window.addEventListener "resize", => 
-            console.log "mierda puta"
-            if @resizeActive 
-                clearTimeout(@resizeActive)
-            @resizeActive = setTimeout( =>
-                @plot.resizeEvent(@esd)
-                console.log "resize"
-            , 250)
-        ###
         window.onresize = @resize
+
     changeNumbers: (inputCurrent, inputVoltage, workToDo) ->
         @esd.drawText inputCurrent, inputVoltage, workToDo
         @plot.inputCurrent = inputCurrent
@@ -70,6 +61,8 @@ class Init
             @resizeActive = setTimeout( =>
                 adapt = document.getElementById("adaptToHeight")
                 if adapt isnt null
+                    console.log window.innerHeight 
+                    adapt.setAttribute "style","height: 0px"
                     height = window.innerHeight - document.getElementById("panel-elements").offsetHeight 
                     height = height-20
                     adapt.setAttribute "style","height:"+ height + "px"
@@ -110,6 +103,7 @@ class Init
             .innerHTML = 'Elements you can interact with: Mode charge'
         document.getElementById 'chargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
         
     selectDischarge: =>
         @switchLab = true
@@ -138,6 +132,7 @@ class Init
             .innerHTML = 'Elements you can interact with: Mode discharge'
         document.getElementById 'dischargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
 
     selectInterface: (e) =>
         battery = e.detail.battery
@@ -164,7 +159,6 @@ class Init
 
         $(".slider-battery").val battery
         $("p#textBattery").text battery + "%"
-        @plot.resize()
 
     eventReadyAll: (e) =>
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady

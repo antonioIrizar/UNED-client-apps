@@ -37,7 +37,7 @@ class Plot
         ###
     resize: ->
         if window.innerWidth >= 1200
-            height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("webcam").offsetHeight - 90
+            height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
             height = height - 20
             @options = {
                 chartArea:{left:40,top:20,height: height-50, width:"100%"},

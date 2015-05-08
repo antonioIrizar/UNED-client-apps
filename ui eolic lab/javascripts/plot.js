@@ -56,7 +56,7 @@
     Plot.prototype.resize = function() {
       var height, margin;
       if (window.innerWidth >= 1200) {
-        height = document.getElementById("div_formula_col").offsetHeight - document.getElementById("webcam").offsetHeight - 90;
+        height = document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90;
         height = height - 20;
         this.options = {
           chartArea: {
