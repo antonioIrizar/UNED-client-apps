@@ -60,6 +60,7 @@ class Init
             @resizeActive = setTimeout( =>
                 adapt = document.getElementById("adaptToHeight")
                 if adapt isnt null
+                    adapt.setAttribute "style","height: 0px"
                     height = window.innerHeight - document.getElementById("panel-elements").offsetHeight 
                     height = height-20
                     adapt.setAttribute "style","height:"+ height + "px"
@@ -100,6 +101,7 @@ class Init
             .innerHTML = 'Elements you can interact with: Mode charge'
         document.getElementById 'chargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
         
     selectDischarge: =>
         @switchLab = true
@@ -128,6 +130,7 @@ class Init
             .innerHTML = 'Elements you can interact with: Mode discharge'
         document.getElementById 'dischargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
 
     selectInterface: (e) =>
         battery = e.detail.battery
@@ -158,7 +161,6 @@ class Init
 
     eventReadyAll: (e) =>
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady
-            @resize()
             myApp.hidePleaseWait()
 
     startExperiments: ->

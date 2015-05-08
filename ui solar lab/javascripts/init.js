@@ -95,6 +95,7 @@
           var adapt, height;
           adapt = document.getElementById("adaptToHeight");
           if (adapt !== null) {
+            adapt.setAttribute("style", "height: 0px");
             height = window.innerHeight - document.getElementById("panel-elements").offsetHeight;
             height = height - 20;
             adapt.setAttribute("style", "height:" + height + "px");
@@ -134,7 +135,8 @@
       this.common.disableReset();
       this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
-      return document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      return this.resize();
     };
 
     Init.prototype.selectDischarge = function() {
@@ -159,7 +161,8 @@
       this.common.disableReset();
       this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
-      return document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      return this.resize();
     };
 
     Init.prototype.selectInterface = function(e) {
@@ -193,7 +196,6 @@
 
     Init.prototype.eventReadyAll = function(e) {
       if (this.wsData.wsDataIsReady && this.wsCamera.wsCameraIsReady) {
-        this.resize();
         return myApp.hidePleaseWait();
       }
     };
