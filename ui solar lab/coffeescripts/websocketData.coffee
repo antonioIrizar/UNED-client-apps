@@ -50,7 +50,6 @@ class WebsocketData
         ##improve this with case
         if msg.method == "sendActuatorData"
             if msg.responseMessages isnt undefined && msg.responseMessages.code == 409
-                alert "You can't controller the laboratory. Other user is used it"
                 console.log "codigo 409"
                 #getSensorData("ESDval", "observer")
                 eve = document.createEvent 'CustomEvent'

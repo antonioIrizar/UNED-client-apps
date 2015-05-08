@@ -64,7 +64,6 @@
       console.log(msg);
       if (msg.method === "sendActuatorData") {
         if (msg.responseMessages !== void 0 && msg.responseMessages.code === 409) {
-          alert("You can't controller the laboratory. Other user is used it");
           console.log("codigo 409");
           eve = document.createEvent('CustomEvent');
           eve.initCustomEvent('selectInterface', true, false, {

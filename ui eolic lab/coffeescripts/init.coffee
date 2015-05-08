@@ -61,7 +61,6 @@ class Init
             @resizeActive = setTimeout( =>
                 adapt = document.getElementById("adaptToHeight")
                 if adapt isnt null
-                    console.log window.innerHeight 
                     adapt.setAttribute "style","height: 0px"
                     height = window.innerHeight - document.getElementById("panel-elements").offsetHeight 
                     height = height-20
