@@ -10,6 +10,7 @@ class Init
     wsCamera: null
     charge: null
     switchLab: false
+    interruptExperiment: false
     INFOMODAL: '#infoModal'
     INFOMODALTITLE: '#infoModalTitle'
     INFOMODALBODY: '#infoModalBody'
@@ -178,17 +179,20 @@ class Init
         @stopFalse()
 
     stopExperiment: -> 
+        @interruptExperiment = true
         @wsData.sendActuatorChange 'ESD', '0'
         @stopTrue()
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()
         @common.resetTimer()
+        $(".slider-battery").val(@wsData.battery)
         $('.slider-time').val 0
         if not @charge
             @crane.enable()
 
     resetExperiment: ->
+        @interruptExperiment = true
 
         if @charge
             lumens = null
@@ -211,6 +215,7 @@ class Init
             @wsData.sendActuatorChange 'CraneLab', '0'
             @wsData.sendActuatorChange 'CraneLab', '1'
 
+        $(".slider-battery").val(@wsData.battery)
         @common.resetTimer()
         @common.enableSliders()
         @common.enableStart()
@@ -228,26 +233,28 @@ class Init
         if @charge
             textToSend = 'You get the results followings, for charging the battery with the windmill:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J'
             text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
-            $(".slider-battery").val(@wsData.battery)
-            @common.disableStop()
-            @common.disableReset()
         else
             textToSend = 'You get the results followings, for discharging the battery with the noria:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J\r\n\t* Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm'
             text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>'
-            $(".slider-distance").val(0)
-            $(".slider-battery").val(@wsData.battery)
-            @crane.enable()
-            @common.disableStop()
-            @common.disableReset()
-            document.getElementById 'chargeButton'
-                .removeAttribute 'disabled'
+            if not @interruptExperiment
+                $(".slider-distance").val(0)
+                @crane.enable()
+                document.getElementById 'chargeButton'
+                    .removeAttribute 'disabled'
 
         $ @INFOMODALBODY
             .append  '<p>'+ text + '</p>'
         $(@INFOMODAL).modal('show')
-        @common.enableSliders()
-        @common.enableStart()
-        @stopTrue()
+        
+        if not @interruptExperiment
+            $(".slider-battery").val(@wsData.battery)
+            @common.disableStop()
+            @common.disableReset()
+            @common.enableSliders()
+            @common.enableStart()
+            @stopTrue()
+
+        @interruptExperiment = false
         @plot.reset textToSend
 
     chargeStart: =>

@@ -24,6 +24,8 @@
 
     Init.prototype.switchLab = false;
 
+    Init.prototype.interruptExperiment = false;
+
     Init.prototype.INFOMODAL = '#infoModal';
 
     Init.prototype.INFOMODALTITLE = '#infoModalTitle';
@@ -217,12 +219,14 @@
     };
 
     Init.prototype.stopExperiment = function() {
+      this.interruptExperiment = true;
       this.wsData.sendActuatorChange('ESD', '0');
       this.stopTrue();
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
       this.common.resetTimer();
+      $(".slider-battery").val(this.wsData.battery);
       $('.slider-time').val(0);
       if (!this.charge) {
         return this.noria.enable();
@@ -230,6 +234,7 @@
     };
 
     Init.prototype.resetExperiment = function() {
+      this.interruptExperiment = true;
       if (this.charge) {
         this.eolic.wind = null;
         $('.slider-wind').val(0);
@@ -259,24 +264,26 @@
       if (this.charge) {
         textToSend = 'You get the results followings, for charging the battery with the windmill: \r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \r\n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J';
         text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>';
-        $(".slider-battery").val(this.wsData.battery);
-        this.common.disableStop();
-        this.common.disableReset();
       } else {
         textToSend = 'You get the results followings, for discharging the battery with the noria: \r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J \r\n\t* Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns';
         text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>';
-        $(".slider-turns").val(0);
-        $(".slider-battery").val(this.wsData.battery);
-        this.noria.enable();
-        this.common.disableStop();
-        this.common.disableReset();
-        document.getElementById('chargeButton').removeAttribute('disabled');
+        if (!this.interruptExperiment) {
+          $(".slider-turns").val(0);
+          this.noria.enable();
+          document.getElementById('chargeButton').removeAttribute('disabled');
+        }
       }
       $(this.INFOMODALBODY).append('<p>' + text + '</p>');
       $(this.INFOMODAL).modal('show');
-      this.common.enableSliders();
-      this.common.enableStart();
-      this.stopTrue();
+      if (!this.interruptExperiment) {
+        $(".slider-battery").val(this.wsData.battery);
+        this.common.disableStop();
+        this.common.disableReset();
+        this.common.enableSliders();
+        this.common.enableStart();
+        this.stopTrue();
+      }
+      this.interruptExperiment = false;
       return this.plot.reset(textToSend);
     };
 
