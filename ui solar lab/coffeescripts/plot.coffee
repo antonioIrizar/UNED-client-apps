@@ -21,7 +21,7 @@ class Plot
         @experiments = []
         @data = [[]]
         #@esd = new Esd idCanvas, img
-        @chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        @chart = new google.visualization.LineChart(document.getElementById('chart_div'))
         @stop = true
         google.setOnLoadCallback @drawChart()
         #@resize()
@@ -73,6 +73,7 @@ class Plot
         @chart.draw(@dataPlot, @options)
 
     resizeEvent: (esd) ->
+        console.log "resize"
         esd.drawImageInCanvas()
         @resize()
         if @initChart 
@@ -150,7 +151,7 @@ class Plot
                     chartArea:{left:40,top:20,height: "80%", width:"100%"},
                     legend: {position: 'none'},
                     animation:{
-                        duration: 1900,
+                        duration: 985,
                         easing: 'linear',
                     }
                     series: {
@@ -171,7 +172,7 @@ class Plot
                 chartArea:{left:40,top:20,height: "80%", width:"100%"},
                 legend: {position: 'none'},
                 animation:{
-                    duration: 900,
+                    duration: 985,
                     easing: 'linear',
                 }
                 series: {
@@ -182,11 +183,12 @@ class Plot
             }
         @chart.draw(@dataPlot, @options1)
 
-    reset: (text)->
+    reset: (text) =>
         @saveArrayData text
         @time = 0
         @data = [[]]
         @chart.clearChart()
+        @chart = new google.visualization.LineChart(document.getElementById('chart_div'))
         google.setOnLoadCallback @drawChart()
 
     saveArrayData: (text) =>

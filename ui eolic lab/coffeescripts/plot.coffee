@@ -185,6 +185,7 @@ class Plot
         @time = 0
         @data = [[]]
         @chart.clearChart()
+        @chart = new google.visualization.LineChart(document.getElementById('chart_div'))
         google.setOnLoadCallback @drawChart()
 
     saveArrayData: (text) =>

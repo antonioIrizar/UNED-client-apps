@@ -297,6 +297,7 @@
       this.time = 0;
       this.data = [[]];
       this.chart.clearChart();
+      this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       return google.setOnLoadCallback(this.drawChart());
     };
 

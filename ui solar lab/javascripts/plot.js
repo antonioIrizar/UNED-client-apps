@@ -38,6 +38,7 @@
 
     function Plot() {
       this.saveArrayData = __bind(this.saveArrayData, this);
+      this.reset = __bind(this.reset, this);
       this.experiments = [];
       this.data = [[]];
       this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
@@ -119,6 +120,7 @@
 
     Plot.prototype.resizeEvent = function(esd) {
       var a, b, d;
+      console.log("resize");
       esd.drawImageInCanvas();
       this.resize();
       if (this.initChart) {
@@ -239,7 +241,7 @@
                 position: 'none'
               },
               animation: {
-                duration: 1900,
+                duration: 985,
                 easing: 'linear'
               },
               series: {
@@ -276,7 +278,7 @@
           position: 'none'
         },
         animation: {
-          duration: 900,
+          duration: 985,
           easing: 'linear'
         },
         series: {
@@ -299,6 +301,7 @@
       this.time = 0;
       this.data = [[]];
       this.chart.clearChart();
+      this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       return google.setOnLoadCallback(this.drawChart());
     };
 
