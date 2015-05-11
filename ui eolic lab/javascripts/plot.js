@@ -237,7 +237,7 @@
                 position: 'none'
               },
               animation: {
-                duration: 1900,
+                duration: 985,
                 easing: 'linear'
               },
               series: {
@@ -274,7 +274,7 @@
           position: 'none'
         },
         animation: {
-          duration: 900,
+          duration: 985,
           easing: 'linear'
         },
         series: {

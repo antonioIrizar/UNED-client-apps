@@ -148,7 +148,7 @@ class Plot
                     chartArea:{left:40,top:20,height: "80%", width:"100%"},
                     legend: {position: 'none'},
                     animation:{
-                        duration: 1900,
+                        duration: 985,
                         easing: 'linear',
                     }
                     series: {
@@ -169,7 +169,7 @@ class Plot
                 chartArea:{left:40,top:20,height: "80%", width:"100%"},
                 legend: {position: 'none'},
                 animation:{
-                    duration: 900,
+                    duration: 985,
                     easing: 'linear',
                 }
                 series: {
