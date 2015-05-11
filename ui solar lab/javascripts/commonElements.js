@@ -14,10 +14,11 @@
 
     CommonElements.prototype.time = 0;
 
-    CommonElements.prototype.solar = true;
+    CommonElements.prototype.isSolar = true;
 
-    function CommonElements(solar) {
-      this.solar = solar;
+    function CommonElements(wsData, isSolar) {
+      this.wsData = wsData;
+      this.isSolar = isSolar;
       this.selectModalText = __bind(this.selectModalText, this);
       CommonElements.__super__.constructor.apply(this, arguments);
       this.selectNameVar();
@@ -68,7 +69,7 @@
       time.specialElement([smallElementTime], [bigElementTime]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(time.div);
-      if (!this.solar) {
+      if (!this.isSolar) {
         minTime = [0, 10];
         maxTime = [90];
         middle = 10;
@@ -87,7 +88,7 @@
     };
 
     CommonElements.prototype.selectModalText = function(type) {
-      if (this.solar) {
+      if (this.isSolar) {
         if (type === 'time') {
           this.modalText('Decide for how long you want to charge the battery', 'The battery will charge for the selected lapse of time. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.');
         }
@@ -118,7 +119,7 @@
     };
 
     CommonElements.prototype.selectNameVar = function() {
-      if (this.solar) {
+      if (this.isSolar) {
         this.timeText = "Time charging ";
         return this.batteryText = "How much charge do you want? ";
       } else {
@@ -127,11 +128,11 @@
       }
     };
 
-    CommonElements.prototype.mySwitch = function(solar) {
+    CommonElements.prototype.mySwitch = function(isSolar) {
       var maxTime, middle, minTime, values;
-      this.solar = solar;
+      this.isSolar = isSolar;
       this.selectNameVar();
-      if (!this.solar) {
+      if (!this.isSolar) {
         minTime = [0, 10];
         maxTime = [90];
         middle = 10;
@@ -260,7 +261,7 @@
           if (a === 100) {
             a = 100;
           }
-          if (_this.solar) {
+          if (_this.isSolar) {
             if (a < _this.wsData.battery) {
               $('.slider-battery').val(_this.wsData.battery);
             }

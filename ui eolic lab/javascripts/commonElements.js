@@ -14,10 +14,11 @@
 
     CommonElements.prototype.time = 0;
 
-    CommonElements.prototype.solar = true;
+    CommonElements.prototype.isEolic = true;
 
-    function CommonElements(solar) {
-      this.solar = solar;
+    function CommonElements(wsData, isEolic) {
+      this.wsData = wsData;
+      this.isEolic = isEolic;
       this.selectModalText = __bind(this.selectModalText, this);
       CommonElements.__super__.constructor.apply(this, arguments);
       this.selectNameVar();
@@ -68,7 +69,7 @@
       time.specialElement([smallElementTime], [bigElementTime]);
       parent = document.getElementById("elementsCommons");
       parent.appendChild(time.div);
-      if (!this.solar) {
+      if (!this.isEolic) {
         minTime = [0, 10];
         maxTime = [90];
         middle = 10;
@@ -87,7 +88,7 @@
     };
 
     CommonElements.prototype.selectModalText = function(type) {
-      if (this.solar) {
+      if (this.isEolic) {
         if (type === 'time') {
           this.modalText('For how long do you want the battery to be charging?', 'The maximum value is 20 minutes. Keep in mind that if you select both, charge and time, the process will end when the first value is reached.');
         }
@@ -120,7 +121,7 @@
     };
 
     CommonElements.prototype.selectNameVar = function() {
-      if (this.solar) {
+      if (this.isEolic) {
         this.timeText = "For how long do you want the battery to be charging? ";
         return this.batteryText = "How much do you want to charge the battery? ";
       } else {
@@ -129,11 +130,11 @@
       }
     };
 
-    CommonElements.prototype.mySwitch = function(solar) {
+    CommonElements.prototype.mySwitch = function(isEolic) {
       var maxTime, middle, minTime, values;
-      this.solar = solar;
+      this.isEolic = isEolic;
       this.selectNameVar();
-      if (!this.solar) {
+      if (!this.isEolic) {
         minTime = [0, 10];
         maxTime = [90];
         middle = 10;
@@ -261,7 +262,7 @@
           if (a === 100) {
             a = 100;
           }
-          if (_this.solar) {
+          if (_this.isEolic) {
             if (a < _this.wsData.battery) {
               $('.slider-battery').val(_this.wsData.battery);
             }

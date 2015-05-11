@@ -3,9 +3,9 @@ class CommonElements extends Part
     timeText: null
     batteryText: null
     time: 0
-    solar:true
+    isSolar:true
     
-    constructor: (@solar) ->
+    constructor: (@wsData, @isSolar) ->
         super
         @selectNameVar()
         @battery()
@@ -65,7 +65,7 @@ class CommonElements extends Part
         parent = document.getElementById "elementsCommons"
         parent.appendChild time.div
 
-        if not @solar 
+        if not @isSolar 
             minTime = [0, 10]
             maxTime = [90]
             middle = 10
@@ -84,7 +84,7 @@ class CommonElements extends Part
         })
    
     selectModalText: (type) =>
-        if @solar
+        if @isSolar
             if type is 'time'
                 @modalText 'Decide for how long you want to charge the battery', 'The battery will charge for the selected lapse of time. If you select both (charge and lapse of time), it will charge till it reaches the first of both; or you click on the stop button.'
             if type is 'battery'
@@ -114,16 +114,16 @@ class CommonElements extends Part
         parent.appendChild button.div
 
     selectNameVar: ->
-        if @solar
+        if @isSolar
             @timeText = "Time charging "
             @batteryText = "How much charge do you want? "
         else
             @timeText = "Time discharging "
             @batteryText = "How much discharge do you want? " 
             
-    mySwitch: (@solar)->
+    mySwitch: (@isSolar)->
         @selectNameVar()
-        if not @solar 
+        if not @isSolar 
             minTime = [0, 10]
             maxTime = [90]
             middle = 10
@@ -242,7 +242,7 @@ class CommonElements extends Part
                 if a is 100
                     a = 100
 
-                if @solar
+                if @isSolar
                     if a < @wsData.battery
                         $ '.slider-battery'
                             .val @wsData.battery
