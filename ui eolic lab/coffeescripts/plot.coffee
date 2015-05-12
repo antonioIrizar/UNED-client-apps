@@ -199,18 +199,21 @@ class Plot
         console.log  @experiments[0].result
 
     save: ->
-        $ '#example1' 
+        $ '#tableCSV' 
             .handsontable
-                    data: @data,
-                    colHeaders: ["Time", "Amps", "Volts", "Jouls"],
-                    maxCols: 4,
-                    maxRows: 4,
-                    columns: [
-                        {readOnly: true,}
-                        {readOnly: true,}
-                        {readOnly: true,}
-                        {readOnly: true,}
-                    ],
+                data: @data,
+                colHeaders: ["Time", "Amps", "Volts", "Jouls"],
+                maxCols: 4,
+                height: 396,
+                stretchH: 'all',
+                columnSorting: true,
+                contextMenu: true,
+                columns: [
+                    {readOnly: true,}
+                    {readOnly: true,}
+                    {readOnly: true,}
+                    {readOnly: true,}
+                ],
             
         $ '#myModalCSV'
             .modal 'show'

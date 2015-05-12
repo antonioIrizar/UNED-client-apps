@@ -47,6 +47,7 @@ class Init
         @plot.inputCurrent = inputCurrent
         @plot.inputVoltage = inputVoltage
         @plot.workToDo = workToDo
+        $("p#textBattery").text workToDo + "%"
         if @plot.initChart is false
             console.log "iniciando"
             @plot.initChart = true
@@ -225,11 +226,11 @@ class Init
         $ @INFOMODALTITLE 
             .append 'Experiment has been finished'
         if @charge
-            textToSend = 'You get the results followings, for charging the battery with the windmill:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J'
-            text = 'You get the results followings, for charging the battery with the windmill:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
+            textToSend = 'You get the results followings, for charging the battery with the solar panel:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls won from the experiment: ' + e.detail.data[1] + ' J'
+            text = 'You get the results followings, for charging the battery with the solar panel:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls won from the experiment: ' + e.detail.data[1] + ' J</li></ul>'
         else
-            textToSend = 'You get the results followings, for discharging the battery with the noria:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J\r\n\t* Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm'
-            text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>'
+            textToSend = 'You get the results followings, for discharging the battery with the crane:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J\r\n\t* Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm'
+            text = 'You get the results followings, for discharging the battery with the crane:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>'
             if not @interruptExperiment
                 $(".slider-distance").val(0)
                 @crane.enable()

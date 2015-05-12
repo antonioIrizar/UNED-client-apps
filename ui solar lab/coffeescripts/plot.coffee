@@ -15,8 +15,10 @@ class Plot
     stop: true
     experiments: []
     timeStart: null
+    csv: null
 
     constructor:  ->
+        csv = null
         @experiments = []
         @data = [[]]
         #@esd = new Esd idCanvas, img
@@ -200,18 +202,21 @@ class Plot
         @experiments.push aux
 
     save: ->
-        $ '#example1' 
+        $ '#tableCSV' 
             .handsontable
-                    data: @data,
-                    colHeaders: ["Time", "Amps", "Volts", "Jouls"],
-                    maxCols: 4,
-                    maxRows: 4,
-                    columns: [
-                        {readOnly: true,}
-                        {readOnly: true,}
-                        {readOnly: true,}
-                        {readOnly: true,}
-                    ],
+                data: @data,
+                colHeaders: ["Time", "Amps", "Volts", "Jouls"],
+                maxCols: 4,
+                height: 396,
+                stretchH: 'all',
+                columnSorting: true,
+                contextMenu: true,
+                columns: [
+                    {readOnly: true,}
+                    {readOnly: true,}
+                    {readOnly: true,}
+                    {readOnly: true,}
+                ],
             
         $ '#myModalCSV'
             .modal 'show'

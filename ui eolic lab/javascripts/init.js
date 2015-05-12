@@ -77,6 +77,7 @@
       this.plot.inputCurrent = inputCurrent;
       this.plot.inputVoltage = inputVoltage;
       this.plot.workToDo = workToDo;
+      $("p#textBattery").text(workToDo + "%");
       if (this.plot.initChart === false) {
         console.log("iniciando");
         this.plot.initChart = true;

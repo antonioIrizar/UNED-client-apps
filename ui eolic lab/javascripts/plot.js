@@ -313,11 +313,14 @@
     };
 
     Plot.prototype.save = function() {
-      $('#example1').handsontable({
+      $('#tableCSV').handsontable({
         data: this.data,
         colHeaders: ["Time", "Amps", "Volts", "Jouls"],
         maxCols: 4,
-        maxRows: 4,
+        height: 396,
+        stretchH: 'all',
+        columnSorting: true,
+        contextMenu: true,
         columns: [
           {
             readOnly: true

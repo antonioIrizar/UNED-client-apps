@@ -34,9 +34,13 @@
 
     Plot.prototype.timeStart = null;
 
+    Plot.prototype.csv = null;
+
     function Plot() {
       this.saveArrayData = __bind(this.saveArrayData, this);
       this.reset = __bind(this.reset, this);
+      var csv;
+      csv = null;
       this.experiments = [];
       this.data = [[]];
       this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
@@ -315,11 +319,14 @@
     };
 
     Plot.prototype.save = function() {
-      $('#example1').handsontable({
+      $('#tableCSV').handsontable({
         data: this.data,
         colHeaders: ["Time", "Amps", "Volts", "Jouls"],
         maxCols: 4,
-        maxRows: 4,
+        height: 396,
+        stretchH: 'all',
+        columnSorting: true,
+        contextMenu: true,
         columns: [
           {
             readOnly: true

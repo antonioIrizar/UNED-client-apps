@@ -48,6 +48,7 @@ class Init
         @plot.inputCurrent = inputCurrent
         @plot.inputVoltage = inputVoltage
         @plot.workToDo = workToDo
+        $("p#textBattery").text workToDo + "%"
         if @plot.initChart is false
             console.log "iniciando"
             @plot.initChart = true
