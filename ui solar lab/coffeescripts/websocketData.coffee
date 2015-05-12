@@ -140,6 +140,8 @@ class WebsocketData
         if msg.method == "getSensorData" && msg.sensorId == "ESDval"
             if (msg.responseData.valueNames.length == 7)
                 #fix this
+                if @role is 'observer'
+                    varInit.stopFalse()
                 @battery = msg.responseData.data[6]
                 varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], @battery)
 

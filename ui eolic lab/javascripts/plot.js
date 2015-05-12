@@ -20,8 +20,6 @@
 
     Plot.prototype.data = [[]];
 
-    Plot.prototype.realTime = null;
-
     Plot.prototype.inputCurrent = null;
 
     Plot.prototype.inputVoltage = null;
@@ -62,7 +60,7 @@
           chartArea: {
             left: 40,
             top: 20,
-            height: height - 50,
+            height: height - 52,
             width: "100%"
           },
           legend: {
@@ -123,13 +121,13 @@
         if (this.time > 18) {
           this.dataPlot.removeRow(17);
         } else {
-          this.dataPlot.removeRow(this.time - 2);
+          this.dataPlot.removeRow(this.time - 1);
         }
         this.chart.draw(this.dataPlot, this.options);
-        this.dataPlot.addRow([this.data[this.time - 2][0], parseFloat(this.data[this.time - 2][1]), parseFloat(this.data[this.time - 2][2]), parseFloat(this.data[this.time - 2][3])]);
+        this.dataPlot.addRow([this.data[this.time - 1][0], parseFloat(this.data[this.time - 1][1]), parseFloat(this.data[this.time - 1][2]), parseFloat(this.data[this.time - 1][3])]);
         d = new Date();
         b = d.getTime();
-        a = this.realTime + (1000 * (this.time - 2) * 5) - b;
+        a = (1000 * (this.time - 1) * 5) - b;
         if (a > 0) {
           this.options1 = {
             chartArea: {

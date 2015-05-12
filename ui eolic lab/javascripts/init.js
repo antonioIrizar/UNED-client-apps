@@ -42,6 +42,7 @@
       this.stopFalse = __bind(this.stopFalse, this);
       this.stopTrue = __bind(this.stopTrue, this);
       this.resize = __bind(this.resize, this);
+      this.changeNumbers = __bind(this.changeNumbers, this);
       var token;
       document.addEventListener('selectInterface', this.selectInterface, false);
       document.addEventListener('allWsAreReady', this.eventReadyAll, false);
@@ -82,6 +83,7 @@
         this.plot.init();
       }
       if (this.plot.stop) {
+        console.log("dentro del stop");
         return this.plot.initChart = false;
       }
     };

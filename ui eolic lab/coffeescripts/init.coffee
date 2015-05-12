@@ -43,7 +43,7 @@ class Init
         
         window.onresize = @resize
 
-    changeNumbers: (inputCurrent, inputVoltage, workToDo) ->
+    changeNumbers: (inputCurrent, inputVoltage, workToDo) =>
         @esd.drawText inputCurrent, inputVoltage, workToDo
         @plot.inputCurrent = inputCurrent
         @plot.inputVoltage = inputVoltage
@@ -53,6 +53,7 @@ class Init
             @plot.initChart = true
             @plot.init()
         if @plot.stop
+            console.log "dentro del stop"
             @plot.initChart = false
         
     resize: =>

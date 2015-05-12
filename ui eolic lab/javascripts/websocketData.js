@@ -63,6 +63,15 @@
       msg = JSON.parse(data);
       console.log(msg);
       if (msg.method === "sendActuatorData") {
+
+        /*
+        if msg.responseMessages isnt undefined && msg.responseMessages.code == 411
+             if not @wsDataIsReady 
+                    @wsDataIsReady = true
+                    eve = document.createEvent 'Event'
+                    eve.initEvent 'allWsAreReady', true, false
+                    document.dispatchEvent eve
+         */
         if (msg.responseMessages !== void 0 && msg.responseMessages.code === 409) {
           console.log("codigo 409");
           eve = document.createEvent('CustomEvent');
@@ -160,6 +169,9 @@
       }
       if (msg.method === "getSensorData" && msg.sensorId === "ESDval") {
         if (msg.responseData.valueNames.length === 7) {
+          if (this.role === 'observer') {
+            varInit.stopFalse();
+          }
           this.battery = msg.responseData.data[6];
           varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], this.battery);
         }

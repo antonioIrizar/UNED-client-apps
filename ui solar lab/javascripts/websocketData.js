@@ -170,6 +170,9 @@
       }
       if (msg.method === "getSensorData" && msg.sensorId === "ESDval") {
         if (msg.responseData.valueNames.length === 7) {
+          if (this.role === 'observer') {
+            varInit.stopFalse();
+          }
           this.battery = msg.responseData.data[6];
           varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], this.battery);
         }

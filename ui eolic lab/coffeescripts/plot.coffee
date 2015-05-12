@@ -8,7 +8,6 @@ class Plot
     options1: null
     initChart: false
     data:[[]]
-    realTime: null
     inputCurrent: null
     inputVoltage: null 
     workToDo: null
@@ -40,7 +39,7 @@ class Plot
             height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("experiment-real-time-data").offsetHeight - 90
             height = height - 20
             @options = {
-                chartArea:{left:40,top:20,height: height-50, width:"100%"},
+                chartArea:{left:40,top:20,height: height-52, width:"100%"},
                 legend: {position: 'none'}   
                 series: {
                     0: {color: "red"},
@@ -79,13 +78,13 @@ class Plot
             if @time > 18
                 @dataPlot.removeRow 17
             else
-                @dataPlot.removeRow @time-2
+                @dataPlot.removeRow @time-1
             @chart.draw(@dataPlot, @options)
     
-            @dataPlot.addRow [@data[@time-2][0], parseFloat(@data[@time-2][1]), parseFloat(@data[@time-2][2]), parseFloat(@data[@time-2][3])]
+            @dataPlot.addRow [@data[@time-1][0], parseFloat(@data[@time-1][1]), parseFloat(@data[@time-1][2]), parseFloat(@data[@time-1][3])]
             d = new Date()
             b = d.getTime()
-            a = @realTime+(1000*(@time-2)*5) - b
+            a = (1000*(@time-1)*5) - b
 
             if a >0
                 @options1 = {

@@ -47,6 +47,14 @@ class WebsocketData
 
         ##improve this with case
         if msg.method == "sendActuatorData"
+            ###
+            if msg.responseMessages isnt undefined && msg.responseMessages.code == 411
+                 if not @wsDataIsReady 
+                        @wsDataIsReady = true
+                        eve = document.createEvent 'Event'
+                        eve.initEvent 'allWsAreReady', true, false
+                        document.dispatchEvent eve
+            ###
             if msg.responseMessages isnt undefined && msg.responseMessages.code == 409
                 console.log "codigo 409"
                 #getSensorData("ESDval", "observer")
@@ -130,6 +138,8 @@ class WebsocketData
         if msg.method == "getSensorData" && msg.sensorId == "ESDval"
             if (msg.responseData.valueNames.length == 7)
                 #fix this
+                if @role is 'observer'
+                    varInit.stopFalse()
                 @battery = msg.responseData.data[6]
                 varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], @battery)
 
