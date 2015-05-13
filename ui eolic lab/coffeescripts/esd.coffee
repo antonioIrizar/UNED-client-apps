@@ -5,9 +5,10 @@ class Esd
     width: null
     height: null
     plot: null
-    inputCurrent: "0.000"
-    inputVoltage: "0.000" 
-    workToDo: "0.000"
+    current: "0.0000"
+    voltage: "0.0000" 
+    workToDo: "0"
+    charge: true
 
     constructor: (idCanvas, img) ->
        
@@ -15,16 +16,6 @@ class Esd
         @img = document.getElementById img
         @canvas.width = @img.width
         @canvas.height = @img.height
-        #a.noUiSlider({start:[0], step: 20, range:{'min': [0], 'max': [700]}}) 
-        ###
-        if @img.complete  #check if image was already loaded by the browser
-            @drawImageInCanvas()
-        else 
-            @img.onload  = => 
-                console.log "caa"
-                @drawImageInCanvas()
-                new Plot()
-        ###
         @drawImageInCanvas()
 
     drawImageInCanvas: ->
@@ -39,16 +30,24 @@ class Esd
         ctx.fillText "Joules", (@width/11), (14*(@height/20))
         ctx.fillText "Charging", 3.5*(@width/11), (5*(@height/20))
         ctx.fillText "Discharging", 6.5*(@width/11), (5*(@height/20))
-        ctx.fillText @inputCurrent, 4*(@width/11), (8*(@height/20)) 
-        ctx.fillText @inputVoltage, 4*(@width/11), (11*(@height/20))
-        ctx.fillText @workToDo, 4*(@width/11), (14*(@height/20))
+        if @charge
+            @drawTextCharge @current, @voltage, @workToDo
+        else
+            @drawTextDischarge @current, @voltage, @workToDo
 
-    drawText: (@inputCurrent, @inputVoltage, @workToDo) ->
+    drawTextCharge: (@current, @voltage, @workToDo) ->
         ctx = @canvas.getContext "2d"
         ctx.clearRect 3.4*(@width/11), (7*(@height/20)), @width, @height
-        ctx.fillText @inputCurrent, 4*(@width/11), (8*(@height/20)) 
-        ctx.fillText @inputVoltage, 4*(@width/11), (11*(@height/20))
+        ctx.fillText @current, 4*(@width/11), (8*(@height/20)) 
+        ctx.fillText @voltage, 4*(@width/11), (11*(@height/20))
         ctx.fillText @workToDo, 4*(@width/11), (14*(@height/20))
+
+    drawTextDischarge: (@current, @voltage, @workToDo) ->
+        ctx = @canvas.getContext "2d"
+        ctx.clearRect 3.4*(@width/11), (7*(@height/20)), @width, @height
+        ctx.fillText @current, 7*(@width/11), (8*(@height/20)) 
+        ctx.fillText @voltage, 7*(@width/11), (11*(@height/20))
+        ctx.fillText @workToDo, 7*(@width/11), (14*(@height/20))
 
         
 window.Esd = Esd

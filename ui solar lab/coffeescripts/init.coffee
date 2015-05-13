@@ -42,14 +42,18 @@ class Init
         
         window.onresize = @resize
 
-    changeNumbers: (inputCurrent, inputVoltage, workToDo) ->
-        @esd.drawText inputCurrent, inputVoltage, workToDo
-        @plot.inputCurrent = inputCurrent
-        @plot.inputVoltage = inputVoltage
+    changeNumbers: (inputCurrent, inputVoltage, outputCurrent, outputVoltage, workToDo) =>
+        if @charge
+            @esd.drawTextCharge inputCurrent, inputVoltage, workToDo
+            @plot.current = inputCurrent
+            @plot.voltage = inputVoltage
+        else
+            @esd.drawTextDischarge outputCurrent, outputVoltage, workToDo
+            @plot.current = outputCurrent
+            @plot.voltage = outputVoltage
         @plot.workToDo = workToDo
         $("p#textBattery").text workToDo + "%"
         if @plot.initChart is false
-            console.log "iniciando"
             @plot.initChart = true
             @plot.init()
         if @plot.stop
@@ -78,6 +82,8 @@ class Init
     selectCharge: =>
         @switchLab = true
         myApp.showPleaseWait()
+        @esd.charge = true
+        @esd.drawTextCharge '0.0000', '0.0000', '0'
         if @common is null
             @common = new CommonElements @wsData, true
         else
@@ -107,6 +113,8 @@ class Init
     selectDischarge: =>
         @switchLab = true
         myApp.showPleaseWait()
+        @esd.charge = false
+        @esd.drawTextDischarge '0.0000', '0.0000', '0'
         if @common is null
             @common = new CommonElements @wsData, false
         else
@@ -248,6 +256,10 @@ class Init
             @common.enableSliders()
             @common.enableStart()
             @stopTrue()
+        if @charge
+            @esd.drawTextCharge '0.0000', '0.0000', @wsData.battery
+        else
+            @esd.drawTextDischarge '0.0000', '0.0000', @wsData.battery
 
         @interruptExperiment = false
         @plot.reset textToSend

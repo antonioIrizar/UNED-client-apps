@@ -9,8 +9,8 @@ class Plot
     options1: null
     initChart: false
     data:[[]]
-    inputCurrent: null
-    inputVoltage: null 
+    current: null
+    voltage: null 
     workToDo: null
     stop: true
     experiments: []
@@ -145,8 +145,8 @@ class Plot
             if not @stop
                 if @time > 18
                     @dataPlot.removeRow 0
-                @data[@time] = [''+(@time), @inputCurrent, @inputVoltage, @workToDo]
-                @dataPlot.addRow [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
+                @data[@time] = [''+(@time), @current, @voltage, @workToDo]
+                @dataPlot.addRow [''+(@time), parseFloat(@current), parseFloat(@voltage), parseFloat(@workToDo)]
                 @time++
                 @options1 = {
                     chartArea:{left:40,top:20,height: "80%", width:"100%"},
@@ -166,8 +166,8 @@ class Plot
 
     init: ->
         @timeStart = new Date().toUTCString()
-        @data[@time] = [''+(@time), @inputCurrent, @inputVoltage, @workToDo]
-        @dataPlot.addRow [''+(@time), parseFloat(@inputCurrent), parseFloat(@inputVoltage), parseFloat(@workToDo)]
+        @data[@time] = [''+(@time), @current, @voltage, @workToDo]
+        @dataPlot.addRow [''+(@time), parseFloat(@current), parseFloat(@voltage), parseFloat(@workToDo)]
         @time++
         @options1 = {
                 chartArea:{left:40,top:20,height: "80%", width:"100%"},

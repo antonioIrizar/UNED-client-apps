@@ -20,9 +20,9 @@
 
     Plot.prototype.data = [[]];
 
-    Plot.prototype.inputCurrent = null;
+    Plot.prototype.current = null;
 
-    Plot.prototype.inputVoltage = null;
+    Plot.prototype.voltage = null;
 
     Plot.prototype.workToDo = null;
 
@@ -221,8 +221,8 @@
             if (_this.time > 18) {
               _this.dataPlot.removeRow(0);
             }
-            _this.data[_this.time] = ['' + _this.time, _this.inputCurrent, _this.inputVoltage, _this.workToDo];
-            _this.dataPlot.addRow(['' + _this.time, parseFloat(_this.inputCurrent), parseFloat(_this.inputVoltage), parseFloat(_this.workToDo)]);
+            _this.data[_this.time] = ['' + _this.time, _this.current, _this.voltage, _this.workToDo];
+            _this.dataPlot.addRow(['' + _this.time, parseFloat(_this.current), parseFloat(_this.voltage), parseFloat(_this.workToDo)]);
             _this.time++;
             _this.options1 = {
               chartArea: {
@@ -258,8 +258,8 @@
 
     Plot.prototype.init = function() {
       this.timeStart = new Date().toUTCString();
-      this.data[this.time] = ['' + this.time, this.inputCurrent, this.inputVoltage, this.workToDo];
-      this.dataPlot.addRow(['' + this.time, parseFloat(this.inputCurrent), parseFloat(this.inputVoltage), parseFloat(this.workToDo)]);
+      this.data[this.time] = ['' + this.time, this.current, this.voltage, this.workToDo];
+      this.dataPlot.addRow(['' + this.time, parseFloat(this.current), parseFloat(this.voltage), parseFloat(this.workToDo)]);
       this.time++;
       this.options1 = {
         chartArea: {

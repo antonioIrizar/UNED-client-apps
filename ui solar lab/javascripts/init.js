@@ -42,6 +42,7 @@
       this.stopFalse = __bind(this.stopFalse, this);
       this.stopTrue = __bind(this.stopTrue, this);
       this.resize = __bind(this.resize, this);
+      this.changeNumbers = __bind(this.changeNumbers, this);
       var token;
       document.addEventListener('selectInterface', this.selectInterface, false);
       document.addEventListener('allWsAreReady', this.eventReadyAll, false);
@@ -71,14 +72,19 @@
       window.onresize = this.resize;
     }
 
-    Init.prototype.changeNumbers = function(inputCurrent, inputVoltage, workToDo) {
-      this.esd.drawText(inputCurrent, inputVoltage, workToDo);
-      this.plot.inputCurrent = inputCurrent;
-      this.plot.inputVoltage = inputVoltage;
+    Init.prototype.changeNumbers = function(inputCurrent, inputVoltage, outputCurrent, outputVoltage, workToDo) {
+      if (this.charge) {
+        this.esd.drawTextCharge(inputCurrent, inputVoltage, workToDo);
+        this.plot.current = inputCurrent;
+        this.plot.voltage = inputVoltage;
+      } else {
+        this.esd.drawTextDischarge(outputCurrent, outputVoltage, workToDo);
+        this.plot.current = outputCurrent;
+        this.plot.voltage = outputVoltage;
+      }
       this.plot.workToDo = workToDo;
       $("p#textBattery").text(workToDo + "%");
       if (this.plot.initChart === false) {
-        console.log("iniciando");
         this.plot.initChart = true;
         this.plot.init();
       }
@@ -117,6 +123,8 @@
     Init.prototype.selectCharge = function() {
       this.switchLab = true;
       myApp.showPleaseWait();
+      this.esd.charge = true;
+      this.esd.drawTextCharge('0.0000', '0.0000', '0');
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, true);
       } else {
@@ -143,6 +151,8 @@
     Init.prototype.selectDischarge = function() {
       this.switchLab = true;
       myApp.showPleaseWait();
+      this.esd.charge = false;
+      this.esd.drawTextDischarge('0.0000', '0.0000', '0');
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, false);
       } else {
@@ -279,6 +289,11 @@
         this.common.enableSliders();
         this.common.enableStart();
         this.stopTrue();
+      }
+      if (this.charge) {
+        this.esd.drawTextCharge('0.0000', '0.0000', this.wsData.battery);
+      } else {
+        this.esd.drawTextDischarge('0.0000', '0.0000', this.wsData.battery);
       }
       this.interruptExperiment = false;
       return this.plot.reset(textToSend);

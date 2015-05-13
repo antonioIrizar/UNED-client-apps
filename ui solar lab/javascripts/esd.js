@@ -13,27 +13,19 @@
 
     Esd.prototype.plot = null;
 
-    Esd.prototype.inputCurrent = "0.000";
+    Esd.prototype.current = "0.0000";
 
-    Esd.prototype.inputVoltage = "0.000";
+    Esd.prototype.voltage = "0.0000";
 
-    Esd.prototype.workToDo = "0.000";
+    Esd.prototype.workToDo = "0";
+
+    Esd.prototype.charge = true;
 
     function Esd(idCanvas, img) {
       this.canvas = document.getElementById(idCanvas);
       this.img = document.getElementById(img);
       this.canvas.width = this.img.width;
       this.canvas.height = this.img.height;
-
-      /*
-      if @img.complete  #check if image was already loaded by the browser
-          @drawImageInCanvas()
-      else 
-          @img.onload  = => 
-              console.log "caa"
-              @drawImageInCanvas()
-              new Plot()
-       */
       this.drawImageInCanvas();
     }
 
@@ -48,21 +40,35 @@
       ctx.fillText("Joules", this.width / 11, 14 * (this.height / 20));
       ctx.fillText("Charging", 3.5 * (this.width / 11), 5 * (this.height / 20));
       ctx.fillText("Discharging", 6.5 * (this.width / 11), 5 * (this.height / 20));
-      ctx.fillText(this.inputCurrent, 4 * (this.width / 11), 8 * (this.height / 20));
-      ctx.fillText(this.inputVoltage, 4 * (this.width / 11), 11 * (this.height / 20));
-      return ctx.fillText(this.workToDo, 4 * (this.width / 11), 14 * (this.height / 20));
+      if (this.charge) {
+        return this.drawTextCharge(this.current, this.voltage, this.workToDo);
+      } else {
+        return this.drawTextDischarge(this.current, this.voltage, this.workToDo);
+      }
     };
 
-    Esd.prototype.drawText = function(inputCurrent, inputVoltage, workToDo) {
+    Esd.prototype.drawTextCharge = function(current, voltage, workToDo) {
       var ctx;
-      this.inputCurrent = inputCurrent;
-      this.inputVoltage = inputVoltage;
+      this.current = current;
+      this.voltage = voltage;
       this.workToDo = workToDo;
       ctx = this.canvas.getContext("2d");
       ctx.clearRect(3.4 * (this.width / 11), 7 * (this.height / 20), this.width, this.height);
-      ctx.fillText(this.inputCurrent, 4 * (this.width / 11), 8 * (this.height / 20));
-      ctx.fillText(this.inputVoltage, 4 * (this.width / 11), 11 * (this.height / 20));
+      ctx.fillText(this.current, 4 * (this.width / 11), 8 * (this.height / 20));
+      ctx.fillText(this.voltage, 4 * (this.width / 11), 11 * (this.height / 20));
       return ctx.fillText(this.workToDo, 4 * (this.width / 11), 14 * (this.height / 20));
+    };
+
+    Esd.prototype.drawTextDischarge = function(current, voltage, workToDo) {
+      var ctx;
+      this.current = current;
+      this.voltage = voltage;
+      this.workToDo = workToDo;
+      ctx = this.canvas.getContext("2d");
+      ctx.clearRect(3.4 * (this.width / 11), 7 * (this.height / 20), this.width, this.height);
+      ctx.fillText(this.current, 7 * (this.width / 11), 8 * (this.height / 20));
+      ctx.fillText(this.voltage, 7 * (this.width / 11), 11 * (this.height / 20));
+      return ctx.fillText(this.workToDo, 7 * (this.width / 11), 14 * (this.height / 20));
     };
 
     return Esd;

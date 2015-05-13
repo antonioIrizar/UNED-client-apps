@@ -141,7 +141,7 @@ class WebsocketData
                 if @role is 'observer'
                     varInit.stopFalse()
                 @battery = msg.responseData.data[6]
-                varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], @battery)
+                varInit.changeNumbers(msg.responseData.data[1], msg.responseData.data[0], msg.responseData.data[4], msg.responseData.data[3], @battery)
 
             if @firstTimeBattery 
                 #fix this
