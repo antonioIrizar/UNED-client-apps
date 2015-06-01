@@ -39,16 +39,6 @@
       this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       this.stop = true;
       google.setOnLoadCallback(this.drawChart());
-
-      /*
-      window.addEventListener "resize", =>
-          if @resizeActive 
-              clearTimeout(@resizeActive)
-          @resizeActive = setTimeout( =>
-              @resize()
-              @chart.draw(@dataPlot, @options)
-          ,500)
-       */
     }
 
     Plot.prototype.resize = function() {
@@ -117,7 +107,7 @@
       var a, b, d;
       esd.drawImageInCanvas();
       this.resize();
-      if (this.initChart) {
+      if (this.stop) {
         if (this.time > 18) {
           this.dataPlot.removeRow(17);
         } else {
@@ -257,6 +247,11 @@
     };
 
     Plot.prototype.init = function() {
+      this.time = 0;
+      this.data = [[]];
+      this.chart.clearChart();
+      this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      google.setOnLoadCallback(this.drawChart());
       this.timeStart = new Date().toUTCString();
       this.data[this.time] = ['' + this.time, this.current, this.voltage, this.workToDo];
       this.dataPlot.addRow(['' + this.time, parseFloat(this.current), parseFloat(this.voltage), parseFloat(this.workToDo)]);
@@ -291,12 +286,7 @@
     };
 
     Plot.prototype.reset = function(text) {
-      this.saveArrayData(text);
-      this.time = 0;
-      this.data = [[]];
-      this.chart.clearChart();
-      this.chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      return google.setOnLoadCallback(this.drawChart());
+      return this.saveArrayData(text);
     };
 
     Plot.prototype.saveArrayData = function(text) {
@@ -307,9 +297,7 @@
         data: this.data,
         result: text
       };
-      this.experiments.push(aux);
-      console.log(this.experiments);
-      return console.log(this.experiments[0].result);
+      return this.experiments.push(aux);
     };
 
     Plot.prototype.save = function() {

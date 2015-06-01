@@ -86,10 +86,7 @@
       $("p#textBattery").text(workToDo + "%");
       if (this.plot.initChart === false) {
         this.plot.initChart = true;
-        this.plot.init();
-      }
-      if (this.plot.stop) {
-        return this.plot.initChart = false;
+        return this.plot.init();
       }
     };
 
@@ -142,7 +139,6 @@
       this.common.enableStart();
       this.common.disableStop();
       this.common.disableReset();
-      this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
       document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
       return this.resize();
@@ -170,7 +166,6 @@
       this.common.enableStart();
       this.common.disableStop();
       this.common.disableReset();
-      this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
       return this.resize();
@@ -223,7 +218,6 @@
     Init.prototype.stopExperiment = function() {
       this.interruptExperiment = true;
       this.wsData.sendActuatorChange('ESD', '0');
-      this.stopTrue();
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
@@ -254,8 +248,7 @@
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
-      this.common.disableReset();
-      return this.stopTrue();
+      return this.common.disableReset();
     };
 
     Init.prototype.finishExperiment = function(e) {
@@ -277,13 +270,14 @@
       }
       $(this.INFOMODALBODY).append('<p>' + text + '</p>');
       $(this.INFOMODAL).modal('show');
+      this.stopTrue();
+      this.plot.initChart = false;
       if (!this.interruptExperiment) {
         $(".slider-battery").val(this.wsData.battery);
         this.common.disableStop();
         this.common.disableReset();
         this.common.enableSliders();
         this.common.enableStart();
-        this.stopTrue();
       }
       if (this.charge) {
         this.esd.drawTextCharge('0.0000', '0.0000', this.wsData.battery);

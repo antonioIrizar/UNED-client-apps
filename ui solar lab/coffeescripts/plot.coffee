@@ -21,22 +21,10 @@ class Plot
         csv = null
         @experiments = []
         @data = [[]]
-        #@esd = new Esd idCanvas, img
         @chart = new google.visualization.LineChart(document.getElementById('chart_div'))
         @stop = true
         google.setOnLoadCallback @drawChart()
-        #@resize()
-        #@init()
-            
-        ###
-        window.addEventListener "resize", =>
-            if @resizeActive 
-                clearTimeout(@resizeActive)
-            @resizeActive = setTimeout( =>
-                @resize()
-                @chart.draw(@dataPlot, @options)
-            ,500)
-        ###
+        
     resize: ->
         if window.innerWidth >= 1200
             height =  document.getElementById("div_formula_col").offsetHeight - document.getElementById("webcam").offsetHeight - 90
@@ -77,7 +65,7 @@ class Plot
         console.log "resize"
         esd.drawImageInCanvas()
         @resize()
-        if @initChart 
+        if @stop 
             if @time > 18
                 @dataPlot.removeRow 17
             else
@@ -165,6 +153,12 @@ class Plot
             #@esd.drawText Math.random().toFixed(3), Math.random().toFixed(3), Math.random().toFixed(3)     
 
     init: ->
+        @time = 0
+        @data = [[]]
+        @chart.clearChart()
+        @chart = new google.visualization.LineChart(document.getElementById('chart_div'))
+        google.setOnLoadCallback @drawChart()
+
         @timeStart = new Date().toUTCString()
         @data[@time] = [''+(@time), @current, @voltage, @workToDo]
         @dataPlot.addRow [''+(@time), parseFloat(@current), parseFloat(@voltage), parseFloat(@workToDo)]
@@ -186,11 +180,6 @@ class Plot
 
     reset: (text) =>
         @saveArrayData text
-        @time = 0
-        @data = [[]]
-        @chart.clearChart()
-        @chart = new google.visualization.LineChart(document.getElementById('chart_div'))
-        google.setOnLoadCallback @drawChart()
 
     saveArrayData: (text) =>
         aux = 

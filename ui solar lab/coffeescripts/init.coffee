@@ -56,8 +56,6 @@ class Init
         if @plot.initChart is false
             @plot.initChart = true
             @plot.init()
-        if @plot.stop
-            @plot.initChart = false
         
     resize: =>
         if @resizeActive 
@@ -102,7 +100,6 @@ class Init
         @common.enableStart()
         @common.disableStop()
         @common.disableReset()
-        @stopTrue()
 
         document.getElementById "panelHeadingElements" 
             .innerHTML = 'Elements you can interact with: Mode charge'
@@ -133,7 +130,6 @@ class Init
         @common.enableStart()
         @common.disableStop()
         @common.disableReset()
-        @stopTrue()
 
         document.getElementById "panelHeadingElements" 
             .innerHTML = 'Elements you can interact with: Mode discharge'
@@ -184,7 +180,6 @@ class Init
     stopExperiment: -> 
         @interruptExperiment = true
         @wsData.sendActuatorChange 'ESD', '0'
-        @stopTrue()
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()
@@ -224,7 +219,6 @@ class Init
         @common.enableStart()
         @common.disableStop()
         @common.disableReset()
-        @stopTrue()
 
     finishExperiment: (e) =>
         $ @INFOMODALTITLE
@@ -249,13 +243,16 @@ class Init
             .append  '<p>'+ text + '</p>'
         $(@INFOMODAL).modal('show')
 
+        @stopTrue()
+        @plot.initChart = false
+
         if not @interruptExperiment
             $(".slider-battery").val(@wsData.battery)
             @common.disableStop()
             @common.disableReset()
             @common.enableSliders()
             @common.enableStart()
-            @stopTrue()
+
         if @charge
             @esd.drawTextCharge '0.0000', '0.0000', @wsData.battery
         else
