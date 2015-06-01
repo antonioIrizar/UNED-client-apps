@@ -11,6 +11,7 @@ class Init
     charge: null
     switchLab: false
     interruptExperiment: false
+    role: 'observer'
     INFOMODAL: '#infoModal'
     INFOMODALTITLE: '#infoModalTitle'
     INFOMODALBODY: '#infoModalBody'
@@ -140,6 +141,7 @@ class Init
 
     selectInterface: (e) =>
         battery = e.detail.battery
+        @role = e.detail.role
         role = document.getElementById 'yourRole'
         if battery >= 90
             @selectDischarge()     
@@ -230,7 +232,7 @@ class Init
         else
             textToSend = 'You get the results followings, for discharging the battery with the noria: \r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J \r\n\t* Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns'
             text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>'
-            if not @interruptExperiment
+            if not @interruptExperiment and @role is 'controller'
                 $(".slider-turns").val(0)
                 @noria.enable()
                 document.getElementById 'chargeButton'
@@ -243,7 +245,7 @@ class Init
         @stopTrue()
         @plot.initChart = false
 
-        if not @interruptExperiment
+        if not @interruptExperiment and @role is 'controller'
             $(".slider-battery").val(@wsData.battery)
             @common.disableStop()
             @common.disableReset()

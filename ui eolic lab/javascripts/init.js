@@ -26,6 +26,8 @@
 
     Init.prototype.interruptExperiment = false;
 
+    Init.prototype.role = 'observer';
+
     Init.prototype.INFOMODAL = '#infoModal';
 
     Init.prototype.INFOMODALTITLE = '#infoModalTitle';
@@ -174,6 +176,7 @@
     Init.prototype.selectInterface = function(e) {
       var battery, role;
       battery = e.detail.battery;
+      this.role = e.detail.role;
       role = document.getElementById('yourRole');
       if (battery >= 90) {
         this.selectDischarge();
@@ -262,7 +265,7 @@
       } else {
         textToSend = 'You get the results followings, for discharging the battery with the noria: \r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds \r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J \r\n\t* Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns';
         text = 'You get the results followings, for discharging the battery with the noria:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Turns given by the noria in the experiment: ' + e.detail.data[2] + ' Turns</li></ul>';
-        if (!this.interruptExperiment) {
+        if (!this.interruptExperiment && this.role === 'controller') {
           $(".slider-turns").val(0);
           this.noria.enable();
           document.getElementById('chargeButton').removeAttribute('disabled');
@@ -272,7 +275,7 @@
       $(this.INFOMODAL).modal('show');
       this.stopTrue();
       this.plot.initChart = false;
-      if (!this.interruptExperiment) {
+      if (!this.interruptExperiment && this.role === 'controller') {
         $(".slider-battery").val(this.wsData.battery);
         this.common.disableStop();
         this.common.disableReset();
