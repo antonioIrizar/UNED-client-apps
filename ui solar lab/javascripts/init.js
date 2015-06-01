@@ -26,6 +26,8 @@
 
     Init.prototype.interruptExperiment = false;
 
+    Init.prototype.role = 'observer';
+
     Init.prototype.INFOMODAL = '#infoModal';
 
     Init.prototype.INFOMODALTITLE = '#infoModalTitle';
@@ -86,10 +88,7 @@
       $("p#textBattery").text(workToDo + "%");
       if (this.plot.initChart === false) {
         this.plot.initChart = true;
-        this.plot.init();
-      }
-      if (this.plot.stop) {
-        return this.plot.initChart = false;
+        return this.plot.init();
       }
     };
 
@@ -142,7 +141,6 @@
       this.common.enableStart();
       this.common.disableStop();
       this.common.disableReset();
-      this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
       document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
       return this.resize();
@@ -170,7 +168,6 @@
       this.common.enableStart();
       this.common.disableStop();
       this.common.disableReset();
-      this.stopTrue();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
       return this.resize();
@@ -179,6 +176,7 @@
     Init.prototype.selectInterface = function(e) {
       var battery, role;
       battery = e.detail.battery;
+      this.role = e.detail.role;
       role = document.getElementById('yourRole');
       if (battery >= 90) {
         this.selectDischarge();
@@ -224,7 +222,6 @@
     Init.prototype.stopExperiment = function() {
       this.interruptExperiment = true;
       this.wsData.sendActuatorChange('ESD', '0');
-      this.stopTrue();
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
@@ -259,8 +256,7 @@
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();
-      this.common.disableReset();
-      return this.stopTrue();
+      return this.common.disableReset();
     };
 
     Init.prototype.finishExperiment = function(e) {
@@ -274,7 +270,7 @@
       } else {
         textToSend = 'You get the results followings, for discharging the battery with the crane:\r\n\t* Duration of the experiment: ' + e.detail.data[0] + ' seconds\r\n\t* Jouls used from the experiment: ' + e.detail.data[1] + ' J\r\n\t* Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm';
         text = 'You get the results followings, for discharging the battery with the crane:' + '<ul><li>Duration of the experiment: ' + e.detail.data[0] + ' seconds</li>' + '<li>Jouls used from the experiment: ' + e.detail.data[1] + ' J</li>' + '<li>Distance travelled by the weigth in the experiment: ' + e.detail.data[2] + ' cm</li></ul>';
-        if (!this.interruptExperiment) {
+        if (!this.interruptExperiment && this.role === 'controller') {
           $(".slider-distance").val(0);
           this.crane.enable();
           document.getElementById('chargeButton').removeAttribute('disabled');
@@ -282,13 +278,14 @@
       }
       $(this.INFOMODALBODY).append('<p>' + text + '</p>');
       $(this.INFOMODAL).modal('show');
-      if (!this.interruptExperiment) {
+      this.stopTrue();
+      this.plot.initChart = false;
+      if (!this.interruptExperiment && this.role === 'controller') {
         $(".slider-battery").val(this.wsData.battery);
         this.common.disableStop();
         this.common.disableReset();
         this.common.enableSliders();
         this.common.enableStart();
-        this.stopTrue();
       }
       if (this.charge) {
         this.esd.drawTextCharge('0.0000', '0.0000', this.wsData.battery);
