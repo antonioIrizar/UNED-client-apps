@@ -27,7 +27,13 @@ class Init
             myApp.hidePleaseWait()
         , false
 
-        document.addEventListener 'switchLab', () =>
+        document.addEventListener 'switchLab', (e) =>
+            if @role is 'observer'
+                if e.detail.modeLab is 'charge'
+                    @createUiCharge()
+                else
+                    @createUiDischarge()
+            else 
             if @switchLab
                 @switchLab = false
                 myApp.hidePleaseWait()
@@ -108,6 +114,21 @@ class Init
             .setAttribute 'disabled', 'disabled'
         @resize()
         
+    createUiCharge: ->
+        @esd.charge = true
+        @esd.drawTextCharge '0.0000', '0.0000', '0'
+        @crane.remove()
+        delete @crane
+        @crane = null
+        @common.mySwitch true
+        @common.disable()
+        @solar = new SolarElements @wsData
+        @charge = true
+        @solar.disable()
+        document.getElementById "panelHeadingElements"
+            .innerHTML = 'Elements you can interact with: Mode charge'
+        @resize()
+
     selectDischarge: =>
         @switchLab = true
         myApp.showPleaseWait()
@@ -136,6 +157,23 @@ class Init
             .innerHTML = 'Elements you can interact with: Mode discharge'
         document.getElementById 'dischargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
+
+    createUiDischarge: ->
+        @esd.charge = false
+        @esd.drawTextDischarge '0.0000', '0.0000', '0'
+
+        @solar.remove()
+        delete @solar
+        @solar = null
+        @common.mySwitch false
+        @common.disable()
+        @crane = new CraneElements @wsData
+        @charge = false
+        @crane.disable()
+
+        document.getElementById "panelHeadingElements" 
+            .innerHTML = 'Elements you can interact with: Mode discharge'
         @resize()
 
     selectInterface: (e) =>

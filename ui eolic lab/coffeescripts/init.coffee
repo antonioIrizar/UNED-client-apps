@@ -27,10 +27,16 @@ class Init
             myApp.hidePleaseWait()
         , false
 
-        document.addEventListener 'switchLab', () =>
-            if @switchLab
-                @switchLab = false
-                myApp.hidePleaseWait()
+        document.addEventListener 'switchLab', (e) =>
+            if @role is 'observer'
+                if e.detail.modeLab is 'charge'
+                    @createUiCharge()
+                else
+                    @createUiDischarge()
+            else 
+                if @switchLab
+                    @switchLab = false
+                    myApp.hidePleaseWait()
         , false
 
         @change = false
@@ -104,9 +110,24 @@ class Init
         @common.disableReset()
 
         document.getElementById "panelHeadingElements"
-            .innerHTML = 'Elements you can interact with: Mode charge'
+            .innerHTML = 'Elements you can interact with: Mode charge'        
         document.getElementById 'chargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
+
+    createUiCharge: ->
+        @esd.charge = true
+        @esd.drawTextCharge '0.0000', '0.0000', '0'
+        @noria.remove()
+        delete @noria
+        @noria = null
+        @common.mySwitch true
+        @common.disable()
+        @eolic = new EolicElements @wsData
+        @charge = true
+        @eolic.disable()
+        document.getElementById "panelHeadingElements"
+            .innerHTML = 'Elements you can interact with: Mode charge'
         @resize()
         
     selectDischarge: =>
@@ -126,7 +147,7 @@ class Init
             @common.mySwitch false
             @wsData.sendActuatorChange 'FWheelLab', "1"
         @noria = new NoriaElements @wsData
-        @charge = false
+        @charge = false       
 
         @common.enableSliders()
         @common.enableStart()
@@ -137,6 +158,23 @@ class Init
             .innerHTML = 'Elements you can interact with: Mode discharge'
         document.getElementById 'dischargeButton'
             .setAttribute 'disabled', 'disabled'
+        @resize()
+
+    createUiDischarge: ->
+        @esd.charge = false
+        @esd.drawTextDischarge '0.0000', '0.0000', '0'
+
+        @eolic.remove()
+        delete @eolic
+        @eolic = null
+        @common.mySwitch false
+        @common.disable()
+        @noria = new NoriaElements @wsData
+        @charge = false
+        @noria.disable()
+
+        document.getElementById "panelHeadingElements" 
+            .innerHTML = 'Elements you can interact with: Mode discharge'
         @resize()
 
     selectInterface: (e) =>

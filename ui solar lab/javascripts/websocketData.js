@@ -87,7 +87,9 @@
         }
         if (msg.payload.actuatorId === "SolarLab" && msg.payload.responseData.data[0] === "1") {
           eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('switchLab', true, false, null);
+          eve.initCustomEvent('switchLab', true, false, {
+            'modeLab': 'discharge'
+          });
           document.dispatchEvent(eve);
           if (!this.wsDataIsReady) {
             this.role = "controller";
@@ -106,7 +108,9 @@
         }
         if (msg.payload.actuatorId === "CraneLab" && msg.payload.responseData.data[0] === "1") {
           eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('switchLab', true, false, null);
+          eve.initCustomEvent('switchLab', true, false, {
+            'modeLab': 'discharge'
+          });
           document.dispatchEvent(eve);
           if (!this.wsDataIsReady) {
             this.role = "controller";

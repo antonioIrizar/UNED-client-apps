@@ -58,10 +58,18 @@
         };
       })(this), false);
       document.addEventListener('switchLab', (function(_this) {
-        return function() {
-          if (_this.switchLab) {
-            _this.switchLab = false;
-            return myApp.hidePleaseWait();
+        return function(e) {
+          if (_this.role === 'observer') {
+            if (e.detail.modeLab === 'charge') {
+              return _this.createUiCharge();
+            } else {
+              return _this.createUiDischarge();
+            }
+          } else {
+            if (_this.switchLab) {
+              _this.switchLab = false;
+              return myApp.hidePleaseWait();
+            }
           }
         };
       })(this), false);
@@ -146,6 +154,21 @@
       return this.resize();
     };
 
+    Init.prototype.createUiCharge = function() {
+      this.esd.charge = true;
+      this.esd.drawTextCharge('0.0000', '0.0000', '0');
+      this.noria.remove();
+      delete this.noria;
+      this.noria = null;
+      this.common.mySwitch(true);
+      this.common.disable();
+      this.eolic = new EolicElements(this.wsData);
+      this.charge = true;
+      this.eolic.disable();
+      document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
+      return this.resize();
+    };
+
     Init.prototype.selectDischarge = function() {
       this.switchLab = true;
       myApp.showPleaseWait();
@@ -170,6 +193,21 @@
       this.common.disableReset();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      return this.resize();
+    };
+
+    Init.prototype.createUiDischarge = function() {
+      this.esd.charge = false;
+      this.esd.drawTextDischarge('0.0000', '0.0000', '0');
+      this.eolic.remove();
+      delete this.eolic;
+      this.eolic = null;
+      this.common.mySwitch(false);
+      this.common.disable();
+      this.noria = new NoriaElements(this.wsData);
+      this.charge = false;
+      this.noria.disable();
+      document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       return this.resize();
     };
 

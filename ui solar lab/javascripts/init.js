@@ -58,7 +58,16 @@
         };
       })(this), false);
       document.addEventListener('switchLab', (function(_this) {
-        return function() {
+        return function(e) {
+          if (_this.role === 'observer') {
+            if (e.detail.modeLab === 'charge') {
+              _this.createUiCharge();
+            } else {
+              _this.createUiDischarge();
+            }
+          } else {
+
+          }
           if (_this.switchLab) {
             _this.switchLab = false;
             return myApp.hidePleaseWait();
@@ -146,6 +155,21 @@
       return this.resize();
     };
 
+    Init.prototype.createUiCharge = function() {
+      this.esd.charge = true;
+      this.esd.drawTextCharge('0.0000', '0.0000', '0');
+      this.crane.remove();
+      delete this.crane;
+      this.crane = null;
+      this.common.mySwitch(true);
+      this.common.disable();
+      this.solar = new SolarElements(this.wsData);
+      this.charge = true;
+      this.solar.disable();
+      document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode charge';
+      return this.resize();
+    };
+
     Init.prototype.selectDischarge = function() {
       this.switchLab = true;
       myApp.showPleaseWait();
@@ -170,6 +194,21 @@
       this.common.disableReset();
       document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      return this.resize();
+    };
+
+    Init.prototype.createUiDischarge = function() {
+      this.esd.charge = false;
+      this.esd.drawTextDischarge('0.0000', '0.0000', '0');
+      this.solar.remove();
+      delete this.solar;
+      this.solar = null;
+      this.common.mySwitch(false);
+      this.common.disable();
+      this.crane = new CraneElements(this.wsData);
+      this.charge = false;
+      this.crane.disable();
+      document.getElementById("panelHeadingElements").innerHTML = 'Elements you can interact with: Mode discharge';
       return this.resize();
     };
 

@@ -74,7 +74,7 @@ class WebsocketData
 
             if msg.payload.actuatorId is "WindLab" and msg.payload.responseData.data[0] is "1"
                 eve = document.createEvent 'CustomEvent'
-                eve.initCustomEvent 'switchLab', true, false, null
+                eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'charge'}
                 document.dispatchEvent eve
                 if not @wsDataIsReady 
                     @role  = "controller"
@@ -90,7 +90,7 @@ class WebsocketData
 
             if msg.payload.actuatorId is "FWheelLab" and msg.payload.responseData.data[0] is "1"
                 eve = document.createEvent 'CustomEvent'
-                eve.initCustomEvent 'switchLab', true, false, null
+                eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'discharge'}
                 document.dispatchEvent eve
                 if not @wsDataIsReady
                     @role  = "controller" 

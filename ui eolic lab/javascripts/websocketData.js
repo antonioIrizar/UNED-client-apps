@@ -95,7 +95,9 @@
         }
         if (msg.payload.actuatorId === "WindLab" && msg.payload.responseData.data[0] === "1") {
           eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('switchLab', true, false, null);
+          eve.initCustomEvent('switchLab', true, false, {
+            'modeLab': 'charge'
+          });
           document.dispatchEvent(eve);
           if (!this.wsDataIsReady) {
             this.role = "controller";
@@ -114,7 +116,9 @@
         }
         if (msg.payload.actuatorId === "FWheelLab" && msg.payload.responseData.data[0] === "1") {
           eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('switchLab', true, false, null);
+          eve.initCustomEvent('switchLab', true, false, {
+            'modeLab': 'discharge'
+          });
           document.dispatchEvent(eve);
           if (!this.wsDataIsReady) {
             this.role = "controller";
