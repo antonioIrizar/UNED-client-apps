@@ -115,7 +115,7 @@
       console.log("resize");
       esd.drawImageInCanvas();
       this.resize();
-      if (this.stop) {
+      if (!this.stop) {
         if (this.time > 18) {
           this.dataPlot.removeRow(17);
         } else {

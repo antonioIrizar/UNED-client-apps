@@ -65,7 +65,7 @@ class Plot
         console.log "resize"
         esd.drawImageInCanvas()
         @resize()
-        if @stop 
+        if not @stop 
             if @time > 18
                 @dataPlot.removeRow 17
             else
