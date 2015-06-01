@@ -3,7 +3,7 @@
   <head>
     <title>Eolic Lab</title>
     <link rel="shortcut icon" href="favicon.ico" />
-    <meta charset="utf-8"  />
+    <meta charset="utf-8" />
     <meta content="X-Content-Type-Options=nosniff" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Antonio Jesus Irízar López" />
@@ -80,7 +80,13 @@
         <div class="col-lg-4" id="div_formula_col">
           <div id="panel-elements" class="panel panel-primary">
             <div class="panel-heading">
-              <h3 id="panelHeadingElements" class="panel-title"></h3>
+              <div class="right-buttons-panel-heading-tutorial">
+                <a href="#" data-toggle="modal" data-target="#modalTutorial" style="color: #FFFFFF;">
+                  <span class="glyphicon glyphicon-info-sign"></span>
+                </a>
+              </div>
+              <h3 id="panelHeadingElements" class="panel-title">
+              </h3>
             </div>
             <div class="panel-body">
               <div id="noCommonElements"></div>       
@@ -125,19 +131,14 @@
                   <h3 class="panel-title">Webcam</h3>
                 </div>
                 <div id="panelGraph" class="panel-body ">
-                  <!--<img src="http://62.204.201.150:31/snapshot.cgi?&user=userSolar&pwd=&t=" onload='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 1)' onerror='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 5000)' alt='' class="img-responsive"/>-->
-                  <!--<img src="images/webcam.JPG" class="img-responsive">      -->
                   <img  id="imgCamera" src="" class="img-responsive center-block" alt="webcam in real time from solar lab">
-                  <!--
-                    src="http://62.204.201.150:31/videostream.cgi?user=userSolar&amp;pwd="
-                  <iframe marginheight="0" marginwidth="0" scrolling="auto" name="main" src="http://62.204.201.150:31/videostream.cgi?user=observer&pwd=" frameborder="0" height="480" width="640"></iframe>-->
                 </div>
               </div>
             </div>
           </div>
           <div class="panel panel-info">
             <div class="panel-heading">
-              <div id="save">
+              <div id="save" class="right-buttons-panel-heading">
                 <a href="#" onclick="varInit.plot.save()">
                   <span class="glyphicon glyphicon-eye-open"></span>
                 </a>
@@ -167,6 +168,27 @@
     </div>
 
     <!-- Modals -->
+    <div class="modal fade" id="modalTutorial" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">Tutorial of Laboratory</h4>
+          </div>
+          <div class="modal-body">
+            <!-- to view the pdf with library pdf.js,  need put url from library and url where the pdf is save 
+              example:
+                "http://dominio/pdf.js/web/viewer.html?file=http://dominio/Windmill_lab_user_manual.pdf
+            -->
+            <iframe src="http://weblab.ieec.uned.es/golab/ajirizar/pdfjs/web/viewer.html?file=http://weblab.ieec.uned.es/golab/ajirizar/uiEolic/Windmill_lab_user_manual.pdf" style="width: 100%;height:70vh;"></iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -259,150 +281,16 @@
       </div>
     </div>
   </div>
-    <script>
-    var 
-      varInit = null;
-      function arranque(){
-  
-
+  <script>
+    var varInit = null;
+    function arranque(){
       varInit = new Init("myCanvas", "esd");
-      /*
-      setTimeout(function(){
-        myApp.hidePleaseWait();
-          
-
-      },1000);
-
-      */
     };
 
-/* deprecate
-function reciveData(dataRecive, dataActuator, slider, nameActuator){
-  var result;
-  if (dataActuator == null || nameActuator == "Sun")
-    result = dataRecive;
-  else 
-    result = dataRecive + dataActuator;
-
-  if (result < $(slider).noUiSlider('options').range.min[0]){
-    console.log((Math.abs(result) + $(slider).noUiSlider('options').range.min[0]));
-    sendActuatorChange(nameActuator, (Math.abs(result) + $(slider).noUiSlider('options').range.min[0]).toString());
-    result = $(slider).noUiSlider('options').range.min[0];
-    console.log("minimo");
-  }
-  else{
-    if (result > $(slider).noUiSlider('options').range.max[0]){
-      console.log($(slider).noUiSlider('options').range.max[0]-result);
-      sendActuatorChange(nameActuator, ($(slider).noUiSlider('options').range.max[0]-result).toString());
-      result = $(slider).noUiSlider('options').range.max[0];
-      console.log("maximo");
-    }
-  }
-  console.log("dentro una vez");
-    return result;
-
-}
-*/
-
-
-/*
-function wsclose(event)
-{
-//   item = document.getElementById("receive");
-//  item.firstChild.nodeValue +=  " websocket is closed";
-alert("websocket " + event + " is closed");
-}
-*/
-
-  
-/* deprecate */
-/*
-$(".slider-battery").Link('upper').to('-inline-<div class="tooltipe"></div>', function ( value ) {
-
-  // The tooltip HTML is 'this', so additional
-  // markup can be inserted here.
-  $(this).html(
-    '<span>' + Math.floor(value) + '</span>'
-  );
-});
-
-
-$(".slider-battery").Link('lower').to('-inline-<div class="tooltipe"></div>', function ( value ) {
-
-  // The tooltip HTML is 'this', so additional
-  // markup can be inserted here.
-  $(this).html(
-    
-       '<span id="muahaha" class="info-pop-up" data-trigger="manual" data-placement="top" tabindex="0" data-toggle="popover" data-content="You can\'t change this value">' + Math.floor(value) + '</span>'
-  );
-});
-
-
-$(document).ready(function(){$('.info-pop-up').popover({trigger: 'manual'});
-  var a;
-  a = $('.slider-battery');
-  a = a[0].getElementsByClassName('noUi-handle-lower');
-  console.log(a[0]);
-});
-
-//console.log( document.getElementsByClassName("slider slider-battery noUi-target noUi-ltr noUi-horizontal noUi-background").id="red");
-
-var cosa1,cosa2,valueBatery;
-$('.slider-battery').on(
-  "change", function(event){
-    a = $('.slider-battery');
-    a = a[0].getElementsByClassName('noUi-base');
-    $(".slider-battery").val([valueBatery]);
-    $(".slider-battery").Link('lower').to(function ( value ) {
-  // The tooltip HTML is 'this', so additional
-  // markup can be inserted here.
-      if (value != valueBatery ){
-        clearTimeout(cosa1);
-        cosa1 = setTimeout(function(){
-          $('#muahaha').popover('show');
-          if (cosa2 == null)
-            clearTimeout(cosa2);
-          cosa2 = setTimeout(function(){
-            $('#muahaha').popover('hide');
-            cosa2 = null;
-          },13000);
-        },250);
-      }
-      else
-        if (cosa2 != null)
-          $('#muahaha').popover('show');
-});
-    //$('#muahaha').popover('show');
-   
-});
-
-function initSliderBattery (){
-  a = $('.slider-battery');
-  a = a[0].getElementsByClassName("noUi-connect");
-  a[0].setAttribute("class","noUi-origin noUi-background");
-  setInterval(function () {
-    var value = $(".slider-battery").val();
-    b = $('.slider-battery');
-    a = b[0].getElementsByClassName('noUi-base');
-    auxValueBatery = Math.floor((Math.random() * value[1])+1);
-    //valueBatery = 10;
-    if (auxValueBatery != valueBatery){
-      valueBatery = auxValueBatery;
-      b.val([valueBatery]);
-      if (valueBatery < 10)
-        a[0].setAttribute("id", "battery-warning");
-      else
-        a[0].setAttribute("id", "battery-ok");
-    }
-  }, 3000);
-}
-initSliderBattery();
-*/
-
-// TODO i don't know it is using
-function errorLumens(){
-  $('#myModalError').modal('show');
-};
+    // TODO i don't know it is using
+    function errorLumens(){
+      $('#myModalError').modal('show');
+    };
 
     </script>
   </body>

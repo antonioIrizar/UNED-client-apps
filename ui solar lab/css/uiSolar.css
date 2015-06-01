@@ -56,6 +56,13 @@
   float:right;
 }
 
+.right-buttons-panel-heading-tutorial{
+  position: relative;
+  font-size: 160%;
+  float:right;
+  top: -4px;
+}
+
 .button-accept{
   float:right;
 }

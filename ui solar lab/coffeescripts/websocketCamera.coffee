@@ -36,7 +36,7 @@ class WebSocketCamera
     reader = new FileReader()
     reader.onload = (e) ->
       #fix warning in chrome. Need say it is a image
-      image.src = image.src = e.target.result[0..4] + "image/jpg" + e.target.result[5..]
+      image.src = e.target.result[0..4] + "image/jpg" + e.target.result[5..]
 
     reader.readAsDataURL blob
     if not @wsCameraIsReady 

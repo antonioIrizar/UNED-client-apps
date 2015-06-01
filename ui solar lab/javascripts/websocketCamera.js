@@ -46,7 +46,7 @@
       image = document.getElementById('imgCamera');
       reader = new FileReader();
       reader.onload = function(e) {
-        return image.src = image.src = e.target.result.slice(0, 5) + "image/jpg" + e.target.result.slice(5);
+        return image.src = e.target.result.slice(0, 5) + "image/jpg" + e.target.result.slice(5);
       };
       reader.readAsDataURL(blob);
       if (!this.wsCameraIsReady) {

@@ -105,7 +105,7 @@ class Init
         @common.disableReset()
         @stopTrue()
 
-        document.getElementById "panelHeadingElements" 
+        document.getElementById "panelHeadingElements"
             .innerHTML = 'Elements you can interact with: Mode charge'
         document.getElementById 'chargeButton'
             .setAttribute 'disabled', 'disabled'
