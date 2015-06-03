@@ -75,7 +75,7 @@
         };
       })(this), false);
       this.change = false;
-      token = Math.random();
+      token = 1025;
       this.wsData = new WebsocketData(token);
       this.wsCamera = new WebSocketCamera(token);
       this.plot = new Plot();
@@ -136,13 +136,17 @@
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, true);
       } else {
-        this.wsData.sendActuatorChange('CraneLab', "0");
+        if (this.role === 'controller') {
+          this.wsData.sendActuatorChange('CraneLab', "0");
+        }
         this.crane.remove();
         delete this.crane;
         document.getElementById('dischargeButton').removeAttribute('disabled');
         this.crane = null;
         this.common.mySwitch(true);
-        this.wsData.sendActuatorChange('SolarLab', "1");
+        if (this.role === 'controller') {
+          this.wsData.sendActuatorChange('SolarLab', "1");
+        }
       }
       this.solar = new SolarElements(this.wsData);
       this.charge = true;
@@ -178,13 +182,17 @@
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, false);
       } else {
-        this.wsData.sendActuatorChange('SolarLab', "0");
+        if (this.role === 'controller') {
+          this.wsData.sendActuatorChange('SolarLab', "0");
+        }
         this.solar.remove();
         delete this.solar;
         document.getElementById('chargeButton').removeAttribute('disabled');
         this.solar = null;
         this.common.mySwitch(false);
-        this.wsData.sendActuatorChange('CraneLab', "1");
+        if (this.role === 'controller') {
+          this.wsData.sendActuatorChange('CraneLab', "1");
+        }
       }
       this.crane = new CraneElements(this.wsData);
       this.charge = false;
@@ -217,10 +225,10 @@
       battery = e.detail.battery;
       this.role = e.detail.role;
       role = document.getElementById('yourRole');
-      if (battery >= 90) {
-        this.selectDischarge();
-      } else {
+      if (e.detail.lab === 'solar') {
         this.selectCharge();
+      } else {
+        this.selectDischarge();
       }
       if (e.detail.role === 'observer') {
         if (this.charge) {
@@ -231,15 +239,30 @@
         this.common.disable();
         document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
         document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
-        role.appendChild(document.createTextNode('You are mode observer'));
+        role.innerHTML = 'You are mode observer';
       } else {
         this.common.disableStop();
         this.common.disableReset();
-        role.appendChild(document.createTextNode('You are mode controller'));
+        role.innerHTML = 'You are mode controller';
       }
       $(".slider-battery").val(battery);
       $("p#textBattery").text(battery + "%");
       return this.plot.resize();
+    };
+
+    Init.prototype.observer = function() {
+      var role;
+      this.role = 'observer';
+      if (this.charge) {
+        this.solar.disable();
+      } else {
+        this.crane.disable();
+      }
+      role = document.getElementById('yourRole');
+      this.common.disable();
+      document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      return role.innerHTML = 'You are mode observer';
     };
 
     Init.prototype.eventReadyAll = function(e) {
@@ -250,7 +273,6 @@
 
     Init.prototype.startExperiments = function() {
       if (this.charge) {
-        console.log("cargarrr");
         this.chargeStart();
       } else {
         this.dischargeStart();

@@ -6,11 +6,21 @@ class WebsocketData
     role: "observer"
     battery: null
     token: null
+    lab: null
+    switchUi: false
+    oneNone: false
+    alwaysObserver: false
+    errorWithControler: false
 
     constructor: (@token) ->
         @wsDataIsReady = false
         @firstTimeBattery = true
         @role = "observer"
+        @lab = null
+        @switchUi = false
+        @oneNone = false
+        @alwaysObserver = false
+        @errorWithControler = false
 
         @wsData = new WebSocket @URLWS
 
@@ -20,13 +30,11 @@ class WebsocketData
         @wsData.onerror = @onerror
 
     onopen: =>
-        console.log "ws data llamada"
+        console.log "ws open"
         @getSensorData("ESDval", "observer")
-        #sendActuatorChange 'SolarLab', "1"
-        #sendActuatorChange 'CraneLab', "1"
 
     onclose: (event) =>
-        console.log "me he cerrado"
+        console.log "close"
         switch event.code
             when 1000
                 myApp.hidePleaseWait()
@@ -50,57 +58,88 @@ class WebsocketData
         ##improve this with case
         if msg.method == "sendActuatorData"
             if msg.responseMessages isnt undefined && msg.responseMessages.code == 409
-                console.log "codigo 409"
-                #getSensorData("ESDval", "observer")
-                eve = document.createEvent 'CustomEvent'
-                eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
-                document.dispatchEvent eve
-                if @battery < 90
-                    @getSensorData("Light", "observer")
-                    @getSensorData("PanelRot", "observer")
-                    @getSensorData("PanelTilt", "observer")
-                else
-                    if not @wsDataIsReady 
-                        @wsDataIsReady = true
-                        eve = document.createEvent 'Event'
-                        eve.initEvent 'allWsAreReady', true, false
-                        document.dispatchEvent eve
+                console.log "code 409"
+                if msg.responseMessages.message is "AccesRole controller already assigned."
+                    myApp.showPleaseWait()
+                    @alwaysObserver = true
+                    @errorWithControler = true
+                    @role = 'observer' 
+                    @wsDataIsReady = false
+                    if @lab is 'none'
+                        @getSensorData("Doing", "observer") 
+                    else
+                        @switchUi = true
+                        if @lab is 'solar'
+                            varInit.observer()
+                            @getSensorData("Light", "observer")
+                        else
+                            varInit.observer()
                 return
 
             if msg.payload.actuatorId is "SolarLab" and msg.payload.responseData.data[0] is "1"
-                eve = document.createEvent 'CustomEvent'
-                eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'discharge'}
-                document.dispatchEvent eve
-                if not @wsDataIsReady 
-                    @role  = "controller"
+
+                if @firstTimeBattery or @lab is null
+                    @lab = 'solar'
+                    @alwaysObserver = true
+                    return
+                
+                if not @wsDataIsReady and @switchUi 
+                    @lab = 'solar'
+                    @abort = false
+                    @solarInterfaz()
+                    @getSensorData("Light", "observer")
+                    return
+               
+                if not @wsDataIsReady and @lab isnt null
+                    @lab = 'solar' 
+                    @role = "controller"
                     eve = document.createEvent 'CustomEvent'
-                    eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
+                    eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery, 'lab' : 'solar'}
                     document.dispatchEvent eve
                     @wsDataIsReady = true
                     eve = document.createEvent 'Event'
                     eve.initEvent 'allWsAreReady', true, false
                     document.dispatchEvent eve
                     #getSensorData("ESDval", "controller")
+                else 
+                    @lab = 'solar'
+                    eve = document.createEvent 'CustomEvent'
+                    eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'charge'}
+                    document.dispatchEvent eve
                 return
 
             if msg.payload.actuatorId is "CraneLab" and msg.payload.responseData.data[0] is "1"
-                eve = document.createEvent 'CustomEvent'
-                eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'discharge'}
-                document.dispatchEvent eve
+
+                if @firstTimeBattery or @lab is null
+                    @lab = 'crane'
+                    @alwaysObserver = true
+                    return
+
+                @lab = 'crane'
+                if not @wsDataIsReady and @switchUi 
+                    @abort = true
+                    @craneInterfaz()
+                    return
+               
                 if not @wsDataIsReady
-                    @role  = "controller" 
+                    @role = "controller" 
                     eve = document.createEvent 'CustomEvent'
-                    eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery}
+                    eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery, 'lab' : 'crane'}
                     document.dispatchEvent eve
                     @wsDataIsReady = true
                     eve = document.createEvent 'Event'
                     eve.initEvent 'allWsAreReady', true, false
                     document.dispatchEvent eve
                     #getSensorData("ESDval", "controller")
+                else
+                    eve = document.createEvent 'CustomEvent'
+                    eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'discharge'}
+                    document.dispatchEvent eve
+
                 return
 
         if msg.method == "sendActuatorData" && msg.payload.actuatorId == "ESD"
-            if msg.payload.responseData.data[0] == "1"
+            if msg.payload.responseData.data[0] == "1" and not @alwaysObserver and @wsDataIsReady
                 eve = document.createEvent 'Event'
                 eve.initEvent 'ESDOn', true, false
                 document.dispatchEvent eve
@@ -110,7 +149,6 @@ class WebsocketData
                 return
 
         if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot")
-
             eve = document.createEvent 'CustomEvent'
             eve.initCustomEvent 'reciveData', true, false, {'actuatorId' : msg.payload.actuatorId, 'value' : msg.payload.responseData.data[0]}
             document.dispatchEvent eve
@@ -149,29 +187,135 @@ class WebsocketData
                 #fix this
                 @firstTimeBattery = false
                 @battery = msg.responseData.data[0]
-                if @battery < 90
-                    @sendActuatorChange 'SolarLab', "1"
+                if @lab is null
+                    @getSensorData("Doing", "observer")
                 else
-                    @sendActuatorChange 'CraneLab', "1"
+                    @switchUi = true
+                    if @lab is 'solar'
+                        @solarInterfaz()
+                        @getSensorData("Light", "observer")
+                    else
+                        @craneInterfaz()
+
             return
             #finishInitLoading(msg.responseData.data[0])
 
+        if msg.method == "getSensorData" && msg.sensorId == "Doing"
+
+            if @alwaysObserver and not @errorWithControler
+                @switchUi = true
+                if @lab is 'solar'
+                    @solarInterfaz()
+                    @getSensorData("Light", "observer")
+                    return
+                else
+                    @craneInterfaz()
+                    return
+            else
+                if @errorWithControler
+                    @switchUi = true
+                    if @lab is 'none' and msg.responseData.data[0] is 'none'
+                        if @battery < 90
+                            @lab = 'solar'
+                            @solarInterfaz()
+                            @getSensorData("Light", "observer")
+                            return
+                        else
+                            @lab = 'crane'
+                            @craneInterfaz()
+                            return
+                    else
+                        if msg.responseData.data[0] is 'none'
+                            if @lab is 'solar'
+                                @solarInterfaz()
+                                @getSensorData("Light", "observer")
+                                return
+                            else
+                                @craneInterfaz()
+                                return
+                        else
+                            if msg.responseData.data[0] is 'solar'
+                                @solarInterfaz()
+                                @getSensorData("Light", "observer")
+                                return
+                            else
+                                @craneInterfaz()
+                                return
+                else
+                    if msg.responseData.data[0] is 'none'
+                        if @lab is null
+                            if @battery < 90
+                                @sendActuatorChange 'SolarLab', "1"
+                            else
+                                @sendActuatorChange 'CraneLab', "1" 
+                            @lab = 'none'
+
+                    
+                    if msg.responseData.data[0] is 'crane'
+                        @alwaysObserver = true
+                        @lab = 'crane'
+                        @switchUi = true
+                        @craneInterfaz()
+                        return
+
+                    if msg.responseData.data[0] is 'solar'
+                        @alwaysObserver = true
+                        @lab = 'solar'
+                        @switchUi = true
+                        @solarInterfaz()
+                        @getSensorData("Light", "observer")
+                        return
+
+            return
+            
+
         if msg.method == "getSensorData" && msg.sensorId == "Light"
+            if @abort
+                @abort = false
+                return
             $(".slider-lumens").val(parseInt(msg.responseData.data[0]))
+            if @switchUi 
+                @getSensorData("PanelRot", "observer")
             return
         
         if msg.method == "getSensorData" && msg.sensorId == "PanelRot"
-          $(".slider-horizontal-axis").val(parseInt(msg.responseData.data[0]))
-          return
+            if @abort
+                @abort = false
+                return
+            $(".slider-horizontal-axis").val(parseInt(msg.responseData.data[0]))
+            if @switchUi
+                @getSensorData("PanelTilt", "observer")
+            return
 
         if msg.method == "getSensorData" && msg.sensorId == "PanelTilt"
+            if @abort
+                @abort = false
+                return
             $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]))
+            if @switchUi
+                @switchUi = false
             if not @wsDataIsReady 
                 @wsDataIsReady = true
                 eve = document.createEvent 'Event'
                 eve.initEvent 'allWsAreReady', true, false
                 document.dispatchEvent eve
             return
+
+    craneInterfaz: =>
+        eve = document.createEvent 'CustomEvent'
+        eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery, 'lab' : 'crane'}
+        document.dispatchEvent eve
+        if not @wsDataIsReady 
+            @wsDataIsReady = true
+            @switchUi = false
+            eve = document.createEvent 'Event'
+            eve.initEvent 'allWsAreReady', true, false
+            document.dispatchEvent eve
+
+    solarInterfaz: =>
+        eve = document.createEvent 'CustomEvent'
+        eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery, 'lab' : 'solar'}
+        document.dispatchEvent eve
 
     sendActuatorChange: (actuatorId, data) -> 
         actuatorRequest = 
@@ -196,63 +340,5 @@ class WebsocketData
         jsonRequest = JSON.stringify sensorRequest
         @wsData.send jsonRequest
 
-
-        # put recive message jouls and time
-        ###
-        "{"method":"sendActuatorData","accessRole":"controller","payload":{"actuatorId":"ESD","responseData":{"valueNames":["State"],"data":[1],"lastMeasured":["13022015T095315"]}}}"
-
-
-        "{"method":"getSensorData","sensorId":"ESDval","accessRole":"","responseData":{"valueNames":["input voltage","input current","input wattage","worktodo"],"data":[1.7309999465942383,0,0,4],"lastMeasured":["12022015T151255","12022015T151255","12022015T151255","12022015T151255"]}}"
-
-        "{
-         "method": "sendActuatorData",
-         "responseMessages" :{
-            "code": 409,
-            "message": "AccesRole controller already assigned."
-        }
-        }"
-        if (msg.method == "getSensorMetadata") {
-          document.querySelector('#sensorInfo').value = msg.sensors[0].description; // display description of the 1st sensor
-          document.querySelector('#SensorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
-          }
-        else 
-        if (msg.method == "getActuatorMetadata") {
-          document.querySelector('#ActuatorInfo').value = msg.actuators[0].description; // display description of the 1st sensor
-          document.querySelector('#ActuatorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
-          }
-        else{
-
-          if (msg.responseData) {
-            document.querySelector('#sensorVal').value = msg.responseData.data[0];
-          }
-          else
-            document.querySelector('#sensorVal').value ="err: " +msg.responseMessages.code + " " +msg.responseMessages.message  ;
-            
-            }
-         
-        //  console.log("received: [", data, "]");
-        ###
-###
-    sendActuatorChange: (actuatorId, data) ->
-        console.log("llamada")
-
-        actuatorRequest = {
-        method: 'sendActuatorData',
-        authToken: 'skfjs343kjKJ',
-        accessRole: 'controller',
-        actuatorId: actuatorId,
-        valueNames: "",
-        data: data  
-        }
-
-        jsonRequest = JSON.stringify(actuatorRequest)
-        @wsData.send(jsonRequest)
-        console.log(varInit)
-        console.log(varInit.wsData)
-
-    getSensorData: (sensorId, accessRole) ->
-        jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId})
-        @wsData.send(jsonRequest)
-###
 
 window.WebsocketData = WebsocketData

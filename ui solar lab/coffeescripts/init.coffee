@@ -41,7 +41,7 @@ class Init
 
         @change = false
         #same id for websocket data and video. It is for close correctly in backned.
-        token = Math.random()
+        token = 1025
         @wsData = new WebsocketData token
         @wsCamera = new WebSocketCamera token
         @plot = new Plot()
@@ -92,14 +92,16 @@ class Init
         if @common is null
             @common = new CommonElements @wsData, true
         else
-            @wsData.sendActuatorChange 'CraneLab', "0"
+            if @role is 'controller'
+                @wsData.sendActuatorChange 'CraneLab', "0"
             @crane.remove()
             delete @crane
             document.getElementById 'dischargeButton'
                 .removeAttribute 'disabled'
             @crane = null
             @common.mySwitch true
-            @wsData.sendActuatorChange 'SolarLab', "1"
+            if @role is 'controller'
+                @wsData.sendActuatorChange 'SolarLab', "1"
         @solar = new SolarElements @wsData
         @charge = true
 
@@ -137,14 +139,16 @@ class Init
         if @common is null
             @common = new CommonElements @wsData, false
         else
-            @wsData.sendActuatorChange 'SolarLab', "0"
+            if @role is 'controller'
+                @wsData.sendActuatorChange 'SolarLab', "0"
             @solar.remove()
             delete @solar
             document.getElementById 'chargeButton'
                 .removeAttribute 'disabled'
             @solar = null
             @common.mySwitch false
-            @wsData.sendActuatorChange 'CraneLab', "1"
+            if @role is 'controller'
+                @wsData.sendActuatorChange 'CraneLab', "1"
         @crane = new CraneElements @wsData
         @charge = false
 
@@ -180,10 +184,10 @@ class Init
         battery = e.detail.battery
         @role = e.detail.role
         role = document.getElementById 'yourRole'
-        if battery >= 90
-            @selectDischarge()     
-        else
+        if e.detail.lab is 'solar'
             @selectCharge()
+        else
+            @selectDischarge() 
         if e.detail.role is 'observer'
             if @charge
                 @solar.disable()
@@ -194,15 +198,29 @@ class Init
                 .setAttribute 'disabled', 'disabled'
             document.getElementById 'chargeButton'
                 .setAttribute 'disabled', 'disabled'
-            role.appendChild document.createTextNode 'You are mode observer'
+            role.innerHTML = 'You are mode observer'
         else
             @common.disableStop()
             @common.disableReset()
-            role.appendChild document.createTextNode 'You are mode controller'
+            role.innerHTML = 'You are mode controller'
 
         $(".slider-battery").val battery
         $("p#textBattery").text battery + "%"
         @plot.resize()
+
+    observer: ->
+        @role = 'observer'
+        if @charge
+                @solar.disable()
+            else
+                @crane.disable()
+        role = document.getElementById 'yourRole'
+        @common.disable()
+        document.getElementById 'dischargeButton'
+            .setAttribute 'disabled', 'disabled'
+        document.getElementById 'chargeButton'
+            .setAttribute 'disabled', 'disabled'
+        role.innerHTML = 'You are mode observer'
 
     eventReadyAll: (e) =>
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady
@@ -210,7 +228,6 @@ class Init
 
     startExperiments: ->
         if @charge
-            console.log "cargarrr"
             @chargeStart()
         else
             @dischargeStart()

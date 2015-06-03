@@ -91,7 +91,8 @@
     EolicElements.prototype.sendWind = function() {
       var auxWind;
       auxWind = parseInt($('.slider-wind').val());
-      if (auxWind !== 0) {
+      if (parseInt(this.realValueToSend(this.wind, auxWind)) !== 0) {
+        this.wind = auxWind;
         this.wsData.sendActuatorChange('Wind', auxWind.toString());
         return myApp.showPleaseWait();
       }

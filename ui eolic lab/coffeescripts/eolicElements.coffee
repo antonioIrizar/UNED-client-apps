@@ -78,7 +78,8 @@ class EolicElements extends Part
     sendWind: =>
         auxWind = parseInt $('.slider-wind').val()
 
-        if auxWind isnt 0
+        if parseInt(@realValueToSend @wind, auxWind) isnt 0
+            @wind = auxWind
             @wsData.sendActuatorChange 'Wind', auxWind.toString()
             myApp.showPleaseWait()
   

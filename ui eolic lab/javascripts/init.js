@@ -259,6 +259,7 @@
     Init.prototype.stopExperiment = function() {
       this.interruptExperiment = true;
       this.wsData.sendActuatorChange('ESD', '0');
+      this.eolic.wind = null;
       this.common.enableSliders();
       this.common.enableStart();
       this.common.disableStop();

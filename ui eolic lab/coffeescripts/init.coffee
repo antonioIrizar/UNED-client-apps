@@ -220,6 +220,7 @@ class Init
     stopExperiment: -> 
         @interruptExperiment = true
         @wsData.sendActuatorChange 'ESD', '0'
+        @eolic.wind = null
         @common.enableSliders()
         @common.enableStart()
         @common.disableStop()

@@ -147,12 +147,11 @@ class WebsocketData
                 #fix this
                 @firstTimeBattery = false
                 @battery = msg.responseData.data[0]
-
                 if @battery < 90
                     @sendActuatorChange 'WindLab', "1"
                 else
-                    @sendActuatorChange 'FWheelLab', "1"
-                
+                    @sendActuatorChange 'FWheelLab', "1"   
+                    
             return
             #finishInitLoading(msg.responseData.data[0])
 
