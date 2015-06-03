@@ -18,14 +18,31 @@
 
     WebsocketData.prototype.token = null;
 
+    WebsocketData.prototype.lab = null;
+
+    WebsocketData.prototype.switchUi = false;
+
+    WebsocketData.prototype.oneNone = false;
+
+    WebsocketData.prototype.alwaysObserver = false;
+
+    WebsocketData.prototype.errorWithControler = false;
+
     function WebsocketData(token) {
       this.token = token;
+      this.windInterfaz = __bind(this.windInterfaz, this);
+      this.wheelInterfaz = __bind(this.wheelInterfaz, this);
       this.onmessage = __bind(this.onmessage, this);
       this.onclose = __bind(this.onclose, this);
       this.onopen = __bind(this.onopen, this);
       this.wsDataIsReady = false;
       this.firstTimeBattery = true;
       this.role = "observer";
+      this.lab = null;
+      this.switchUi = false;
+      this.oneNone = false;
+      this.alwaysObserver = false;
+      this.errorWithControler = false;
       this.wsData = new WebSocket(this.URLWS);
       this.wsData.onopen = this.onopen;
       this.wsData.onmessage = this.onmessage;
@@ -34,12 +51,12 @@
     }
 
     WebsocketData.prototype.onopen = function() {
-      console.log("ws data llamada");
+      console.log("ws open");
       return this.getSensorData("ESDval", "observer");
     };
 
     WebsocketData.prototype.onclose = function(event) {
-      console.log("me he cerrado");
+      console.log("close");
       switch (event.code) {
         case 1000:
           myApp.hidePleaseWait();
@@ -63,89 +80,112 @@
       msg = JSON.parse(data);
       console.log(msg);
       if (msg.method === "sendActuatorData") {
-
-        /*
-        if msg.responseMessages isnt undefined && msg.responseMessages.code == 411
-             if not @wsDataIsReady 
-                    @wsDataIsReady = true
-                    eve = document.createEvent 'Event'
-                    eve.initEvent 'allWsAreReady', true, false
-                    document.dispatchEvent eve
-         */
         if (msg.responseMessages !== void 0 && msg.responseMessages.code === 409) {
-          console.log("codigo 409");
-          eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('selectInterface', true, false, {
-            'role': this.role,
-            'battery': this.battery
-          });
-          document.dispatchEvent(eve);
-          if (this.battery < 90) {
-            this.getSensorData("WindPower", "observer");
-            this.getSensorData("MillRot", "observer");
-          } else {
-            if (!this.wsDataIsReady) {
-              this.wsDataIsReady = true;
-              eve = document.createEvent('Event');
-              eve.initEvent('allWsAreReady', true, false);
-              document.dispatchEvent(eve);
+          console.log("code 409");
+          if (msg.responseMessages.message === "AccesRole controller already assigned.") {
+            myApp.showPleaseWait();
+            this.alwaysObserver = true;
+            this.errorWithControler = true;
+            this.role = 'observer';
+            this.wsDataIsReady = false;
+            if (this.lab === 'none') {
+              this.getSensorData("Doing", "observer");
+            } else {
+              this.switchUi = true;
+              if (this.lab === 'wind') {
+                varInit.observer();
+                this.getSensorData("WindPower", "observer");
+              } else {
+                varInit.observer();
+              }
             }
           }
           return;
         }
         if (msg.payload.actuatorId === "WindLab" && msg.payload.responseData.data[0] === "1") {
-          eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('switchLab', true, false, {
-            'modeLab': 'charge'
-          });
-          document.dispatchEvent(eve);
-          if (!this.wsDataIsReady) {
+          if (this.firstTimeBattery || this.lab === null) {
+            this.lab = 'wind';
+            this.alwaysObserver = true;
+            return;
+          }
+          if (!this.wsDataIsReady && this.switchUi) {
+            this.lab = 'wind';
+            this.abort = false;
+            this.windInterfaz();
+            this.getSensorData("WindPower", "observer");
+            return;
+          }
+          if (!this.wsDataIsReady && this.lab !== null) {
+            this.lab = 'wind';
             this.role = "controller";
             eve = document.createEvent('CustomEvent');
             eve.initCustomEvent('selectInterface', true, false, {
               'role': this.role,
-              'battery': this.battery
+              'battery': this.battery,
+              'lab': 'wind'
             });
             document.dispatchEvent(eve);
             this.wsDataIsReady = true;
             eve = document.createEvent('Event');
             eve.initEvent('allWsAreReady', true, false);
+            document.dispatchEvent(eve);
+          } else {
+            this.lab = 'wind';
+            eve = document.createEvent('CustomEvent');
+            eve.initCustomEvent('switchLab', true, false, {
+              'modeLab': 'charge'
+            });
             document.dispatchEvent(eve);
           }
           return;
         }
         if (msg.payload.actuatorId === "FWheelLab" && msg.payload.responseData.data[0] === "1") {
-          eve = document.createEvent('CustomEvent');
-          eve.initCustomEvent('switchLab', true, false, {
-            'modeLab': 'discharge'
-          });
-          document.dispatchEvent(eve);
+          if (this.firstTimeBattery || this.lab === null) {
+            this.lab = 'wheel';
+            this.alwaysObserver = true;
+            return;
+          }
+          if (!this.wsDataIsReady && this.switchUi) {
+            this.lab = 'wheel';
+            this.abort = true;
+            this.wheelInterfaz();
+            return;
+          }
           if (!this.wsDataIsReady) {
+            this.lab = 'wheel';
             this.role = "controller";
             eve = document.createEvent('CustomEvent');
             eve.initCustomEvent('selectInterface', true, false, {
               'role': this.role,
-              'battery': this.battery
+              'battery': this.battery,
+              'lab': 'wheel'
             });
             document.dispatchEvent(eve);
             this.wsDataIsReady = true;
             eve = document.createEvent('Event');
             eve.initEvent('allWsAreReady', true, false);
+            document.dispatchEvent(eve);
+          } else {
+            this.lab = 'wheel';
+            eve = document.createEvent('CustomEvent');
+            eve.initCustomEvent('switchLab', true, false, {
+              'modeLab': 'discharge'
+            });
             document.dispatchEvent(eve);
           }
           return;
         }
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "ESD") {
-        if (msg.payload.responseData.data[0] === "1") {
+        if (msg.payload.responseData.data[0] === "1" && !this.alwaysObserver && this.wsDataIsReady) {
           eve = document.createEvent('Event');
           eve.initEvent('ESDOn', true, false);
           document.dispatchEvent(eve);
           this.getSensorData("ESDval", "controller");
           $("#stop").removeAttr('disabled');
           $("#reset").removeAttr('disabled');
-          return;
         }
+        return;
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "Millrot") {
         eve = document.createEvent('CustomEvent');
@@ -182,19 +222,112 @@
         if (this.firstTimeBattery) {
           this.firstTimeBattery = false;
           this.battery = msg.responseData.data[0];
-          if (this.battery < 90) {
-            this.sendActuatorChange('WindLab', "1");
+          if (this.lab === null) {
+            this.getSensorData("Doing", "observer");
           } else {
-            this.sendActuatorChange('FWheelLab', "1");
+            this.switchUi = true;
+            if (this.lab === 'wind') {
+              this.windInterfaz();
+              this.getSensorData("WindPower", "observer");
+            } else {
+              this.wheelInterfaz();
+            }
+          }
+        }
+        return;
+      }
+      if (msg.method === "getSensorData" && msg.sensorId === "Doing") {
+        if (this.alwaysObserver && !this.errorWithControler) {
+          this.switchUi = true;
+          if (this.lab === 'wind') {
+            this.windInterfaz();
+            this.getSensorData("WindPower", "observer");
+            return;
+          } else {
+            this.wheelInterfaz();
+            return;
+          }
+        } else {
+          if (this.errorWithControler) {
+            this.switchUi = true;
+            if (this.lab === 'none' && msg.responseData.data[0] === 'none') {
+              if (this.battery < 90) {
+                this.lab = 'wind';
+                this.windInterfaz();
+                this.getSensorData("WindPower", "observer");
+                return;
+              } else {
+                this.lab = 'wheel';
+                this.wheelInterfaz();
+                return;
+              }
+            } else {
+              if (msg.responseData.data[0] === 'none') {
+                if (this.lab === 'wind') {
+                  this.windInterfaz();
+                  this.getSensorData("WindPower", "observer");
+                  return;
+                } else {
+                  this.wheelInterfaz();
+                  return;
+                }
+              } else {
+                if (msg.responseData.data[0] === 'wind') {
+                  this.windInterfaz();
+                  this.getSensorData("WindPower", "observer");
+                  return;
+                } else {
+                  this.wheelInterfaz();
+                  return;
+                }
+              }
+            }
+          } else {
+            if (msg.responseData.data[0] === 'none') {
+              if (this.lab === null) {
+                if (this.battery < 90) {
+                  this.sendActuatorChange('WindLab', "1");
+                } else {
+                  this.sendActuatorChange('FWheelLab', "1");
+                }
+                this.lab = 'none';
+              }
+            }
+            if (msg.responseData.data[0] === 'wheel') {
+              this.alwaysObserver = true;
+              this.lab = 'wheel';
+              this.switchUi = true;
+              this.wheelInterfaz();
+              return;
+            }
+            if (msg.responseData.data[0] === 'wind') {
+              this.alwaysObserver = true;
+              this.lab = 'wind';
+              this.switchUi = true;
+              this.windInterfaz();
+              this.getSensorData("WindPower", "observer");
+              return;
+            }
           }
         }
         return;
       }
       if (msg.method === "getSensorData" && msg.sensorId === "WindPower") {
+        if (this.abort) {
+          this.abort = false;
+          return;
+        }
         $(".slider-lumens").val(parseInt(msg.responseData.data[0]));
+        if (this.switchUi) {
+          this.getSensorData("MillRot", "observer");
+        }
         return;
       }
       if (msg.method === "getSensorData" && msg.sensorId === "MillRot") {
+        if (this.abort) {
+          this.abort = false;
+          return;
+        }
         $(".slider-vertical-axis").val(parseInt(msg.responseData.data[0]));
         if (!this.wsDataIsReady) {
           this.wsDataIsReady = true;
@@ -203,6 +336,35 @@
           document.dispatchEvent(eve);
         }
       }
+    };
+
+    WebsocketData.prototype.wheelInterfaz = function() {
+      var eve;
+      eve = document.createEvent('CustomEvent');
+      eve.initCustomEvent('selectInterface', true, false, {
+        'role': this.role,
+        'battery': this.battery,
+        'lab': 'wheel'
+      });
+      document.dispatchEvent(eve);
+      if (!this.wsDataIsReady) {
+        this.wsDataIsReady = true;
+        this.switchUi = false;
+        eve = document.createEvent('Event');
+        eve.initEvent('allWsAreReady', true, false);
+        return document.dispatchEvent(eve);
+      }
+    };
+
+    WebsocketData.prototype.windInterfaz = function() {
+      var eve;
+      eve = document.createEvent('CustomEvent');
+      eve.initCustomEvent('selectInterface', true, false, {
+        'role': this.role,
+        'battery': this.battery,
+        'lab': 'wind'
+      });
+      return document.dispatchEvent(eve);
     };
 
     WebsocketData.prototype.sendActuatorChange = function(actuatorId, data) {
@@ -230,70 +392,11 @@
       };
       jsonRequest = JSON.stringify(sensorRequest);
       return this.wsData.send(jsonRequest);
-
-      /*
-      "{"method":"sendActuatorData","accessRole":"controller","payload":{"actuatorId":"ESD","responseData":{"valueNames":["State"],"data":[1],"lastMeasured":["13022015T095315"]}}}"
-      
-      
-      "{"method":"getSensorData","sensorId":"ESDval","accessRole":"","responseData":{"valueNames":["input voltage","input current","input wattage","worktodo"],"data":[1.7309999465942383,0,0,4],"lastMeasured":["12022015T151255","12022015T151255","12022015T151255","12022015T151255"]}}"
-      
-      "{
-       "method": "sendActuatorData",
-       "responseMessages" :{
-          "code": 409,
-          "message": "AccesRole controller already assigned."
-      }
-      }"
-      if (msg.method == "getSensorMetadata") {
-        document.querySelector('#sensorInfo').value = msg.sensors[0].description; // display description of the 1st sensor
-        document.querySelector('#SensorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
-        }
-      else 
-      if (msg.method == "getActuatorMetadata") {
-        document.querySelector('#ActuatorInfo').value = msg.actuators[0].description; // display description of the 1st sensor
-        document.querySelector('#ActuatorMeta').value = JSON.stringify(msg);//msg.sensors[0].description; // display description of the 1st sensor
-        }
-      else{
-      
-        if (msg.responseData) {
-          document.querySelector('#sensorVal').value = msg.responseData.data[0];
-        }
-        else
-          document.querySelector('#sensorVal').value ="err: " +msg.responseMessages.code + " " +msg.responseMessages.message  ;
-          
-          }
-       
-      //  console.log("received: [", data, "]");
-       */
     };
 
     return WebsocketData;
 
   })();
-
-
-  /*
-      sendActuatorChange: (actuatorId, data) ->
-          console.log("llamada")
-  
-          actuatorRequest = {
-          method: 'sendActuatorData',
-          authToken: 'skfjs343kjKJ',
-          accessRole: 'controller',
-          actuatorId: actuatorId,
-          valueNames: "",
-          data: data  
-          }
-  
-          jsonRequest = JSON.stringify(actuatorRequest)
-          @wsData.send(jsonRequest)
-          console.log(varInit)
-          console.log(varInit.wsData)
-  
-      getSensorData: (sensorId, accessRole) ->
-          jsonRequest = JSON.stringify({"method":"getSensorData", "accessRole": accessRole, "updateFrequency":"1", "sensorId":sensorId})
-          @wsData.send(jsonRequest)
-   */
 
   window.WebsocketData = WebsocketData;
 

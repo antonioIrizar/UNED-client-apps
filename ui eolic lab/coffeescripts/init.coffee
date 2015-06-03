@@ -93,14 +93,16 @@ class Init
         if @common is null
             @common = new CommonElements @wsData, true
         else
-            @wsData.sendActuatorChange 'FWheelLab', "0"
+            if @role is 'controller'
+                @wsData.sendActuatorChange 'FWheelLab', "0"
             @noria.remove()
             delete @noria
             document.getElementById 'dischargeButton'
                 .removeAttribute 'disabled'
             @noria = null
             @common.mySwitch true
-            @wsData.sendActuatorChange 'WindLab', "1"
+            if @role is 'controller'
+                @wsData.sendActuatorChange 'WindLab', "1"
         @eolic = new EolicElements @wsData
         @charge = true
 
@@ -138,14 +140,16 @@ class Init
         if @common is null
             @common = new CommonElements @wsData, false
         else
-            @wsData.sendActuatorChange 'WindLab', "0"
+            if @role is "controller"
+                @wsData.sendActuatorChange 'WindLab', "0"
             @eolic.remove()
             delete @eolic
             document.getElementById 'chargeButton'
                 .removeAttribute 'disabled'
             @eolic = null
             @common.mySwitch false
-            @wsData.sendActuatorChange 'FWheelLab', "1"
+            if @role is "controller"
+                @wsData.sendActuatorChange 'FWheelLab', "1"
         @noria = new NoriaElements @wsData
         @charge = false       
 
@@ -181,10 +185,10 @@ class Init
         battery = e.detail.battery
         @role = e.detail.role
         role = document.getElementById 'yourRole'
-        if battery >= 90
-            @selectDischarge()     
-        else
+        if e.detail.lab is 'wind'
             @selectCharge()
+        else
+            @selectDischarge()
         if e.detail.role is 'observer'
             if @charge
                 @eolic.disable()
@@ -195,14 +199,28 @@ class Init
                 .setAttribute 'disabled', 'disabled'
             document.getElementById 'chargeButton'
                 .setAttribute 'disabled', 'disabled'
-            role.appendChild document.createTextNode 'You are an observer'
+            role.innerHTML = 'You are an observer'
         else
             @common.disableStop()
             @common.disableReset()
-            role.appendChild document.createTextNode 'You are the controller'
+            role.innerHTML = 'You are the controller'
 
         $(".slider-battery").val battery
         $("p#textBattery").text battery + "%"
+
+    observer: ->
+        @role = 'observer'
+        if @charge
+                @eolic.disable()
+            else
+                @noria.disable()
+        role = document.getElementById 'yourRole'
+        @common.disable()
+        document.getElementById 'dischargeButton'
+            .setAttribute 'disabled', 'disabled'
+        document.getElementById 'chargeButton'
+            .setAttribute 'disabled', 'disabled'
+        role.innerHTML = 'You are mode observer'
 
     eventReadyAll: (e) =>
         if @wsData.wsDataIsReady and @wsCamera.wsCameraIsReady

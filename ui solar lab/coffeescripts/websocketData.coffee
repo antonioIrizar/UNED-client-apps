@@ -115,13 +115,15 @@ class WebsocketData
                     @alwaysObserver = true
                     return
 
-                @lab = 'crane'
+                
                 if not @wsDataIsReady and @switchUi 
+                    @lab = 'crane'
                     @abort = true
                     @craneInterfaz()
                     return
                
                 if not @wsDataIsReady
+                    @lab = 'crane'
                     @role = "controller" 
                     eve = document.createEvent 'CustomEvent'
                     eve.initCustomEvent 'selectInterface', true, false, {'role' : @role, 'battery' : @battery, 'lab' : 'crane'}
@@ -132,6 +134,7 @@ class WebsocketData
                     document.dispatchEvent eve
                     #getSensorData("ESDval", "controller")
                 else
+                    @lab = 'crane'
                     eve = document.createEvent 'CustomEvent'
                     eve.initCustomEvent 'switchLab', true, false, {'modeLab' : 'discharge'}
                     document.dispatchEvent eve
@@ -146,7 +149,8 @@ class WebsocketData
                 @getSensorData("ESDval", "controller")
                 $("#stop").removeAttr('disabled')
                 $("#reset").removeAttr('disabled')
-                return
+                
+            return
 
         if (msg.method == "sendActuatorData" && msg.payload.actuatorId == "Panelrot")
             eve = document.createEvent 'CustomEvent'

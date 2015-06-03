@@ -135,13 +135,17 @@
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, true);
       } else {
-        this.wsData.sendActuatorChange('FWheelLab', "0");
+        if (this.role === 'controller') {
+          this.wsData.sendActuatorChange('FWheelLab', "0");
+        }
         this.noria.remove();
         delete this.noria;
         document.getElementById('dischargeButton').removeAttribute('disabled');
         this.noria = null;
         this.common.mySwitch(true);
-        this.wsData.sendActuatorChange('WindLab', "1");
+        if (this.role === 'controller') {
+          this.wsData.sendActuatorChange('WindLab', "1");
+        }
       }
       this.eolic = new EolicElements(this.wsData);
       this.charge = true;
@@ -177,13 +181,17 @@
       if (this.common === null) {
         this.common = new CommonElements(this.wsData, false);
       } else {
-        this.wsData.sendActuatorChange('WindLab', "0");
+        if (this.role === "controller") {
+          this.wsData.sendActuatorChange('WindLab', "0");
+        }
         this.eolic.remove();
         delete this.eolic;
         document.getElementById('chargeButton').removeAttribute('disabled');
         this.eolic = null;
         this.common.mySwitch(false);
-        this.wsData.sendActuatorChange('FWheelLab', "1");
+        if (this.role === "controller") {
+          this.wsData.sendActuatorChange('FWheelLab', "1");
+        }
       }
       this.noria = new NoriaElements(this.wsData);
       this.charge = false;
@@ -216,10 +224,10 @@
       battery = e.detail.battery;
       this.role = e.detail.role;
       role = document.getElementById('yourRole');
-      if (battery >= 90) {
-        this.selectDischarge();
-      } else {
+      if (e.detail.lab === 'wind') {
         this.selectCharge();
+      } else {
+        this.selectDischarge();
       }
       if (e.detail.role === 'observer') {
         if (this.charge) {
@@ -230,14 +238,29 @@
         this.common.disable();
         document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
         document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
-        role.appendChild(document.createTextNode('You are an observer'));
+        role.innerHTML = 'You are an observer';
       } else {
         this.common.disableStop();
         this.common.disableReset();
-        role.appendChild(document.createTextNode('You are the controller'));
+        role.innerHTML = 'You are the controller';
       }
       $(".slider-battery").val(battery);
       return $("p#textBattery").text(battery + "%");
+    };
+
+    Init.prototype.observer = function() {
+      var role;
+      this.role = 'observer';
+      if (this.charge) {
+        this.eolic.disable();
+      } else {
+        this.noria.disable();
+      }
+      role = document.getElementById('yourRole');
+      this.common.disable();
+      document.getElementById('dischargeButton').setAttribute('disabled', 'disabled');
+      document.getElementById('chargeButton').setAttribute('disabled', 'disabled');
+      return role.innerHTML = 'You are mode observer';
     };
 
     Init.prototype.eventReadyAll = function(e) {

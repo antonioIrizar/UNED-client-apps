@@ -145,13 +145,14 @@
             this.alwaysObserver = true;
             return;
           }
-          this.lab = 'crane';
           if (!this.wsDataIsReady && this.switchUi) {
+            this.lab = 'crane';
             this.abort = true;
             this.craneInterfaz();
             return;
           }
           if (!this.wsDataIsReady) {
+            this.lab = 'crane';
             this.role = "controller";
             eve = document.createEvent('CustomEvent');
             eve.initCustomEvent('selectInterface', true, false, {
@@ -165,6 +166,7 @@
             eve.initEvent('allWsAreReady', true, false);
             document.dispatchEvent(eve);
           } else {
+            this.lab = 'crane';
             eve = document.createEvent('CustomEvent');
             eve.initCustomEvent('switchLab', true, false, {
               'modeLab': 'discharge'
@@ -182,8 +184,8 @@
           this.getSensorData("ESDval", "controller");
           $("#stop").removeAttr('disabled');
           $("#reset").removeAttr('disabled');
-          return;
         }
+        return;
       }
       if (msg.method === "sendActuatorData" && msg.payload.actuatorId === "Panelrot") {
         eve = document.createEvent('CustomEvent');
